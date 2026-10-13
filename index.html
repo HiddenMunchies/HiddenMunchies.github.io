@@ -4,43 +4,53 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Oscar Gomez | Command Center</title>
-  <!-- Chart.js CDN for visualizations -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --bg-base: #0b0f19;
-      --card-bg: rgba(22, 27, 34, 0.75);
-      --border-color: rgba(255, 255, 255, 0.08);
+      --bg-base: #080c14;
+      --card-bg: rgba(18, 24, 38, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
       --text-main: #f0f6fc;
       --text-muted: #8b949e;
-      --accent: #002D62; /* Default Padres Navy */
-      --accent-glow: rgba(0, 45, 98, 0.4);
+      --accent: #002D62; /* Padres Navy */
       --highlight: #FFC425; /* Padres Gold */
+      --glow-rgb1: 0, 45, 98;
+      --glow-rgb2: 255, 196, 37;
+    }
+
+    [data-theme="padres"] {
+      --accent: #2F241D;
+      --highlight: #FFC425;
+      --glow-rgb1: 47, 36, 29;
+      --glow-rgb2: 255, 196, 37;
     }
 
     [data-theme="dodgers"] {
       --accent: #005A9C;
-      --accent-glow: rgba(0, 90, 156, 0.4);
       --highlight: #EF3E42;
+      --glow-rgb1: 0, 90, 156;
+      --glow-rgb2: 239, 62, 66;
     }
 
     [data-theme="heat"] {
       --accent: #98002E;
-      --accent-glow: rgba(152, 0, 46, 0.4);
       --highlight: #F9A01B;
+      --glow-rgb1: 152, 0, 46;
+      --glow-rgb2: 249, 160, 27;
     }
 
     [data-theme="magic"] {
       --accent: #0077C0;
-      --accent-glow: rgba(0, 119, 192, 0.4);
       --highlight: #C4CED4;
+      --glow-rgb1: 0, 119, 192;
+      --glow-rgb2: 196, 206, 212;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     body {
@@ -53,29 +63,29 @@
       overflow-x: hidden;
     }
 
-    /* Ambient Background Glow */
-    .ambient-glow {
+    /* Lava Lamp Fluid Canvas */
+    #lava-canvas {
       position: fixed;
-      top: -20%;
-      left: 20%;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-      filter: blur(80px);
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
       z-index: 0;
+      filter: blur(80px);
+      opacity: 0.65;
       pointer-events: none;
-      transition: background 0.6s ease;
     }
 
     header {
       position: relative;
       z-index: 10;
-      padding: 24px 32px;
+      padding: 20px 32px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--border-color);
-      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      backdrop-filter: blur(16px);
+      background: rgba(8, 12, 20, 0.6);
     }
 
     .brand h1 {
@@ -89,56 +99,86 @@
       color: var(--text-muted);
     }
 
+    .nav-tabs {
+      display: flex;
+      gap: 12px;
+    }
+
+    .nav-tab {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-tab.active, .nav-tab:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
     .theme-selector {
       display: flex;
       gap: 8px;
-      align-items: center;
     }
 
     .theme-btn {
       background: var(--card-bg);
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--card-border);
       color: var(--text-main);
-      padding: 6px 12px;
+      padding: 6px 14px;
       border-radius: 8px;
       font-size: 0.8rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
     }
 
     .theme-btn:hover, .theme-btn.active {
       border-color: var(--highlight);
-      box-shadow: 0 0 10px var(--accent-glow);
+      box-shadow: 0 0 12px rgba(var(--glow-rgb2), 0.35);
+      color: var(--highlight);
     }
 
     main {
       position: relative;
       z-index: 10;
       flex: 1;
-      max-width: 1200px;
+      max-width: 1280px;
       width: 100%;
       margin: 0 auto;
       padding: 32px 24px;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 24px;
     }
 
     .card {
       background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 20px;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 24px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
     }
 
     .card-title {
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.8px;
       color: var(--text-muted);
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -152,108 +192,244 @@
       box-shadow: 0 0 8px #238636;
     }
 
-    .matchup-box {
+    .scorecard {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px;
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 8px;
-      margin-bottom: 12px;
+      padding: 20px 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 10px;
+      margin-bottom: 16px;
     }
 
-    .team-name {
-      font-weight: 600;
-      font-size: 1.1rem;
+    .team-col {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 40%;
     }
 
-    .score {
-      font-size: 1.4rem;
+    .team-col.away { text-align: right; }
+
+    .team-label {
+      font-size: 1.15rem;
       font-weight: 700;
-      color: var(--highlight);
     }
 
-    canvas {
-      max-height: 220px;
-      width: 100% !important;
+    .team-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .score-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .score-digits {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--highlight);
+      letter-spacing: 1px;
+    }
+
+    .game-status {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #3fb950;
+      text-transform: uppercase;
+    }
+
+    /* OBS Specific Mode */
+    .obs-wrapper {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      border: 2px dashed rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+    }
+
+    .obs-preview-box {
+      width: 480px;
+      background: rgba(10, 14, 23, 0.9);
+      border: 2px solid var(--highlight);
+      border-radius: 10px;
+      padding: 16px 24px;
+      box-shadow: 0 0 24px rgba(var(--glow-rgb2), 0.2);
     }
   </style>
 </head>
 <body data-theme="padres">
 
-  <div class="ambient-glow" id="glow"></div>
+  <!-- Dynamic Fluid Background -->
+  <canvas id="lava-canvas"></canvas>
 
   <header>
     <div class="brand">
       <h1>OSCAR GOMEZ</h1>
-      <p>Sports Analytics & Command Center</p>
+      <p>Sports Command Center</p>
     </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab('dashboard')">Live Board</button>
+      <button class="nav-tab" onclick="switchTab('schedule')">Schedule & Stats</button>
+      <button class="nav-tab" onclick="switchTab('obs')">OBS Stream Dock</button>
+    </nav>
+
+    <!-- Team Theme Selector -->
     <div class="theme-selector">
-      <button class="theme-btn active" onclick="setTheme('padres')">Padres</button>
-      <button class="theme-btn" onclick="setTheme('dodgers')">Dodgers</button>
-      <button class="theme-btn" onclick="setTheme('heat')">Heat</button>
-      <button class="theme-btn" onclick="setTheme('magic')">Magic</button>
+      <button class="theme-btn active" onclick="setTheme('padres', 'mlb', 'sd')">Padres</button>
+      <button class="theme-btn" onclick="setTheme('dodgers', 'mlb', 'lad')">Dodgers</button>
+      <button class="theme-btn" onclick="setTheme('heat', 'nba', 'mia')">Heat</button>
+      <button class="theme-btn" onclick="setTheme('magic', 'nba', 'orl')">Magic</button>
     </div>
   </header>
 
   <main>
-    <!-- Live Matchup Feed -->
-    <section class="card">
-      <div class="card-title">
-        <span>Active Matchup</span>
-        <span class="live-dot"></span>
-      </div>
-      <div class="matchup-box">
-        <span class="team-name" id="homeTeam">San Diego Padres</span>
-        <span class="score" id="matchScore">4 - 2</span>
-        <span class="team-name" id="awayTeam">LA Dodgers</span>
-      </div>
-      <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
-        Live broadcast tracking enabled. Real-time scoring streams update automatically on match events.
-      </p>
-    </section>
+    <!-- Tab 1: Live Dashboard -->
+    <div id="dashboard" class="tab-content active">
+      <section class="card">
+        <div class="card-title">
+          <span>Matchup Feed</span>
+          <span class="live-dot" id="liveIndicator"></span>
+        </div>
+        <div class="scorecard">
+          <div class="team-col">
+            <span class="team-label" id="homeName">Padres</span>
+            <span class="team-sub" id="homeRecord">Home</span>
+          </div>
+          <div class="score-center">
+            <span class="score-digits" id="liveScore">-- : --</span>
+            <span class="game-status" id="gameDetail">Connecting...</span>
+          </div>
+          <div class="team-col away">
+            <span class="team-label" id="awayName">Opponent</span>
+            <span class="team-sub" id="awayRecord">Away</span>
+          </div>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;" id="venueInfo">
+          Syncing with official sports telemetry...
+        </p>
+      </section>
 
-    <!-- Scoring Trends Visualization -->
-    <section class="card">
-      <div class="card-title">
-        <span>Inning-by-Inning Scoring Pace</span>
-      </div>
-      <canvas id="scoringChart"></canvas>
-    </section>
+      <section class="card">
+        <div class="card-title">
+          <span>Inning / Quarter Scoring Momentum</span>
+        </div>
+        <canvas id="momentumChart"></canvas>
+      </section>
+    </div>
 
-    <!-- Project Architecture -->
-    <section class="card" style="grid-column: 1 / -1;">
-      <div class="card-title">
-        <span>System Architecture</span>
+    <!-- Tab 2: Schedule & Stats -->
+    <div id="schedule" class="tab-content">
+      <section class="card" style="grid-column: 1 / -1;">
+        <div class="card-title"><span>Upcoming Series & Details</span></div>
+        <p id="scheduleText" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.7;">
+          Select a team to pull the latest calendar and matchup telemetry.
+        </p>
+      </section>
+    </div>
+
+    <!-- Tab 3: OBS Stream View -->
+    <div id="obs" class="tab-content">
+      <div class="obs-wrapper">
+        <p style="margin-bottom: 16px; font-size: 0.9rem; color: var(--text-muted);">
+          Add <code style="color: var(--highlight);">https://oscargomez.me/#obs</code> directly as an OBS Browser Source:
+        </p>
+        <div class="obs-preview-box">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span id="obsHome" style="font-weight: 700; font-size: 1.1rem;">PADRES</span>
+            <span id="obsScore" style="font-weight: 800; font-size: 1.3rem; color: var(--highlight);">0 - 0</span>
+            <span id="obsAway" style="font-weight: 700; font-size: 1.1rem;">OPPONENT</span>
+          </div>
+        </div>
       </div>
-      <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;">
-        Designed with modular CSS tokens, ESPN API endpoints for live event feeds, and Chart.js dynamic canvases. Built to seamlessly embed directly into OBS browser sources or standalone monitor displays.
-      </p>
-    </section>
+    </div>
   </main>
 
   <script>
-    // Theme switching logic
-    function setTheme(theme) {
-      document.body.setAttribute('data-theme', theme);
-      document.querySelectorAll('.theme-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent.toLowerCase() === theme);
-      });
-      updateChartColors(theme);
+    // 1. Fluid Lava Lamp Canvas
+    const canvas = document.getElementById('lava-canvas');
+    const ctxLava = canvas.getContext('2d');
+    let width, height;
+    let blobs = [];
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Blob {
+      constructor(colorKey) {
+        this.colorKey = colorKey;
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.vx = (Math.random() - 0.5) * 1.2;
+        this.vy = (Math.random() - 0.5) * 1.2;
+        this.radius = Math.min(width, height) * 0.35;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < -100 || this.x > width + 100) this.vx *= -1;
+        if (this.y < -100 || this.y > height + 100) this.vy *= -1;
+      }
+      draw(c1, c2) {
+        let grad = ctxLava.createRadialGradient(this.x, this.y, 10, this.x, this.y, this.radius);
+        let rgb = this.colorKey === 1 ? c1 : c2;
+        grad.addColorStop(0, `rgba(${rgb}, 0.8)`);
+        grad.addColorStop(1, `rgba(${rgb}, 0)`);
+        ctxLava.fillStyle = grad;
+        ctxLava.beginPath();
+        ctxLava.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctxLava.fill();
+      }
     }
 
-    // Chart.js Setup
-    const ctx = document.getElementById('scoringChart').getContext('2d');
-    let scoringChart = new Chart(ctx, {
+    blobs = [new Blob(1), new Blob(2), new Blob(1), new Blob(2)];
+
+    function renderLava() {
+      ctxLava.clearRect(0, 0, width, height);
+      let s = getComputedStyle(document.body);
+      let c1 = s.getPropertyValue('--glow-rgb1').trim() || '0, 45, 98';
+      let c2 = s.getPropertyValue('--glow-rgb2').trim() || '255, 196, 37';
+      blobs.forEach(b => {
+        b.update();
+        b.draw(c1, c2);
+      });
+      requestAnimationFrame(renderLava);
+    }
+    renderLava();
+
+    // 2. Tab Navigation
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    // 3. Chart.js Setup
+    const chartCtx = document.getElementById('momentumChart').getContext('2d');
+    let momentumChart = new Chart(chartCtx, {
       type: 'line',
       data: {
-        labels: ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th'],
+        labels: ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7'],
         datasets: [{
-          label: 'Run Probability %',
-          data: [12, 18, 30, 42, 45, 60, 75, 82, 88],
+          label: 'Scoring Momentum',
+          data: [15, 25, 45, 40, 65, 80, 95],
           borderColor: '#FFC425',
-          backgroundColor: 'rgba(255, 196, 37, 0.1)',
-          tension: 0.4,
+          backgroundColor: 'rgba(255, 196, 37, 0.08)',
+          tension: 0.45,
           fill: true
         }]
       },
@@ -267,16 +443,67 @@
       }
     });
 
-    function updateChartColors(theme) {
+    // 4. Live ESPN API Fetcher
+    async function fetchTeamData(sport, teamAbbr) {
+      try {
+        const url = `https://site.api.espn.com/apis/site/v2/sports/${sport === 'mlb' ? 'baseball/mlb' : 'basketball/nba'}/scoreboard`;
+        const res = await fetch(url);
+        const data = await res.json();
+        const event = data.events.find(e => 
+          e.competitions[0].competitors.some(c => c.team.abbreviation.toLowerCase() === teamAbbr.toLowerCase())
+        );
+
+        if (event) {
+          const comp = event.competitions[0];
+          const home = comp.competitors.find(c => c.homeAway === 'home');
+          const away = comp.competitors.find(c => c.homeAway === 'away');
+
+          document.getElementById('homeName').textContent = home.team.shortDisplayName;
+          document.getElementById('awayName').textContent = away.team.shortDisplayName;
+          document.getElementById('homeRecord').textContent = home.records ? home.records[0].summary : 'Home';
+          document.getElementById('awayRecord').textContent = away.records ? away.records[0].summary : 'Away';
+          document.getElementById('liveScore').textContent = `${home.score} - ${away.score}`;
+          document.getElementById('gameDetail').textContent = event.status.type.detail;
+          document.getElementById('venueInfo').textContent = `${comp.venue ? comp.venue.fullName : 'Stadium'} — ${event.name}`;
+
+          // OBS dock elements
+          document.getElementById('obsHome').textContent = home.team.abbreviation;
+          document.getElementById('obsAway').textContent = away.team.abbreviation;
+          document.getElementById('obsScore').textContent = `${home.score} - ${away.score}`;
+
+          document.getElementById('scheduleText').innerHTML = `<strong>Next Matchup:</strong> ${event.name}<br><strong>Date:</strong> ${new Date(event.date).toLocaleString()}<br><strong>Broadcast:</strong> ${comp.broadcasts && comp.broadcasts[0] ? comp.broadcasts[0].names.join(', ') : 'National Broadcast'}`;
+        } else {
+          document.getElementById('gameDetail').textContent = 'No Live Game Today';
+          document.getElementById('scheduleText').textContent = 'No active game broadcast scheduled right now. Check back near game time.';
+        }
+      } catch (err) {
+        document.getElementById('gameDetail').textContent = 'Live Feed Idle';
+      }
+    }
+
+    // 5. Theme Changer
+    function setTheme(theme, sport = 'mlb', abbr = 'sd') {
+      document.body.setAttribute('data-theme', theme);
+      document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.toLowerCase() === theme);
+      });
+
       const colors = {
         padres: '#FFC425',
         dodgers: '#EF3E42',
         heat: '#F9A01B',
         magic: '#0077C0'
       };
-      scoringChart.data.datasets[0].borderColor = colors[theme];
-      scoringChart.update();
+
+      momentumChart.data.datasets[0].borderColor = colors[theme];
+      momentumChart.data.datasets[0].backgroundColor = `${colors[theme]}15`;
+      momentumChart.update();
+
+      fetchTeamData(sport, abbr);
     }
+
+    // Initial load
+    fetchTeamData('mlb', 'sd');
   </script>
 </body>
 </html>
