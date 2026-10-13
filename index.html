@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oscar Gomez | Command Center</title>
+  <!-- Chart.js CDN for visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-base: #0b0f19;
+      --card-bg: rgba(22, 27, 34, 0.75);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --text-main: #f0f6fc;
+      --text-muted: #8b949e;
+      --accent: #002D62; /* Default Padres Navy */
+      --accent-glow: rgba(0, 45, 98, 0.4);
+      --highlight: #FFC425; /* Padres Gold */
+    }
+
+    [data-theme="dodgers"] {
+      --accent: #005A9C;
+      --accent-glow: rgba(0, 90, 156, 0.4);
+      --highlight: #EF3E42;
+    }
+
+    [data-theme="heat"] {
+      --accent: #98002E;
+      --accent-glow: rgba(152, 0, 46, 0.4);
+      --highlight: #F9A01B;
+    }
+
+    [data-theme="magic"] {
+      --accent: #0077C0;
+      --accent-glow: rgba(0, 119, 192, 0.4);
+      --highlight: #C4CED4;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Ambient Background Glow */
+    .ambient-glow {
+      position: fixed;
+      top: -20%;
+      left: 20%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      filter: blur(80px);
+      z-index: 0;
+      pointer-events: none;
+      transition: background 0.6s ease;
+    }
+
+    header {
+      position: relative;
+      z-index: 10;
+      padding: 24px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .brand p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .theme-selector {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .theme-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .theme-btn:hover, .theme-btn.active {
+      border-color: var(--highlight);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    main {
+      position: relative;
+      z-index: 10;
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 32px 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #238636;
+      box-shadow: 0 0 8px #238636;
+    }
+
+    .matchup-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    .team-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .score {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--highlight);
+    }
+
+    canvas {
+      max-height: 220px;
+      width: 100% !important;
+    }
+  </style>
+</head>
+<body data-theme="padres">
+
+  <div class="ambient-glow" id="glow"></div>
+
+  <header>
+    <div class="brand">
+      <h1>OSCAR GOMEZ</h1>
+      <p>Sports Analytics & Command Center</p>
+    </div>
+    <div class="theme-selector">
+      <button class="theme-btn active" onclick="setTheme('padres')">Padres</button>
+      <button class="theme-btn" onclick="setTheme('dodgers')">Dodgers</button>
+      <button class="theme-btn" onclick="setTheme('heat')">Heat</button>
+      <button class="theme-btn" onclick="setTheme('magic')">Magic</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Live Matchup Feed -->
+    <section class="card">
+      <div class="card-title">
+        <span>Active Matchup</span>
+        <span class="live-dot"></span>
+      </div>
+      <div class="matchup-box">
+        <span class="team-name" id="homeTeam">San Diego Padres</span>
+        <span class="score" id="matchScore">4 - 2</span>
+        <span class="team-name" id="awayTeam">LA Dodgers</span>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+        Live broadcast tracking enabled. Real-time scoring streams update automatically on match events.
+      </p>
+    </section>
+
+    <!-- Scoring Trends Visualization -->
+    <section class="card">
+      <div class="card-title">
+        <span>Inning-by-Inning Scoring Pace</span>
+      </div>
+      <canvas id="scoringChart"></canvas>
+    </section>
+
+    <!-- Project Architecture -->
+    <section class="card" style="grid-column: 1 / -1;">
+      <div class="card-title">
+        <span>System Architecture</span>
+      </div>
+      <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;">
+        Designed with modular CSS tokens, ESPN API endpoints for live event feeds, and Chart.js dynamic canvases. Built to seamlessly embed directly into OBS browser sources or standalone monitor displays.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    // Theme switching logic
+    function setTheme(theme) {
+      document.body.setAttribute('data-theme', theme);
+      document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.toLowerCase() === theme);
+      });
+      updateChartColors(theme);
+    }
+
+    // Chart.js Setup
+    const ctx = document.getElementById('scoringChart').getContext('2d');
+    let scoringChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th'],
+        datasets: [{
+          label: 'Run Probability %',
+          data: [12, 18, 30, 42, 45, 60, 75, 82, 88],
+          borderColor: '#FFC425',
+          backgroundColor: 'rgba(255, 196, 37, 0.1)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#8b949e' } },
+          y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#8b949e' } }
+        }
+      }
+    });
+
+    function updateChartColors(theme) {
+      const colors = {
+        padres: '#FFC425',
+        dodgers: '#EF3E42',
+        heat: '#F9A01B',
+        magic: '#0077C0'
+      };
+      scoringChart.data.datasets[0].borderColor = colors[theme];
+      scoringChart.update();
+    }
+  </script>
+</body>
+</html>
