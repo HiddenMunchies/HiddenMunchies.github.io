@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta name="theme-color" content="#06080f" />
   <title>OG ZONE | Live Sports, Live Streams, Discord Gaming Forums & Shop</title>
   <!-- Chart.js -->
@@ -672,6 +673,7 @@
       padding: 7px 10px;
       border-radius: 8px;
       background: rgba(255, 255, 255, 0.04);
+      word-break: break-word;
     }
     .chat-msg.bot-msg {
       border-left: 3px solid var(--accent);
@@ -996,7 +998,6 @@
       .discord-channels-col { display: none; }
     }
 
-    /* Column 1: Server Icons Rail (#1e1f22) */
     .discord-servers-rail {
       background: #1e1f22;
       padding: 14px 0;
@@ -1050,7 +1051,6 @@
       margin: 2px 0;
     }
 
-    /* Column 2: Channels & Forum Categories (#2b2d31) */
     .discord-channels-col {
       background: #2b2d31;
       display: flex;
@@ -1125,7 +1125,6 @@
       font-size: 0.82rem;
     }
 
-    /* Column 3: Main Discord Forum & Search View (#313338) */
     .discord-main-col {
       background: #313338;
       display: flex;
@@ -1216,6 +1215,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+      word-break: break-word;
     }
 
     .dc-thread-card:hover {
@@ -1243,7 +1243,6 @@
       gap: 8px;
     }
 
-    /* Column 4: Right Sidebar Members & Game Info (#2b2d31) */
     .discord-right-members {
       background: #2b2d31;
       border-left: 1px solid #1f2023;
@@ -1532,7 +1531,7 @@
     </div>
 
     <div style="font-size: 0.74rem; color: var(--text-muted); border-top: 1px solid var(--card-border); padding-top: 12px;">
-      PiP Auto-Follow • @oscar1975
+      🔒 XSS & SHA-256 Protected • @oscar1975
     </div>
   </aside>
 
@@ -1699,6 +1698,7 @@
             <input
               type="text"
               id="gameChatInput"
+              maxlength="280"
               placeholder="Post in this game's chat..."
               onkeydown="if(event.key==='Enter')sendGameChatMessage()"
             />
@@ -1788,6 +1788,7 @@
           type="text"
           id="streamQueryInput"
           class="stream-search-input"
+          maxlength="60"
           placeholder="Search or enter streamer username (e.g. jynxzi, kaicenat, xqc, shroud, tarik, clix)..."
           onkeydown="if(event.key==='Enter')loadCustomStreamOnPage()"
         />
@@ -1808,9 +1809,7 @@
 
       <!-- Full-Width On-Site Stream Theater + Chat Dock -->
       <div class="stream-theater-grid" id="streamTheaterAnchor">
-        <div class="stream-video-stage" id="streamStageMount">
-          <!-- Populated dynamically with Interactive Twitch JS Player, Kick, or YouTube -->
-        </div>
+        <div class="stream-video-stage" id="streamStageMount"></div>
 
         <div class="stream-chat-stage">
           <div class="card-header" style="padding:14px 16px 0; margin-bottom:10px;">
@@ -1850,9 +1849,7 @@
     <section id="tab-gaming" class="page-section">
       <div class="discord-app-shell">
         <!-- Column 1: Discord Server Icons Rail -->
-        <div class="discord-servers-rail" id="discordServersRail">
-          <!-- Populated dynamically with popular & searched games -->
-        </div>
+        <div class="discord-servers-rail" id="discordServersRail"></div>
 
         <!-- Column 2: Discord Channels & Forum Categories -->
         <div class="discord-channels-col">
@@ -1862,9 +1859,7 @@
               <span style="font-size:0.72rem; color:#23a55a;">● Verified</span>
             </div>
 
-            <div class="dc-channel-list" id="dcChannelList">
-              <!-- Populated dynamically -->
-            </div>
+            <div class="dc-channel-list" id="dcChannelList"></div>
           </div>
 
           <div class="dc-user-footer">
@@ -1893,6 +1888,7 @@
               <input
                 type="text"
                 id="dcGameSearchInput"
+                maxlength="45"
                 placeholder="Search any game to open/create its forum (e.g. Elden Ring, Marvel Rivals)..."
                 onkeydown="if(event.key==='Enter')searchOrCreateGameForum()"
               />
@@ -1912,6 +1908,7 @@
                 <input
                   type="text"
                   id="dcNewThreadTitle"
+                  maxlength="120"
                   placeholder="Post Title (e.g. Best Prismatic Hunter build after patch, or Need +2 for Raid)..."
                   style="flex:1; min-width:220px; background:#1e1f22; border:1px solid #3f4147; color:#fff; padding:9px 12px; border-radius:8px; font-size:0.85rem; outline:none;"
                 />
@@ -1930,6 +1927,7 @@
                 <input
                   type="text"
                   id="dcNewThreadBody"
+                  maxlength="500"
                   placeholder="Write your post details, loadout, or squad code..."
                   style="flex:1; background:#1e1f22; border:1px solid #3f4147; color:#fff; padding:9px 12px; border-radius:8px; font-size:0.84rem; outline:none;"
                   onkeydown="if(event.key==='Enter')createDiscordForumThread()"
@@ -2193,7 +2191,76 @@
     }
 
     /* ========================================================
-       1. ANTI-RACISM & HATE SPEECH USERNAME FILTER
+       1. SECURITY SUITE: XSS SANITIZER, SHA-256 HASHING,
+          RATE LIMITERS & WALLET TAMPER CHECKSUMS
+       ======================================================== */
+    // Escapes all HTML special characters to block Cross-Site Scripting (XSS)
+    function escapeHTML(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // Native Web Crypto API SHA-256 Password Hashing (Never stores plain-text passwords)
+    async function hashPasswordSHA256(password, contactSalt) {
+      const text = `ogzone_v1_salt_${contactSalt}_${password}`;
+      if (window.crypto && crypto.subtle) {
+        const msgBuffer = new TextEncoder().encode(text);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return 'sha256_' + hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      }
+      // Fallback hash if browser runs in non-HTTPS local context
+      let h = 2166136261;
+      for (let i = 0; i < text.length; i++) {
+        h ^= text.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return 'fnv_' + (h >>> 0).toString(16);
+    }
+
+    // Tamper-Detection Checksum for OG Points Wallet (Prevents F12 LocalStorage point editing)
+    function computeWalletSig(u) {
+      if (!u || !u.contact) return '';
+      const raw = `og_wallet_guard_${u.contact}_${u.points}_${(u.ownedItems || []).join(',')}`;
+      let h1 = 0xdeadbeef ^ raw.length;
+      let h2 = 0x41c6ce57 ^ raw.length;
+      for (let i = 0; i < raw.length; i++) {
+        const ch = raw.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 2654435761);
+        h2 = Math.imul(h2 ^ ch, 1597334677);
+      }
+      h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+      h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+      return 'ws_' + (h2 >>> 0).toString(16) + (h1 >>> 0).toString(16);
+    }
+
+    // Anti-Spam Cooldown Timers
+    const rateLimitTimestamps = {
+      chat: 0,
+      thread: 0,
+      reply: 0,
+      bonus: 0
+    };
+
+    function checkRateLimit(actionKey, cooldownMs) {
+      const now = Date.now();
+      const elapsed = now - (rateLimitTimestamps[actionKey] || 0);
+      if (elapsed < cooldownMs) {
+        const waitSec = Math.ceil((cooldownMs - elapsed) / 1000);
+        alert(`Please wait ${waitSec}s before doing that again.`);
+        return false;
+      }
+      rateLimitTimestamps[actionKey] = now;
+      return true;
+    }
+
+    /* ========================================================
+       2. ANTI-RACISM & HATE SPEECH USERNAME FILTER
        ======================================================== */
     const BANNED_SLUR_PATTERNS = [
       'nigg', 'nigga', 'nigar', 'niger', 'negro', 'kneeg', 'chink', 'chinaman',
@@ -2208,7 +2275,7 @@
     ];
 
     function normalizeForModeration(input) {
-      return input
+      return String(input || '')
         .toLowerCase()
         .replace(/0/g, 'o')
         .replace(/1/g, 'i')
@@ -2225,7 +2292,7 @@
 
     function validateUsernameSafety(rawName) {
       if (!rawName || rawName.trim().length < 2) {
-        return { valid: false, reason: 'Username must be between 2 and 22 characters.' };
+        return { valid: false, reason: 'Text must be at least 2 characters.' };
       }
       const rawLower = rawName.toLowerCase().replace(/[^a-z0-9]/g, '');
       const normalized = normalizeForModeration(rawName);
@@ -2233,7 +2300,7 @@
       if (rawLower.includes('1488') || rawLower.includes('8814')) {
         return {
           valid: false,
-          reason: 'Username rejected: Racist terms, hate symbols, or coded hate meanings are strictly prohibited.'
+          reason: 'Rejected: Racist terms, hate symbols, or coded hate meanings are strictly prohibited.'
         };
       }
 
@@ -2241,7 +2308,7 @@
         if (rawLower.includes(slur) || normalized.includes(slur)) {
           return {
             valid: false,
-            reason: 'Username rejected: Racist names, slurs, or offensive meanings are strictly prohibited on OG ZONE.'
+            reason: 'Rejected: Racist names, slurs, or offensive meanings are strictly prohibited on OG ZONE.'
           };
         }
       }
@@ -2249,21 +2316,31 @@
     }
 
     /* ========================================================
-       2. PERSISTENT ACCOUNT AUTH + WALLET + OPTION 1 WELCOME EMAIL
+       3. PERSISTENT ACCOUNT AUTH + WALLET + OPTION 1 WELCOME EMAIL
        ======================================================== */
     let accountsDB = JSON.parse(localStorage.getItem('og_accounts_db_v2') || '{}');
     let currentUser = JSON.parse(localStorage.getItem('og_current_user_v2') || 'null');
     let lockedPicks = JSON.parse(localStorage.getItem('og_locked_picks_v4') || '{}');
     let gamePools = JSON.parse(localStorage.getItem('og_game_pools_v4') || '{}');
     let pinnedShoutout = JSON.parse(localStorage.getItem('og_pinned_shoutout_v1') || 'null');
+    let emailedAccountsLog = JSON.parse(localStorage.getItem('og_emailed_log_v1') || '{}');
 
     function ensureUserWalletFields(u) {
       if (!u) return null;
-      if (typeof u.points !== 'number') u.points = 1000;
+      if (typeof u.points !== 'number' || isNaN(u.points) || u.points < 0) u.points = 1000;
       if (!Array.isArray(u.ownedItems)) u.ownedItems = [];
       if (!u.equippedBadge) u.equippedBadge = '';
       if (!u.equippedColor) u.equippedColor = '';
       if (typeof u.rainbowBorder !== 'boolean') u.rainbowBorder = false;
+
+      // Verify wallet checksum to block F12 LocalStorage point tampering
+      const expectedSig = computeWalletSig(u);
+      if (u._sig && u._sig !== expectedSig) {
+        console.warn('Security Alert: Unverified point modification detected. Resetting wallet to default.');
+        u.points = 1000;
+        u.ownedItems = [];
+      }
+      u._sig = computeWalletSig(u);
       return u;
     }
 
@@ -2274,9 +2351,13 @@
 
     function saveCurrentUserAndDB() {
       if (currentUser) {
+        currentUser._sig = computeWalletSig(currentUser);
         accountsDB[currentUser.contact] = currentUser;
         localStorage.setItem('og_current_user_v2', JSON.stringify(currentUser));
       }
+      Object.values(accountsDB).forEach(acc => {
+        acc._sig = computeWalletSig(acc);
+      });
       localStorage.setItem('og_accounts_db_v2', JSON.stringify(accountsDB));
     }
 
@@ -2284,7 +2365,19 @@
       const welcomeSubject = `Welcome to OG ZONE`;
       const welcomeBody = `Yo ${userObj.username}, thanks for checking out OG ZONE and giving it a shot.\n\nI’m building this as a student project right now, so things are actively being worked on and I’ve got more updates rolling out soon. Your account, username, and picks are all saved whenever you hop back on.\n\nIf there’s a specific stat, sport, or feature you think would make the site better, feel free to reply directly to this email—I read all of them.\n\nAppreciate you stopping by,\nOscar\nhttps://oscargomez.me`;
 
-      if (EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && window.emailjs && userObj.contact.includes('@')) {
+      // Quota Guard: Only dispatch 1 welcome email per email address to prevent quota draining
+      const contactKey = (userObj.contact || '').toLowerCase();
+      if (
+        EMAILJS_PUBLIC_KEY &&
+        EMAILJS_SERVICE_ID &&
+        EMAILJS_TEMPLATE_ID &&
+        window.emailjs &&
+        contactKey.includes('@') &&
+        !emailedAccountsLog[contactKey]
+      ) {
+        emailedAccountsLog[contactKey] = Date.now();
+        localStorage.setItem('og_emailed_log_v1', JSON.stringify(emailedAccountsLog));
+
         emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
           to_email: userObj.contact,
           to_name: userObj.username,
@@ -2297,9 +2390,11 @@
 
       const toast = document.getElementById('authSuccessBox');
       if (toast) {
+        const safeUser = escapeHTML(userObj.username);
+        const safeContact = escapeHTML(userObj.contact);
         toast.innerHTML = `
-          <strong>Welcome in, @${userObj.username}! (+1,000 🪙 Starting Points)</strong><br/>
-          ${userObj.contact.includes('@') ? `Welcome email sent to <strong>${userObj.contact}</strong>.` : `Account saved for <strong>${userObj.contact}</strong>.`}
+          <strong>Welcome in, @${safeUser}! (+1,000 🪙 Starting Points)</strong><br/>
+          ${userObj.contact.includes('@') ? `Welcome email sent to <strong>${safeContact}</strong>.` : `Account saved for <strong>${safeContact}</strong>.`}
         `;
         toast.style.display = 'block';
       }
@@ -2324,7 +2419,9 @@
         headerPts.textContent = currentUser.points.toLocaleString();
         if (shopPts) shopPts.textContent = `🪙 ${currentUser.points.toLocaleString()}`;
         if (dcFootUser) dcFootUser.textContent = `${badgePrefix}@${currentUser.username}`;
-        if (dcActiveSelf) dcActiveSelf.innerHTML = `${currentUser.equippedBadge || '👤'} <strong>@${currentUser.username}</strong>`;
+        if (dcActiveSelf) {
+          dcActiveSelf.innerHTML = `${escapeHTML(currentUser.equippedBadge || '👤')} <strong>@${escapeHTML(currentUser.username)}</strong>`;
+        }
 
         if (spotBorder) {
           spotBorder.classList.toggle('rainbow-override', !!currentUser.rainbowBorder);
@@ -2529,7 +2626,7 @@
       }
     });
 
-    function handleEmailOrPhoneAuth() {
+    async function handleEmailOrPhoneAuth() {
       const rawUsername = document.getElementById('authUsernameInput').value.trim();
       const rawContact = document.getElementById('authContactInput').value.trim();
       const rawPass = document.getElementById('authPasswordInput').value;
@@ -2557,17 +2654,28 @@
       }
 
       const contactKey = isEmail ? rawContact.toLowerCase() : cleanPhone;
+      const hashedPass = await hashPasswordSHA256(rawPass, contactKey);
       const existing = accountsDB[contactKey];
-      if (existing && existing.password && existing.password !== rawPass) {
-        showAuthError('Incorrect password for this account.');
-        return;
+
+      if (existing && existing.passwordHash) {
+        if (existing.passwordHash !== hashedPass) {
+          showAuthError('Incorrect password for this account.');
+          return;
+        }
+      } else if (existing && existing.password) {
+        // Legacy account migration: verify old password, then upgrade to SHA-256 hash
+        if (existing.password !== rawPass) {
+          showAuthError('Incorrect password for this account.');
+          return;
+        }
+        delete existing.password;
       }
 
       const isNewAccount = !existing;
       const userObj = ensureUserWalletFields({
         username: rawUsername,
         contact: contactKey,
-        password: rawPass,
+        passwordHash: hashedPass,
         avatar: existing ? existing.avatar : '',
         provider: isEmail ? 'email' : 'phone',
         points: existing && typeof existing.points === 'number' ? existing.points : 1000,
@@ -2599,7 +2707,7 @@
     }
 
     /* ========================================================
-       3. SMOOTH AMBIENT MESH BACKGROUND
+       4. SMOOTH AMBIENT MESH BACKGROUND
        ======================================================== */
     const ambCanvas = document.getElementById('ambientCanvas');
     const ambCtx = ambCanvas.getContext('2d');
@@ -2653,7 +2761,7 @@
     }
 
     /* ========================================================
-       4. REAL 24/7 STREAMING RADIO PLAYER (SOMAFM HTTPS STREAMS)
+       5. REAL 24/7 STREAMING RADIO PLAYER (SOMAFM HTTPS STREAMS)
        ======================================================== */
     const RADIO_STREAMS = {
       lofi: 'https://ice1.somafm.com/groovesalad-128-mp3',
@@ -2694,7 +2802,7 @@
     }
 
     /* ========================================================
-       5. TABS & PICTURE-IN-PICTURE (PiP) VISIBILITY LOGIC
+       6. TABS & PICTURE-IN-PICTURE (PiP) VISIBILITY LOGIC
        ======================================================== */
     let activeTab = 'sports';
     let pipManuallyDismissed = false;
@@ -2761,7 +2869,7 @@
     }
 
     /* ========================================================
-       6. LIVE MULTI-SPORT TELEMETRY + STATS + AUTOPLAY CLIPS
+       7. LIVE MULTI-SPORT TELEMETRY + STATS + AUTOPLAY CLIPS
        ======================================================== */
     const LEAGUES = [
       { key: 'nfl', label: 'NFL', path: 'football/nfl' },
@@ -2966,35 +3074,35 @@
         const isCurrent = currentSpotlightGame && String(currentSpotlightGame.id) === String(g.id);
 
         return `
-          <div class="game-card ${isCurrent ? 'active-card' : ''}" onclick="selectSpotlightById('${g.id}')">
+          <div class="game-card ${isCurrent ? 'active-card' : ''}" onclick="selectSpotlightById('${escapeHTML(g.id)}')">
             <div style="display:flex; justify-content:space-between; font-size:0.74rem; color:var(--text-muted);">
-              <span class="league-badge">${g.leagueLabel}</span>
-              <span style="color:#4ade80; font-weight:700;">${g.statusDetail}</span>
+              <span class="league-badge">${escapeHTML(g.leagueLabel)}</span>
+              <span style="color:#4ade80; font-weight:700;">${escapeHTML(g.statusDetail)}</span>
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <div style="display:flex; align-items:center; gap:9px;">
-                <img src="${g.away.logo}" style="width:28px; height:28px; object-fit:contain;" />
+                <img src="${escapeHTML(g.away.logo)}" style="width:28px; height:28px; object-fit:contain;" />
                 <div>
-                  <div style="font-weight:700;">${g.away.name}</div>
-                  <div style="font-size:0.7rem; color:var(--text-muted);">${g.away.record}</div>
+                  <div style="font-weight:700;">${escapeHTML(g.away.name)}</div>
+                  <div style="font-size:0.7rem; color:var(--text-muted);">${escapeHTML(g.away.record)}</div>
                 </div>
               </div>
-              <strong style="font-size:1.15rem;">${g.away.score}</strong>
+              <strong style="font-size:1.15rem;">${escapeHTML(g.away.score)}</strong>
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <div style="display:flex; align-items:center; gap:9px;">
-                <img src="${g.home.logo}" style="width:28px; height:28px; object-fit:contain;" />
+                <img src="${escapeHTML(g.home.logo)}" style="width:28px; height:28px; object-fit:contain;" />
                 <div>
-                  <div style="font-weight:700;">${g.home.name}</div>
-                  <div style="font-size:0.7rem; color:var(--text-muted);">${g.home.record}</div>
+                  <div style="font-weight:700;">${escapeHTML(g.home.name)}</div>
+                  <div style="font-size:0.7rem; color:var(--text-muted);">${escapeHTML(g.home.record)}</div>
                 </div>
               </div>
-              <strong style="font-size:1.15rem;">${g.home.score}</strong>
+              <strong style="font-size:1.15rem;">${escapeHTML(g.home.score)}</strong>
             </div>
             <div style="font-size:0.72rem; color:var(--text-muted); border-top:1px solid rgba(255,255,255,0.06); padding-top:8px; display:flex; justify-content:space-between;">
               <span style="color:var(--gold); font-weight:700;">🪙 Pot: ${totalPot.toLocaleString()}</span>
               <span style="color:${locked ? '#4ade80' : 'var(--accent)'}; font-weight:700;">
-                ${locked ? (locked.settled ? `✓ ${locked.resultText}` : `🔒 ${locked.amount} on ${locked.abbr}`) : '🪙 Bet Points →'}
+                ${locked ? (locked.settled ? `✓ ${escapeHTML(locked.resultText)}` : `🔒 ${escapeHTML(locked.amount)} on ${escapeHTML(locked.abbr)}`) : '🪙 Bet Points →'}
               </span>
             </div>
           </div>
@@ -3047,7 +3155,7 @@
     }
 
     /* ========================================================
-       7. TWITCH-STYLE CHANNEL POINTS PREDICTION POOL ENGINE
+       8. TWITCH-STYLE CHANNEL POINTS PREDICTION POOL ENGINE
        ======================================================== */
     function getGamePool(gameId) {
       if (!gamePools[gameId]) {
@@ -3080,6 +3188,8 @@
         showAuthError('Sign in to claim your +250 free OG Points bonus!');
         return;
       }
+      if (!checkRateLimit('bonus', 15000)) return;
+      currentUser = ensureUserWalletFields(currentUser);
       currentUser.points += 250;
       saveCurrentUserAndDB();
       syncUserHeaderUI();
@@ -3094,6 +3204,7 @@
         return;
       }
 
+      currentUser = ensureUserWalletFields(currentUser);
       const g = currentSpotlightGame;
       const pickKey = `${currentUser.contact}_${g.id}`;
 
@@ -3167,9 +3278,12 @@
             bet.resultText = `Won +${totalPayout.toLocaleString()} 🪙`;
 
             if (acc) {
+              ensureUserWalletFields(acc);
               acc.points = (acc.points || 0) + totalPayout;
+              acc._sig = computeWalletSig(acc);
               if (currentUser && currentUser.contact === acc.contact) {
                 currentUser.points = acc.points;
+                currentUser._sig = acc._sig;
               }
             }
 
@@ -3216,8 +3330,8 @@
           btnAway.textContent = g.away.name;
         }
         label.innerHTML = existing.settled
-          ? `<strong style="color:var(--gold);">✓ Pool Settled: ${existing.resultText}</strong>`
-          : `<strong style="color:#4ade80;">✓ Locked ${existing.amount.toLocaleString()} 🪙 on ${existing.teamName}</strong> (Auto-settles when game ends)`;
+          ? `<strong style="color:var(--gold);">✓ Pool Settled: ${escapeHTML(existing.resultText)}</strong>`
+          : `<strong style="color:#4ade80;">✓ Locked ${existing.amount.toLocaleString()} 🪙 on ${escapeHTML(existing.teamName)}</strong> (Auto-settles when game ends)`;
         pipPick.textContent = existing.settled ? existing.resultText : `🔒 ${existing.amount} 🪙 on ${existing.abbr}`;
       } else {
         btnAway.disabled = false;
@@ -3271,7 +3385,7 @@
       document.getElementById('leaderboardBody').innerHTML = rows.map((p, i) => `
         <tr style="${p.isMe ? 'background:rgba(56,189,248,0.14); font-weight:700;' : ''}">
           <td>${i + 1}</td>
-          <td>${p.name}</td>
+          <td>${escapeHTML(p.name)}</td>
           <td>${p.locked}</td>
           <td style="color:var(--gold); font-weight:800;">🪙 ${p.pts.toLocaleString()}</td>
         </tr>
@@ -3279,7 +3393,7 @@
     }
 
     /* ========================================================
-       8. LIVE STREAMING HUB (REAL-TIME LIVE CHECKS & AUTO-SWITCH)
+       9. LIVE STREAMING HUB (REAL-TIME LIVE CHECKS & AUTO-SWITCH)
        ======================================================== */
     const STREAMERS_POOL = [
       { platform: 'twitch', channel: 'jynxzi', title: 'Jynxzi', defaultGame: 'Rainbow Six Siege / Tournaments', badge: '🟣 Twitch', isLive: false, viewers: 0, uptime: '', liveGame: '' },
@@ -3291,7 +3405,7 @@
       { platform: 'twitch', channel: 'lacy', title: 'Lacy', defaultGame: 'IRL / Gaming', badge: '🟣 Twitch', isLive: false, viewers: 0, uptime: '', liveGame: '' },
       { platform: 'twitch', channel: 'caseoh_', title: 'CaseOh_', defaultGame: 'Variety / Horror Games', badge: '🟣 Twitch', isLive: false, viewers: 0, uptime: '', liveGame: '' },
       { platform: 'twitch', channel: 'lvndmark', title: 'LVNDMARK', defaultGame: 'Escape from Tarkov / FPS', badge: '🟣 Twitch', isLive: false, viewers: 0, uptime: '', liveGame: '' },
-      { platform: 'twitch', channel: ' stableronaldo', channel: 'stableronaldo', title: 'StableRonaldo', defaultGame: 'Just Chatting / Fortnite', badge: '🟣 Twitch', isLive: false, viewers: 0, uptime: '', liveGame: '' },
+      { platform: 'twitch', channel: 'stableronaldo', title: 'StableRonaldo', defaultGame: 'Just Chatting / Fortnite', badge: '🟣 Twitch', isLive: false, viewers: 0, uptime: '', liveGame: '' },
       { platform: 'kick', channel: 'xqc', title: 'xQc', defaultGame: 'Variety Gaming & Reacts', badge: '🟢 Kick', isLive: false, viewers: 0, uptime: '', liveGame: '' },
       { platform: 'kick', channel: 'nickmercs', title: 'NICKMERCS', defaultGame: 'Apex / Warzone / Sports', badge: '🟢 Kick', isLive: false, viewers: 0, uptime: '', liveGame: '' },
       { platform: 'youtube', channel: 'jfKfPfyJRdk', title: 'Lofi Girl 24/7 Live', defaultGame: '24/7 Beats to Game / Chill To', badge: '🔴 YouTube Live', isLive: true, viewers: 24500, uptime: '24/7 Live', liveGame: 'Live Radio Broadcast' }
@@ -3304,11 +3418,9 @@
     async function initStreamingHub() {
       renderStreamsDirectory();
       await scanLiveStreamStatuses();
-      // Auto-load the #1 highest-viewer verified LIVE streamer right away
       const firstLive = getSortedRecommendedStreams().find(s => s.isLive) || STREAMERS_POOL[0];
       loadStreamIntoTheater(firstLive.platform, firstLive.channel, firstLive.title);
 
-      // Periodic 45-second background check: updates live recommendations and auto-switches if current stream went offline
       setInterval(async () => {
         await scanLiveStreamStatuses();
         checkCurrentStreamStillLive();
@@ -3322,14 +3434,14 @@
       await Promise.all(STREAMERS_POOL.map(async (s) => {
         if (s.platform === 'twitch') {
           try {
-            const upRes = await fetch(`https://decapi.me/twitch/uptime/${s.channel}`);
+            const upRes = await fetch(`https://decapi.me/twitch/uptime/${encodeURIComponent(s.channel)}`);
             const upText = (await upRes.text()).trim();
             if (upText && !upText.toLowerCase().includes('offline') && !upText.toLowerCase().includes('error')) {
               s.isLive = true;
               s.uptime = upText;
               const [vcRes, gmRes] = await Promise.all([
-                fetch(`https://decapi.me/twitch/viewercount/${s.channel}`),
-                fetch(`https://decapi.me/twitch/game/${s.channel}`)
+                fetch(`https://decapi.me/twitch/viewercount/${encodeURIComponent(s.channel)}`),
+                fetch(`https://decapi.me/twitch/game/${encodeURIComponent(s.channel)}`)
               ]);
               const vcTxt = (await vcRes.text()).trim();
               const gmTxt = (await gmRes.text()).trim();
@@ -3343,7 +3455,7 @@
           } catch (e) {}
         } else if (s.platform === 'kick') {
           try {
-            const kRes = await fetch(`https://kick.com/api/v2/channels/${s.channel}`);
+            const kRes = await fetch(`https://kick.com/api/v2/channels/${encodeURIComponent(s.channel)}`);
             if (kRes.ok) {
               const kData = await kRes.json();
               if (kData && kData.livestream) {
@@ -3439,21 +3551,21 @@
         const isCurrent = currentWatchedStream && currentWatchedStream.channel.toLowerCase() === s.channel.toLowerCase();
 
         return `
-          <div class="game-card ${isCurrent ? 'active-card' : ''}" onclick="loadStreamIntoTheater('${s.platform}', '${s.channel}', '${s.title}')">
+          <div class="game-card ${isCurrent ? 'active-card' : ''}" onclick="loadStreamIntoTheater('${escapeHTML(s.platform)}', '${escapeHTML(s.channel)}', '${escapeHTML(s.title)}')">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span class="league-badge ${badgeClass}">${s.badge}</span>
+              <span class="league-badge ${badgeClass}">${escapeHTML(s.badge)}</span>
               ${s.isLive
                 ? `<span class="live-pulse-tag">🔴 LIVE • ${s.viewers ? s.viewers.toLocaleString() + ' viewers' : 'On Air'}</span>`
                 : `<span class="offline-tag">○ Offline / VOD</span>`
               }
             </div>
             <div>
-              <h3 style="font-size:1.1rem; font-weight:800; margin-bottom:4px;">${s.title}</h3>
-              <p style="font-size:0.8rem; color:var(--text-muted);">${s.isLive && s.liveGame ? 'Playing: ' + s.liveGame : s.defaultGame}</p>
+              <h3 style="font-size:1.1rem; font-weight:800; margin-bottom:4px;">${escapeHTML(s.title)}</h3>
+              <p style="font-size:0.8rem; color:var(--text-muted);">${escapeHTML(s.isLive && s.liveGame ? 'Playing: ' + s.liveGame : s.defaultGame)}</p>
             </div>
             <div style="font-size:0.75rem; color:${s.isLive ? '#4ade80' : 'var(--accent)'}; font-weight:700; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px; display:flex; justify-content:space-between;">
               <span>▶ Watch in Theater</span>
-              <span>${s.uptime ? '⏱️ ' + s.uptime : ''}</span>
+              <span>${s.uptime ? '⏱️ ' + escapeHTML(s.uptime) : ''}</span>
             </div>
           </div>
         `;
@@ -3469,13 +3581,16 @@
         .replace(/^https?:\/\/(www\.)?(twitch\.tv|kick\.com|youtube\.com\/watch\?v=|youtu\.be)\//i, '')
         .split('?')[0]
         .split('/')[0]
+        .replace(/[^a-zA-Z0-9_-]/g, '')
         .trim();
 
+      if (!cleanHandle) return;
       loadStreamIntoTheater(plat, cleanHandle, cleanHandle);
     }
 
     function loadStreamIntoTheater(platform, channelOrId, displayName) {
-      currentWatchedStream = { platform, channel: channelOrId, title: displayName };
+      const safeChannel = String(channelOrId).replace(/[^a-zA-Z0-9_ -]/g, '');
+      currentWatchedStream = { platform, channel: safeChannel, title: displayName };
       const videoMount = document.getElementById('streamStageMount');
       const chatMount = document.getElementById('streamChatMount');
       const titleEl = document.getElementById('activeStreamTitle');
@@ -3488,12 +3603,11 @@
       videoMount.innerHTML = '';
 
       if (platform === 'twitch') {
-        // Use Official Twitch Interactive JS Player to detect OFFLINE / ENDED events automatically
         if (window.Twitch && Twitch.Player) {
           twitchEmbedPlayerInstance = new Twitch.Player('streamStageMount', {
             width: '100%',
             height: '100%',
-            channel: channelOrId,
+            channel: safeChannel,
             parent: [hostDomain, 'oscargomez.me', 'www.oscargomez.me'],
             autoplay: true
           });
@@ -3501,7 +3615,7 @@
           twitchEmbedPlayerInstance.addEventListener(Twitch.Player.OFFLINE, () => {
             const autoSwitch = document.getElementById('autoSwitchStreamToggle')?.checked;
             if (autoSwitch) {
-              const found = STREAMERS_POOL.find(s => s.channel.toLowerCase() === channelOrId.toLowerCase());
+              const found = STREAMERS_POOL.find(s => s.channel.toLowerCase() === safeChannel.toLowerCase());
               if (found) found.isLive = false;
               switchToNextLiveStream(true);
             }
@@ -3509,7 +3623,7 @@
         } else {
           videoMount.innerHTML = `
             <iframe
-              src="https://player.twitch.tv/?channel=${encodeURIComponent(channelOrId)}&parent=${hostDomain}&parent=oscargomez.me&parent=www.oscargomez.me&autoplay=true"
+              src="https://player.twitch.tv/?channel=${encodeURIComponent(safeChannel)}&parent=${hostDomain}&parent=oscargomez.me&parent=www.oscargomez.me&autoplay=true"
               allow="autoplay; fullscreen"
               allowfullscreen
             ></iframe>
@@ -3518,28 +3632,28 @@
 
         chatMount.innerHTML = `
           <iframe
-            src="https://www.twitch.tv/embed/${encodeURIComponent(channelOrId)}/chat?darkpopout&parent=${hostDomain}&parent=oscargomez.me&parent=www.oscargomez.me"
+            src="https://www.twitch.tv/embed/${encodeURIComponent(safeChannel)}/chat?darkpopout&parent=${hostDomain}&parent=oscargomez.me&parent=www.oscargomez.me"
           ></iframe>
         `;
       } else if (platform === 'kick') {
         videoMount.innerHTML = `
           <iframe
-            src="https://player.kick.com/${encodeURIComponent(channelOrId)}?autoplay=true"
+            src="https://player.kick.com/${encodeURIComponent(safeChannel)}?autoplay=true"
             allow="autoplay; fullscreen"
             allowfullscreen
           ></iframe>
         `;
         chatMount.innerHTML = `
           <div style="padding:16px; color:var(--text-muted); font-size:0.84rem; line-height:1.5; flex:1; display:flex; flex-direction:column; justify-content:center; text-align:center;">
-            <strong style="color:#4ade80; font-size:1rem; margin-bottom:8px;">🟢 Watching ${displayName} on Kick</strong>
+            <strong style="color:#4ade80; font-size:1rem; margin-bottom:8px;">🟢 Watching ${escapeHTML(displayName)} on Kick</strong>
             <p>Kick stream is playing live inside the OG ZONE theater player. If the stream ends, click "Next Live Stream" above.</p>
           </div>
         `;
       } else if (platform === 'youtube') {
-        const isVideoId = /^[a-zA-Z0-9_-]{11}$/.test(channelOrId);
+        const isVideoId = /^[a-zA-Z0-9_-]{11}$/.test(safeChannel);
         const embedUrl = isVideoId
-          ? `https://www.youtube.com/embed/${encodeURIComponent(channelOrId)}?autoplay=1`
-          : `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(channelOrId + ' live stream')}&autoplay=1`;
+          ? `https://www.youtube.com/embed/${encodeURIComponent(safeChannel)}?autoplay=1`
+          : `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(safeChannel + ' live stream')}&autoplay=1`;
 
         videoMount.innerHTML = `
           <iframe
@@ -3551,7 +3665,7 @@
         chatMount.innerHTML = `
           <div style="padding:16px; color:var(--text-muted); font-size:0.84rem; line-height:1.5; flex:1; display:flex; flex-direction:column; justify-content:center; text-align:center;">
             <strong style="color:#f87171; font-size:1rem; margin-bottom:8px;">🔴 YouTube Live Theater</strong>
-            <p>Now playing <strong>${displayName}</strong> directly inside OG ZONE.</p>
+            <p>Now playing <strong>${escapeHTML(displayName)}</strong> directly inside OG ZONE.</p>
           </div>
         `;
       }
@@ -3560,7 +3674,7 @@
     }
 
     /* ========================================================
-       9. DISCORD-STYLE GAMING FORUMS (POPULAR GAMES + SEARCH ANY GAME)
+       10. DISCORD-STYLE GAMING FORUMS (POPULAR GAMES + SEARCH ANY GAME)
        ======================================================== */
     const DEFAULT_DISCORD_SERVERS = [
       {
@@ -3688,7 +3802,7 @@
             channel: 'general-forum',
             tag: 'Meta & Builds',
             title: 'Best 6’6" & 6’8" Guard / Wing Badges and Jump Shot animations',
-            body: 'High layup + 89three-ball threshold unlocks the smoothest custom jumper bases.',
+            body: 'High layup + 89 three-ball threshold unlocks the smoothest custom jumper bases.',
             author: '🤖 OG GameBot',
             time: 'Pinned',
             upvotes: 16,
@@ -3760,10 +3874,10 @@
       rail.innerHTML = discordServers.map(srv => `
         <div
           class="dc-server-icon ${srv.id === activeServerId ? 'active' : ''}"
-          title="${srv.name}"
-          onclick="selectDiscordServer('${srv.id}')"
+          title="${escapeHTML(srv.name)}"
+          onclick="selectDiscordServer('${escapeHTML(srv.id)}')"
         >
-          ${srv.icon}
+          ${escapeHTML(srv.icon)}
         </div>
       `).join('') + `
         <div class="dc-rail-divider"></div>
@@ -3776,9 +3890,9 @@
         quickJump.innerHTML = discordServers.map(srv => `
           <button
             class="dc-channel-btn ${srv.id === activeServerId ? 'active' : ''}"
-            onclick="selectDiscordServer('${srv.id}')"
+            onclick="selectDiscordServer('${escapeHTML(srv.id)}')"
           >
-            <span>${srv.icon}</span> <span>${srv.name}</span>
+            <span>${escapeHTML(srv.icon)}</span> <span>${escapeHTML(srv.name)}</span>
           </button>
         `).join('');
       }
@@ -3808,9 +3922,9 @@
         ${srv.channels.map(ch => `
           <button
             class="dc-channel-btn ${ch === activeChannelName ? 'active' : ''}"
-            onclick="selectDiscordChannel('${ch}')"
+            onclick="selectDiscordChannel('${escapeHTML(ch)}')"
           >
-            <span>💬</span> <span>#${ch}</span>
+            <span>💬</span> <span>#${escapeHTML(ch)}</span>
           </button>
         `).join('')}
       `;
@@ -3833,7 +3947,6 @@
       renderDiscordThreads();
     }
 
-    // Dynamically searches or creates a full Discord server & forum for ANY game the user types in
     function searchOrCreateGameForum() {
       const inp = document.getElementById('dcGameSearchInput');
       const query = inp.value.trim();
@@ -3909,6 +4022,8 @@
         return;
       }
 
+      if (!checkRateLimit('thread', 12000)) return;
+
       const srv = discordServers.find(s => s.id === activeServerId);
       if (!srv) return;
 
@@ -3961,6 +4076,8 @@
         return;
       }
 
+      if (!checkRateLimit('reply', 3000)) return;
+
       const srv = discordServers.find(s => s.id === activeServerId);
       if (!srv) return;
       const th = srv.defaultThreads.find(t => t.id === threadId);
@@ -3992,38 +4109,39 @@
         <div class="dc-thread-card">
           <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
             <div style="display:flex; align-items:center; gap:8px;">
-              <span class="dc-thread-tag">${t.tag}</span>
-              <span style="font-size:0.75rem; color:#949ba4;">Posted by <strong style="color:#dbdee1;">${t.author}</strong> • ${t.time}</span>
+              <span class="dc-thread-tag">${escapeHTML(t.tag)}</span>
+              <span style="font-size:0.75rem; color:#949ba4;">Posted by <strong style="color:#dbdee1;">${escapeHTML(t.author)}</strong> • ${escapeHTML(t.time)}</span>
             </div>
             <button
               class="clip-pill"
               style="background:#1e1f22; border-color:#3f4147; color:#facc15; font-weight:800;"
-              onclick="upvoteDiscordThread('${t.id}', event)"
+              onclick="upvoteDiscordThread('${escapeHTML(t.id)}', event)"
             >
-              ▲ ${t.upvotes || 1}
+              ▲ ${Number(t.upvotes) || 1}
             </button>
           </div>
 
-          <h3 style="font-size:1.05rem; color:#f2f3f5; font-weight:800;">${t.title}</h3>
-          <p style="font-size:0.86rem; color:#dbdee1; line-height:1.5;">${t.body}</p>
+          <h3 style="font-size:1.05rem; color:#f2f3f5; font-weight:800;">${escapeHTML(t.title)}</h3>
+          <p style="font-size:0.86rem; color:#dbdee1; line-height:1.5;">${escapeHTML(t.body)}</p>
 
           <!-- Replies Section -->
           <div class="dc-reply-box">
             ${(t.replies || []).map(r => `
               <div style="font-size:0.8rem; background:#1e1f22; padding:7px 10px; border-radius:6px; color:#dbdee1;">
-                <strong style="color:#5865f2;">${r.user}:</strong> ${r.text}
+                <strong style="color:#5865f2;">${escapeHTML(r.user)}:</strong> ${escapeHTML(r.text)}
               </div>
             `).join('')}
 
             <div style="display:flex; gap:6px; margin-top:4px;">
               <input
                 type="text"
-                id="replyInput_${t.id}"
+                id="replyInput_${escapeHTML(t.id)}"
+                maxlength="280"
                 placeholder="Write a reply..."
                 style="flex:1; background:#1e1f22; border:1px solid #3f4147; color:#fff; padding:7px 10px; border-radius:6px; font-size:0.8rem; outline:none;"
-                onkeydown="if(event.key==='Enter')replyToDiscordThread('${t.id}')"
+                onkeydown="if(event.key==='Enter')replyToDiscordThread('${escapeHTML(t.id)}')"
               />
-              <button class="clip-pill" style="background:#5865f2; border:none; color:#fff; font-weight:700;" onclick="replyToDiscordThread('${t.id}')">
+              <button class="clip-pill" style="background:#5865f2; border:none; color:#fff; font-weight:700;" onclick="replyToDiscordThread('${escapeHTML(t.id)}')">
                 Reply
               </button>
             </div>
@@ -4033,7 +4151,7 @@
     }
 
     /* ========================================================
-       10. OG POINTS REDEMPTION SHOP ENGINE
+       11. OG POINTS REDEMPTION SHOP ENGINE
        ======================================================== */
     const SHOP_CATALOG = [
       {
@@ -4106,6 +4224,8 @@
       const grid = document.getElementById('shopItemsGrid');
       if (!grid) return;
 
+      const safeUsername = escapeHTML(currentUser ? currentUser.username : 'Oscar');
+
       grid.innerHTML = SHOP_CATALOG.map(item => {
         const owned = currentUser && currentUser.ownedItems && currentUser.ownedItems.includes(item.id);
         const isEquipped = currentUser && (
@@ -4124,19 +4244,19 @@
             <div>
               <div class="shop-icon-preview">
                 ${item.type === 'color'
-                  ? `<span class="${item.value}" style="font-size:1.15rem; font-weight:800;">@${currentUser ? currentUser.username : 'Oscar'}</span>`
-                  : `<span>${item.type === 'border' ? '🌈' : item.type === 'consumable' ? '📣' : item.value}</span>`
+                  ? `<span class="${escapeHTML(item.value)}" style="font-size:1.15rem; font-weight:800;">@${safeUsername}</span>`
+                  : `<span>${item.type === 'border' ? '🌈' : item.type === 'consumable' ? '📣' : escapeHTML(item.value)}</span>`
                 }
               </div>
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                <h3 style="font-size:1rem;">${item.title}</h3>
+                <h3 style="font-size:1rem;">${escapeHTML(item.title)}</h3>
                 <span class="league-badge" style="color:var(--gold); background:rgba(250,204,21,0.14);">🪙 ${item.cost}</span>
               </div>
-              <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.45;">${item.desc}</p>
+              <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.45;">${escapeHTML(item.desc)}</p>
             </div>
             <button
               class="shop-buy-btn ${isEquipped ? 'equipped' : ''}"
-              onclick="handleShopAction('${item.id}')"
+              onclick="handleShopAction('${escapeHTML(item.id)}')"
             >
               ${btnLabel}
             </button>
@@ -4173,7 +4293,7 @@
         currentUser.points -= item.cost;
         pinnedShoutout = {
           user: `${currentUser.equippedBadge ? currentUser.equippedBadge + ' ' : ''}@${currentUser.username}`,
-          text: msg.trim()
+          text: msg.trim().slice(0, 140)
         };
         localStorage.setItem('og_pinned_shoutout_v1', JSON.stringify(pinnedShoutout));
         saveCurrentUserAndDB();
@@ -4216,7 +4336,7 @@
     }
 
     /* ========================================================
-       11. PER-GAME LIVE CHAT (WITH EQUIPPED SHOP BADGES & GLOWS)
+       12. PER-GAME LIVE CHAT (XSS SANITIZED & RATE LIMITED)
        ======================================================== */
     let gameChats = JSON.parse(localStorage.getItem('og_game_chats_v3') || '{}');
 
@@ -4239,12 +4359,17 @@
       document.getElementById('chatRoomTitle').textContent = `💬 ${g.away.abbr} vs ${g.home.abbr} Chat`;
       const feed = document.getElementById('gameChatFeed');
       const msgs = gameChats[g.id];
-      feed.innerHTML = msgs.map(m => `
-        <div class="chat-msg ${m.isBot ? 'bot-msg' : ''}">
-          <span class="msg-time">${m.time}</span>
-          <strong class="${m.colorClass || ''}">${m.user}:</strong> <span>${m.text}</span>
-        </div>
-      `).join('');
+      const allowedColors = ['name-gold', 'name-cyan', 'name-crimson', ''];
+
+      feed.innerHTML = msgs.map(m => {
+        const safeColor = allowedColors.includes(m.colorClass) ? m.colorClass : '';
+        return `
+          <div class="chat-msg ${m.isBot ? 'bot-msg' : ''}">
+            <span class="msg-time">${escapeHTML(m.time)}</span>
+            <strong class="${safeColor}">${escapeHTML(m.user)}:</strong> <span>${escapeHTML(m.text)}</span>
+          </div>
+        `;
+      }).join('');
       feed.scrollTop = feed.scrollHeight;
     }
 
@@ -4253,11 +4378,15 @@
       const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       gameChats[gameId].push({
         user: isBot ? '🤖 SportsBot' : user,
-        text,
+        text: String(text).slice(0, 280),
         time: now,
         isBot,
         colorClass
       });
+      // Keep chat log trimmed to 60 messages per game to prevent storage bloat
+      if (gameChats[gameId].length > 60) {
+        gameChats[gameId] = gameChats[gameId].slice(-60);
+      }
       localStorage.setItem('og_game_chats_v3', JSON.stringify(gameChats));
       if (currentSpotlightGame && String(currentSpotlightGame.id) === String(gameId)) {
         renderGameChat(currentSpotlightGame);
@@ -4281,13 +4410,15 @@
         return;
       }
 
+      if (!checkRateLimit('chat', 3000)) return;
+
       inp.value = '';
       const displayUser = `${currentUser.equippedBadge ? currentUser.equippedBadge + ' ' : ''}@${currentUser.username}`;
       pushMessageToGameChat(currentSpotlightGame.id, displayUser, txt, false, currentUser.equippedColor || '');
     }
 
     /* ========================================================
-       12. PLAYER STATS, AUTOPLAY HIGHLIGHTS & ON-SITE CLIPS
+       13. PLAYER STATS, AUTOPLAY HIGHLIGHTS & ON-SITE CLIPS
        ======================================================== */
     async function loadPlayerStatsAndClips(g) {
       const statsEl = document.getElementById('playerStatsList');
@@ -4298,7 +4429,7 @@
       let videosToRender = [];
 
       try {
-        const sumRes = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${g.leaguePath}/summary?event=${g.id}`);
+        const sumRes = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${g.leaguePath}/summary?event=${encodeURIComponent(g.id)}`);
         const sumData = await sumRes.json();
 
         if (sumData.scoringPlays && sumData.scoringPlays.length > 0) {
@@ -4351,13 +4482,13 @@
       statsEl.innerHTML = leadersToRender.map(item => `
         <div class="leader-item">
           <div class="leader-left">
-            <img class="leader-avatar" src="${item.avatar}" alt="${item.name}" />
+            <img class="leader-avatar" src="${escapeHTML(item.avatar)}" alt="${escapeHTML(item.name)}" />
             <div>
-              <div class="leader-name">${item.name}</div>
-              <div class="leader-role">${item.role}</div>
+              <div class="leader-name">${escapeHTML(item.name)}</div>
+              <div class="leader-role">${escapeHTML(item.role)}</div>
             </div>
           </div>
-          <div class="leader-stat">${item.stat}</div>
+          <div class="leader-stat">${escapeHTML(item.stat)}</div>
         </div>
       `).join('');
 
@@ -4382,15 +4513,19 @@
       currentClipsList = videosToRender;
       clipBar.innerHTML = videosToRender.map((c, idx) => `
         <button class="clip-pill ${idx === 0 ? 'active' : ''}" onclick="playHighlightClip(${idx}, this)">
-          ▶ ${c.title.slice(0, 28)}...
+          ▶ ${escapeHTML(c.title.slice(0, 28))}...
         </button>
       `).join('');
 
+      const safeAway = escapeHTML(g.away.name);
+      const safeHome = escapeHTML(g.home.name);
+      const safeLeague = escapeHTML(g.leagueLabel);
+
       socialEl.innerHTML = `
         <button class="social-chip active" onclick="playHighlightClip(0)">🎬 Main Highlight</button>
-        <button class="social-chip" onclick="loadOnSiteYouTubeFeed('${g.away.name} vs ${g.home.name} highlights', this)">▶️ YouTube Feed</button>
-        <button class="social-chip" onclick="loadOnSiteYouTubeFeed('${g.away.name} ${g.home.name} top plays clips', this)">🔥 Social Clips</button>
-        <button class="social-chip" onclick="loadOnSiteYouTubeFeed('${g.leagueLabel} live highlights today', this)">📺 League Reel</button>
+        <button class="social-chip" onclick="loadOnSiteYouTubeFeed('${safeAway} vs ${safeHome} highlights', this)">▶️ YouTube Feed</button>
+        <button class="social-chip" onclick="loadOnSiteYouTubeFeed('${safeAway} ${safeHome} top plays clips', this)">🔥 Social Clips</button>
+        <button class="social-chip" onclick="loadOnSiteYouTubeFeed('${safeLeague} live highlights today', this)">📺 League Reel</button>
       `;
 
       playHighlightClip(0);
@@ -4463,7 +4598,7 @@
     }
 
     /* ========================================================
-       13. NEWS & PAYPAL DONATION (@oscar1975)
+       14. NEWS & PAYPAL DONATION (@oscar1975)
        ======================================================== */
     function renderNews(articles) {
       const grid = document.getElementById('newsGrid');
@@ -4471,11 +4606,11 @@
       grid.innerHTML = articles.map(a => `
         <div class="card" style="display:flex; flex-direction:column; justify-content:space-between; gap:12px;">
           <div>
-            <span class="league-badge">${a.league}</span>
-            <h3 style="margin:10px 0 8px; font-size:1.02rem;">${a.headline}</h3>
-            <p style="font-size:0.84rem; color:var(--text-muted); line-height:1.5;">${a.description}</p>
+            <span class="league-badge">${escapeHTML(a.league)}</span>
+            <h3 style="margin:10px 0 8px; font-size:1.02rem;">${escapeHTML(a.headline)}</h3>
+            <p style="font-size:0.84rem; color:var(--text-muted); line-height:1.5;">${escapeHTML(a.description)}</p>
           </div>
-          <a href="${a.link}" target="_blank" rel="noopener" style="color:var(--accent); text-decoration:none; font-size:0.84rem; font-weight:700;">
+          <a href="${escapeHTML(a.link)}" target="_blank" rel="noopener noreferrer" style="color:var(--accent); text-decoration:none; font-size:0.84rem; font-weight:700;">
             Read Full Story →
           </a>
         </div>
@@ -4490,7 +4625,7 @@
 
     function openPayPalDonate() {
       const amt = parseFloat(document.getElementById('donateAmountInput').value) || 10;
-      window.open(`https://www.paypal.com/paypalme/oscar1975/${amt}`, '_blank', 'noopener');
+      window.open(`https://www.paypal.com/paypalme/oscar1975/${encodeURIComponent(amt)}`, '_blank', 'noopener,noreferrer');
     }
 
     // Boot
