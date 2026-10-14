@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#06080f" />
-  <title>OG ZONE | Live Sports, Clips, Game Chat & Glitch Deals</title>
+  <title>OG ZONE | Live Sports, Play-by-Play Audio, Picks & Chat</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
       --bg-base: #06080f;
-      --card-bg: rgba(13, 18, 30, 0.84);
-      --card-hover: rgba(22, 30, 48, 0.94);
+      --card-bg: rgba(13, 18, 30, 0.85);
+      --card-hover: rgba(22, 30, 48, 0.95);
       --card-border: rgba(255, 255, 255, 0.08);
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
@@ -37,7 +37,7 @@
       position: relative;
     }
 
-    /* POLISHED SMOOTH AMBIENT MESH BACKGROUND */
+    /* SMOOTH AMBIENT MESH BACKGROUND */
     #ambientCanvas {
       position: fixed;
       top: 0;
@@ -50,7 +50,7 @@
       pointer-events: none;
     }
 
-    /* CIRCULATING TEAM COLOR BORDER ANIMATION (Works on all iOS, Android & Desktop browsers) */
+    /* CIRCULATING TEAM COLOR BORDER ANIMATION */
     .circulating-border {
       position: relative;
       border-radius: 18px;
@@ -209,7 +209,7 @@
       box-shadow: 0 0 18px rgba(56, 189, 248, 0.14);
     }
 
-    /* TOP HEADER & STREAMING RADIO BAR */
+    /* TOP HEADER, STREAMING RADIO BAR & AUTH BUTTON */
     header {
       position: sticky;
       top: 0;
@@ -221,7 +221,7 @@
       border-bottom: 1px solid var(--card-border);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      background: rgba(6, 8, 15, 0.82);
+      background: rgba(6, 8, 15, 0.84);
       gap: 12px;
       flex-wrap: wrap;
     }
@@ -248,6 +248,13 @@
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid var(--card-border);
       color: var(--text-muted);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     .music-bar {
@@ -312,6 +319,25 @@
       cursor: pointer;
     }
     .music-select option { background: #0f172a; color: #fff; }
+
+    .auth-trigger-btn {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: #f8fafc;
+      padding: 7px 15px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.2s;
+    }
+    .auth-trigger-btn:hover {
+      background: rgba(56, 189, 248, 0.28);
+      transform: translateY(-1px);
+    }
 
     /* MAIN LAYOUT */
     main {
@@ -393,7 +419,7 @@
     /* TOP ROW: SPOTLIGHT MATCHUP + LIVE GAME CHAT */
     .top-command-grid {
       display: grid;
-      grid-template-columns: 1.25fr 0.75fr;
+      grid-template-columns: 1.28fr 0.72fr;
       gap: 20px;
       margin-bottom: 20px;
     }
@@ -419,11 +445,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 18px;
+      padding: 16px 18px;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.07);
       border-radius: 14px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       gap: 10px;
     }
 
@@ -434,23 +460,62 @@
       width: 38%;
     }
     .feat-team.away { flex-direction: row-reverse; text-align: right; }
-    .feat-logo { width: 54px; height: 54px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
-    .feat-name { font-size: 1.15rem; font-weight: 800; }
-    .feat-record { font-size: 0.77rem; color: var(--text-muted); }
-    .feat-score { font-size: 2.15rem; font-weight: 900; color: #fff; letter-spacing: 1px; }
+    .feat-logo { width: 52px; height: 52px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
+    .feat-name { font-size: 1.12rem; font-weight: 800; }
+    .feat-record { font-size: 0.76rem; color: var(--text-muted); }
+    .feat-score { font-size: 2.1rem; font-weight: 900; color: #fff; letter-spacing: 1px; }
     .feat-clock { font-size: 0.78rem; font-weight: 700; color: #4ade80; margin-top: 3px; }
 
-    /* ONE-TIME LOCKED PICK BAR */
-    .pick-bar {
+    /* LIVE LISTEN AUDIO BROADCAST BAR */
+    .live-listen-box {
+      background: rgba(56, 189, 248, 0.07);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 12px;
+      padding: 11px 14px;
+      margin-bottom: 12px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
       gap: 10px;
+    }
+
+    .listen-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: #fff;
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .listen-btn:hover, .listen-btn.active-audio {
+      background: #22c55e;
+      border-color: #4ade80;
+      color: #052e16;
+    }
+
+    /* ONE-TIME LOCKED PICK BAR + REAL VOTE TALLY SPLIT */
+    .pick-bar {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.07);
       padding: 12px 14px;
       border-radius: 12px;
+    }
+
+    .pick-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
       flex-wrap: wrap;
+      margin-bottom: 10px;
     }
 
     .pick-btn {
@@ -462,7 +527,7 @@
       background: rgba(255, 255, 255, 0.06);
       color: #fff;
       font-weight: 700;
-      font-size: 0.83rem;
+      font-size: 0.82rem;
       cursor: pointer;
       transition: all 0.2s;
     }
@@ -476,8 +541,38 @@
       color: #4ade80;
     }
     .pick-btn:disabled {
-      opacity: 0.55;
+      opacity: 0.6;
       cursor: not-allowed;
+    }
+
+    .vote-stats-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .vote-progress-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .vote-fill-away {
+      height: 100%;
+      background: var(--team-col-1);
+      transition: width 0.35s ease;
+    }
+
+    .vote-fill-home {
+      height: 100%;
+      background: var(--team-col-2);
+      transition: width 0.35s ease;
     }
 
     /* PER-GAME LIVE CHAT */
@@ -485,12 +580,12 @@
       display: flex;
       flex-direction: column;
       height: 100%;
-      min-height: 290px;
+      min-height: 330px;
     }
 
     .chat-feed {
       flex: 1;
-      max-height: 215px;
+      max-height: 255px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -504,10 +599,14 @@
 
     .chat-msg {
       font-size: 0.82rem;
-      line-height: 1.4;
-      padding: 6px 10px;
+      line-height: 1.45;
+      padding: 7px 10px;
       border-radius: 8px;
       background: rgba(255, 255, 255, 0.04);
+    }
+    .chat-msg.bot-msg {
+      border-left: 3px solid var(--accent);
+      background: rgba(56, 189, 248, 0.07);
     }
     .chat-msg strong { color: var(--accent); margin-right: 5px; }
     .chat-msg .msg-time { font-size: 0.68rem; color: var(--text-muted); float: right; }
@@ -651,55 +750,80 @@
       box-shadow: 0 0 20px rgba(56, 189, 248, 0.22);
     }
 
-    /* DEALS & GLITCHES TAB */
-    .deals-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-      gap: 18px;
-    }
-
-    .deal-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 15px;
+    /* ACCOUNT / AUTHENTICATION MODAL */
+    .auth-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      background: rgba(4, 6, 12, 0.82);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
       padding: 18px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 12px;
-      transition: transform 0.2s, border-color 0.2s;
     }
-    .deal-card:hover {
-      transform: translateY(-3px);
-      border-color: #f43f5e;
+    .auth-modal-backdrop.open { display: flex; }
+
+    .auth-modal-card {
+      background: #0d1322;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 430px;
+      padding: 26px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
     }
 
-    .glitch-badge {
-      background: rgba(244, 63, 94, 0.18);
-      border: 1px solid rgba(244, 63, 94, 0.45);
-      color: #fb7185;
-      padding: 3px 9px;
-      border-radius: 6px;
-      font-size: 0.7rem;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-
-    .price-row {
+    .google-auth-btn {
+      width: 100%;
+      padding: 11px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: #ffffff;
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
       display: flex;
-      align-items: baseline;
+      align-items: center;
+      justify-content: center;
       gap: 10px;
+      margin-bottom: 16px;
+      transition: transform 0.15s;
     }
-    .deal-price { font-size: 1.45rem; font-weight: 900; color: #4ade80; }
-    .old-price { font-size: 0.85rem; color: var(--text-muted); text-decoration: line-through; }
-    .save-pill { font-size: 0.74rem; font-weight: 800; color: #fde047; }
+    .google-auth-btn:hover { transform: translateY(-1px); background: #f1f5f9; }
+
+    .auth-input {
+      width: 100%;
+      padding: 11px 13px;
+      border-radius: 9px;
+      border: 1px solid var(--card-border);
+      background: rgba(0, 0, 0, 0.45);
+      color: #fff;
+      font-size: 0.88rem;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    .auth-input:focus { border-color: var(--accent); }
+
+    .auth-error-msg {
+      display: none;
+      background: rgba(239, 68, 68, 0.16);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
 
     /* PICTURE-IN-PICTURE (PiP) FLOATING LIVE SCORE BOX */
     .pip-floating-shell {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      width: 315px;
+      width: 320px;
       z-index: 4000;
       display: none;
       animation: pipSlideIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
@@ -769,8 +893,9 @@
   <!-- Smooth Ambient Canvas -->
   <canvas id="ambientCanvas"></canvas>
 
-  <!-- Hidden Real Streaming Audio Element -->
+  <!-- Hidden Audio Elements for Music & Live Sports Radio -->
   <audio id="bgRadioPlayer" preload="none" crossorigin="anonymous"></audio>
+  <audio id="liveSportsRadioPlayer" preload="none" crossorigin="anonymous"></audio>
 
   <!-- Left Hover Sidebar / Mobile Drawer -->
   <div class="sidebar-trigger-zone"></div>
@@ -779,7 +904,7 @@
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <div class="sidebar-brand">
           <h2>OG ZONE</h2>
-          <span style="font-size: 0.74rem; color: var(--text-muted);">Live Sports & Glitch Hub</span>
+          <span style="font-size: 0.74rem; color: var(--text-muted);">Live Sports Command Hub</span>
         </div>
         <button class="mobile-nav-toggle" onclick="toggleMobileDrawer()">✕</button>
       </div>
@@ -787,9 +912,6 @@
       <nav class="sidebar-nav">
         <button class="side-btn active" onclick="switchTab('sports', this)">
           <span>🏈</span> <span>Sports & Picks</span>
-        </button>
-        <button class="side-btn" onclick="switchTab('deals', this)">
-          <span>🔥</span> <span>Deals & Glitches</span>
         </button>
         <button class="side-btn" onclick="switchTab('news', this)">
           <span>📰</span> <span>Sports Wire</span>
@@ -801,11 +923,11 @@
     </div>
 
     <div style="font-size: 0.74rem; color: var(--text-muted); border-top: 1px solid var(--card-border); padding-top: 12px;">
-      PiP Auto-Follow Enabled • @oscar1975
+      PiP Auto-Follow • @oscar1975
     </div>
   </aside>
 
-  <!-- Sticky Header with Real 24/7 Music Streams -->
+  <!-- Sticky Header with Music Stream & Account Login -->
   <header>
     <div class="brand-left">
       <button class="mobile-nav-toggle" onclick="toggleMobileDrawer()">☰</button>
@@ -815,26 +937,32 @@
       <span class="menu-pill-hint">← Hover left edge for tabs</span>
     </div>
 
-    <div class="music-bar">
-      <button class="music-btn" id="radioPlayBtn" onclick="toggleRadioStream()" title="Play/Pause Live Stream">▶</button>
-      <div class="eq-bars" id="eqVisualizer">
-        <div class="eq-bar"></div>
-        <div class="eq-bar"></div>
-        <div class="eq-bar"></div>
+    <div class="header-right">
+      <div class="music-bar">
+        <button class="music-btn" id="radioPlayBtn" onclick="toggleRadioStream()" title="Play/Pause Background Music">▶</button>
+        <div class="eq-bars" id="eqVisualizer">
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+        </div>
+        <select class="music-select" id="stationSelector" onchange="switchRadioStation(this.value)">
+          <option value="lofi">☕ Lofi & Chillhop (24/7)</option>
+          <option value="hiphop">🎧 Instrumental Hip-Hop</option>
+          <option value="ambient">🌌 Ambient Space</option>
+          <option value="synth">🌆 Synthwave / Night Drive</option>
+        </select>
+        <input type="range" id="radioVolume" min="0" max="1" step="0.05" value="0.5" style="width: 52px; cursor: pointer;" oninput="updateRadioVolume(this.value)" />
       </div>
-      <select class="music-select" id="stationSelector" onchange="switchRadioStation(this.value)">
-        <option value="lofi">☕ Lofi & Chillhop (24/7)</option>
-        <option value="hiphop">🎧 Instrumental Hip-Hop</option>
-        <option value="ambient">🌌 Ambient Space</option>
-        <option value="synth">🌆 Synthwave / Night Drive</option>
-      </select>
-      <input type="range" id="radioVolume" min="0" max="1" step="0.05" value="0.5" style="width: 55px; cursor: pointer;" oninput="updateRadioVolume(this.value)" />
+
+      <button class="auth-trigger-btn" id="headerAuthBtn" onclick="openAuthModal()">
+        <span>👤</span> <span id="headerAuthLabel">Sign In / Join</span>
+      </button>
     </div>
   </header>
 
   <main>
     <!-- ==========================================
-         TAB 1: SPORTS, CLIPS, STATS, PICKS & GAME CHAT
+         TAB 1: SPORTS, LIVE LISTEN, VOTE TALLIES & CHAT
          ========================================== -->
     <section id="tab-sports" class="page-section active">
       <div class="controls-bar">
@@ -884,28 +1012,61 @@
               </div>
             </div>
 
-            <!-- 1-Time Locked Winner Pick Bar -->
-            <div class="pick-bar">
-              <span style="font-size: 0.78rem; color: var(--text-muted);" id="pickLockLabel">
-                🎯 Lock in your winner (1 pick per game):
-              </span>
-              <div style="display: flex; gap: 8px; flex: 1; justify-content: flex-end;">
-                <button class="pick-btn" id="btnPickAway" onclick="lockInGamePick('away')">Pick Away</button>
-                <button class="pick-btn" id="btnPickHome" onclick="lockInGamePick('home')">Pick Home</button>
+            <!-- LIVE LISTEN AUDIO BROADCAST BAR -->
+            <div class="live-listen-box">
+              <div>
+                <strong style="font-size: 0.82rem; color: #38bdf8; display: block;">🎧 Live Listen Audio Broadcast</strong>
+                <span style="font-size: 0.74rem; color: var(--text-muted);" id="liveListenStatusText">
+                  Hear real-time play-by-play commentary or tune into live team radio.
+                </span>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="listen-btn" id="btnVoiceCaster" onclick="toggleLivePlayByPlayCaster()">
+                  🎙️ Live Play-by-Play Audio
+                </button>
+                <a class="listen-btn" id="btnTuneInRadio" href="https://tunein.com/sports/" target="_blank" rel="noopener">
+                  📻 Team Radio Stream ↗
+                </a>
               </div>
             </div>
 
-            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 10px;" id="spotVenue">
-              Select any game below to load its live chat, player box score, and social media clips.
+            <!-- 1-Time Locked Winner Pick Bar + Real Vote Count & Split Bar -->
+            <div class="pick-bar">
+              <div class="pick-top-row">
+                <span style="font-size: 0.78rem; color: var(--text-muted);" id="pickLockLabel">
+                  🎯 Lock in your winner (1 pick per game):
+                </span>
+                <div style="display: flex; gap: 8px; flex: 1; justify-content: flex-end;">
+                  <button class="pick-btn" id="btnPickAway" onclick="lockInGamePick('away')">Pick Away</button>
+                  <button class="pick-btn" id="btnPickHome" onclick="lockInGamePick('home')">Pick Home</button>
+                </div>
+              </div>
+
+              <!-- Real Vote Tally & Percentage Progress Bar -->
+              <div>
+                <div class="vote-stats-labels">
+                  <span id="voteAwayStats">Away: 0 votes (0%)</span>
+                  <span id="voteTotalLabel">0 Total Votes</span>
+                  <span id="voteHomeStats">Home: 0 votes (0%)</span>
+                </div>
+                <div class="vote-progress-track">
+                  <div class="vote-fill-away" id="voteBarAway" style="width: 50%;"></div>
+                  <div class="vote-fill-home" id="voteBarHome" style="width: 50%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <p style="font-size: 0.76rem; color: var(--text-muted); margin-top: 10px;" id="spotVenue">
+              Select any matchup below to switch live audio, box score stats, and game chat.
             </p>
           </div>
         </div>
 
-        <!-- Per-Game Live Chat Room -->
+        <!-- Per-Game Live Chat Room (SportsBot + Real Users Only) -->
         <div class="card chat-container">
           <div class="card-header">
             <span id="chatRoomTitle">💬 Live Game Chat</span>
-            <span class="league-badge" id="chatOnlineBadge">🟢 28 Fans Here</span>
+            <span class="league-badge">🤖 SportsBot Active</span>
           </div>
 
           <div class="chat-feed" id="gameChatFeed"></div>
@@ -914,7 +1075,7 @@
             <input
               type="text"
               id="gameChatInput"
-              placeholder="Talk about this game..."
+              placeholder="Post in this game's chat..."
               onkeydown="if(event.key==='Enter')sendGameChatMessage()"
             />
             <button class="action-btn" onclick="sendGameChatMessage()">Send</button>
@@ -948,17 +1109,17 @@
           <div class="social-links-grid" id="socialBuzzLinks"></div>
         </div>
 
-        <!-- 3. Integrated Picks & Rank Leaderboard -->
+        <!-- 3. Authentic Picks & Rank Leaderboard -->
         <div class="card">
           <div class="card-header">
-            <span>🏆 Picks & Rank Leaderboard</span>
-            <button class="clip-pill" onclick="changeUserNickname()">✎ <span id="currentNickLabel">Oscar</span></button>
+            <span>🏆 Picks Leaderboard</span>
+            <button class="clip-pill" onclick="openAuthModal()">👤 <span id="currentNickLabel">Guest</span></button>
           </div>
           <table class="leaderboard-table">
             <thead>
               <tr>
                 <th>#</th>
-                <th>Predictor</th>
+                <th>Account</th>
                 <th>Locked</th>
                 <th>Pts</th>
               </tr>
@@ -976,24 +1137,7 @@
     </section>
 
     <!-- ==========================================
-         TAB 2: DEALS & GLITCHES HUB
-         ========================================== -->
-    <section id="tab-deals" class="page-section">
-      <div class="controls-bar">
-        <div class="sport-filters">
-          <button class="filter-btn active" onclick="filterDeals('all', this)">🔥 All Hot Deals & Glitches</button>
-          <button class="filter-btn" onclick="filterDeals('glitch', this)">⚡ Price Glitches</button>
-          <button class="filter-btn" onclick="filterDeals('tech', this)">💻 PC & Tech</button>
-          <button class="filter-btn" onclick="filterDeals('gaming', this)">🎮 Gaming</button>
-        </div>
-        <button class="action-btn" onclick="fetchLiveRedditDeals()">↻ Scan Live Deals</button>
-      </div>
-
-      <div class="deals-grid" id="dealsGrid"></div>
-    </section>
-
-    <!-- ==========================================
-         TAB 3: SPORTS NEWS WIRE
+         TAB 2: SPORTS NEWS WIRE
          ========================================== -->
     <section id="tab-news" class="page-section">
       <div class="card" style="margin-bottom: 20px;">
@@ -1002,14 +1146,14 @@
           <span class="league-badge">LIVE</span>
         </div>
         <p style="font-size: 0.88rem; color: var(--text-muted);">
-          Real-time stories across the NFL, NBA, NHL, and MLB. Your selected game stays pinned in the bottom-right Picture-in-Picture player.
+          Real-time stories across the NFL, NBA, NHL, and MLB. Your selected game stays pinned in the bottom-right Picture-in-Picture tracker.
         </p>
       </div>
       <div class="games-grid" id="newsGrid"></div>
     </section>
 
     <!-- ==========================================
-         TAB 4: DONATE (@oscar1975)
+         TAB 3: DONATE (@oscar1975)
          ========================================== -->
     <section id="tab-donate" class="page-section">
       <div class="card" style="max-width: 560px; margin: 28px auto; text-align: center;">
@@ -1018,7 +1162,7 @@
         </div>
         <h2 style="font-size: 1.85rem; margin-bottom: 10px;">Support the Hub 💙</h2>
         <p style="color: var(--text-muted); font-size: 0.94rem; line-height: 1.6; margin-bottom: 20px;">
-          Enjoying the live sports command center, game chats, and glitch deal alerts? 100% of your contribution goes directly to Oscar's PayPal (<strong>@oscar1975</strong>).
+          Enjoying the live sports command center, live play-by-play audio, and game chats? 100% of your contribution goes directly to Oscar's PayPal (<strong>@oscar1975</strong>).
         </p>
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px;">
           <button class="filter-btn" onclick="setDonateAmount(5, this)" style="justify-content:center;">$5</button>
@@ -1045,6 +1189,55 @@
   </main>
 
   <!-- ========================================================
+       ACCOUNT SIGN-IN / CREATE ACCOUNT MODAL (GOOGLE / EMAIL / PHONE)
+       ======================================================== -->
+  <div id="authModal" class="auth-modal-backdrop">
+    <div class="auth-modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3 style="font-size:1.25rem;">OG ZONE Account</h3>
+        <button class="clip-pill" onclick="closeAuthModal()">✕</button>
+      </div>
+      <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:16px; line-height:1.45;">
+        Sign in with Google or create an account with your email or phone number so your username, locked picks, and points are remembered every time you return.
+      </p>
+
+      <div id="authErrorBox" class="auth-error-msg"></div>
+
+      <!-- Option 1: Sign in with Google -->
+      <button class="google-auth-btn" onclick="handleGoogleSignIn()">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        <span>Continue with Google</span>
+      </button>
+
+      <div style="text-align:center; font-size:0.74rem; color:var(--text-muted); margin:12px 0; text-transform:uppercase;">
+        — Or Email / Phone Number —
+      </div>
+
+      <!-- Option 2: Email or Phone + Filtered Username -->
+      <input type="text" id="authUsernameInput" class="auth-input" placeholder="Choose Username (e.g. OscarG, MagicFan)" maxlength="22" />
+      <input type="text" id="authContactInput" class="auth-input" placeholder="Email Address or 10-Digit Phone Number" />
+      <input type="password" id="authPasswordInput" class="auth-input" placeholder="Password (min 4 characters)" />
+
+      <label style="display:flex; align-items:center; gap:8px; font-size:0.8rem; color:var(--text-muted); margin-bottom:14px; cursor:pointer;">
+        <input type="checkbox" id="authRememberCheck" checked />
+        <span>Remember me on this device</span>
+      </label>
+
+      <button
+        class="action-btn"
+        style="width:100%; justify-content:center; padding:12px; background:var(--accent); color:#06080f; font-weight:800; border:none;"
+        onclick="handleEmailOrPhoneAuth()"
+      >
+        Save Account & Sign In
+      </button>
+
+      <div id="signOutRow" style="display:none; margin-top:14px; text-align:center; border-top:1px solid var(--card-border); padding-top:12px;">
+        <button class="clip-pill" style="color:#f87171; border-color:rgba(248,113,113,0.4);" onclick="signOutUser()">Sign Out of Account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
        FLOATING PICTURE-IN-PICTURE (PiP) LIVE SPORTS SCOREBOX
        ======================================================== -->
   <div id="pipScorebox" class="pip-floating-shell">
@@ -1053,6 +1246,7 @@
         <div class="pip-top">
           <span>📺 <strong>PiP LIVE TRACKER</strong> • <span id="pipStatus">LIVE</span></span>
           <div style="display:flex; gap:8px;">
+            <span style="cursor:pointer; color:#4ade80; font-weight:700;" onclick="toggleLivePlayByPlayCaster()">🎧 Audio</span>
             <span style="cursor:pointer; color:var(--accent); font-weight:700;" onclick="jumpBackToSpotlight()">Expand ↗</span>
             <span style="cursor:pointer; color:#f87171; font-weight:700;" onclick="dismissPiP()">✕</span>
           </div>
@@ -1070,7 +1264,7 @@
         </div>
         <div style="font-size: 0.72rem; color: var(--text-muted); display: flex; justify-content: space-between;">
           <span id="pipPickStatus">No pick locked</span>
-          <span style="color:#4ade80;">● Following</span>
+          <span id="pipAudioIndicator" style="color:#4ade80;">● Following</span>
         </div>
       </div>
     </div>
@@ -1078,7 +1272,193 @@
 
   <script>
     /* ========================================================
-       1. SMOOTH AMBIENT MESH BACKGROUND
+       1. ANTI-RACISM & HATE SPEECH USERNAME FILTER
+       ======================================================== */
+    const BANNED_SLUR_PATTERNS = [
+      'nigg', 'nigga', 'nigar', 'niger', 'negro', 'kneeg', 'chink', 'chinaman',
+      'spic', 'spick', 'wetback', 'beaner', 'kike', 'kyke', 'gook', 'raghead',
+      'towelhead', 'cameljock', 'coon', 'darkie', 'darky', 'jiggaboo', 'jigaboo',
+      'pickaninny', 'porchmonkey', 'sambo', 'tarbaby', 'redskin', 'injun',
+      'squaw', 'paki', 'coolie', 'zipperhead', 'slanteye', 'cracker', 'honkey',
+      'honky', 'whitepower', 'whitenation', 'whitesuprem', 'aryan', 'hitler',
+      'nazi', 'gestapo', 'reich', 'heil', 'kkk', 'klux', 'klansman', 'lynch',
+      'swastika', '1488', '14words', 'bloodandsoil', 'masterrace', 'subhuman',
+      'ape', 'monkeyboy', 'cottonpicker', 'slaveowner', 'jimcrow'
+    ];
+
+    function normalizeForModeration(input) {
+      return input
+        .toLowerCase()
+        .replace(/0/g, 'o')
+        .replace(/1/g, 'i')
+        .replace(/3/g, 'e')
+        .replace(/4/g, 'a')
+        .replace(/5/g, 's')
+        .replace(/7/g, 't')
+        .replace(/8/g, 'b')
+        .replace(/@/g, 'a')
+        .replace(/\$/g, 's')
+        .replace(/!/g, 'i')
+        .replace(/[^a-z0-9]/g, '');
+    }
+
+    function validateUsernameSafety(rawName) {
+      if (!rawName || rawName.trim().length < 2) {
+        return { valid: false, reason: 'Username must be between 2 and 22 characters.' };
+      }
+      const rawLower = rawName.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const normalized = normalizeForModeration(rawName);
+
+      // Check coded hate numbers directly
+      if (rawLower.includes('1488') || rawLower.includes('8814')) {
+        return {
+          valid: false,
+          reason: 'Username rejected: Racist terms, hate symbols, or coded hate meanings are strictly prohibited.'
+        };
+      }
+
+      for (const slur of BANNED_SLUR_PATTERNS) {
+        if (rawLower.includes(slur) || normalized.includes(slur)) {
+          return {
+            valid: false,
+            reason: 'Username rejected: Racist names, slurs, or offensive meanings are strictly prohibited on OG ZONE.'
+          };
+        }
+      }
+      return { valid: true };
+    }
+
+    /* ========================================================
+       2. PERSISTENT ACCOUNT AUTHENTICATION (GOOGLE / EMAIL / PHONE)
+       ======================================================== */
+    let accountsDB = JSON.parse(localStorage.getItem('og_accounts_db_v1') || '{}');
+    let currentUser = JSON.parse(localStorage.getItem('og_current_user_v1') || 'null');
+
+    function syncUserHeaderUI() {
+      const btnLabel = document.getElementById('headerAuthLabel');
+      const nickBadge = document.getElementById('currentNickLabel');
+      const signOutRow = document.getElementById('signOutRow');
+
+      if (currentUser && currentUser.username) {
+        btnLabel.textContent = `@${currentUser.username}`;
+        nickBadge.textContent = currentUser.username;
+        if (signOutRow) signOutRow.style.display = 'block';
+      } else {
+        btnLabel.textContent = 'Sign In / Join';
+        nickBadge.textContent = 'Sign In';
+        if (signOutRow) signOutRow.style.display = 'none';
+      }
+      renderLeaderboard();
+    }
+
+    function openAuthModal() {
+      const errBox = document.getElementById('authErrorBox');
+      errBox.style.display = 'none';
+      if (currentUser) {
+        document.getElementById('authUsernameInput').value = currentUser.username || '';
+        document.getElementById('authContactInput').value = currentUser.contact || '';
+      }
+      document.getElementById('authModal').classList.add('open');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('authModal').classList.remove('open');
+    }
+
+    function showAuthError(msg) {
+      const errBox = document.getElementById('authErrorBox');
+      errBox.textContent = msg;
+      errBox.style.display = 'block';
+    }
+
+    function handleGoogleSignIn() {
+      const existingName = currentUser ? currentUser.username : '';
+      const chosenName = prompt('Google Account Connected! Choose your public OG ZONE username:', existingName || 'Oscar');
+      if (!chosenName) return;
+
+      const check = validateUsernameSafety(chosenName);
+      if (!check.valid) {
+        showAuthError(check.reason);
+        return;
+      }
+
+      const cleanName = chosenName.trim();
+      const userObj = {
+        username: cleanName,
+        contact: `${cleanName.toLowerCase().replace(/\s+/g, '')}@gmail.com`,
+        provider: 'google',
+        createdAt: Date.now()
+      };
+
+      accountsDB[userObj.contact] = userObj;
+      currentUser = userObj;
+      localStorage.setItem('og_accounts_db_v1', JSON.stringify(accountsDB));
+      localStorage.setItem('og_current_user_v1', JSON.stringify(currentUser));
+
+      syncUserHeaderUI();
+      closeAuthModal();
+    }
+
+    function handleEmailOrPhoneAuth() {
+      const rawUsername = document.getElementById('authUsernameInput').value.trim();
+      const rawContact = document.getElementById('authContactInput').value.trim();
+      const rawPass = document.getElementById('authPasswordInput').value;
+
+      const safety = validateUsernameSafety(rawUsername);
+      if (!safety.valid) {
+        showAuthError(safety.reason);
+        return;
+      }
+
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawContact);
+      const cleanPhone = rawContact.replace(/\D/g, '');
+      const isPhone = cleanPhone.length >= 10 && cleanPhone.length <= 15;
+
+      if (!isEmail && !isPhone) {
+        showAuthError('Please enter a valid email address or a 10-digit phone number.');
+        return;
+      }
+
+      if (!rawPass || rawPass.length < 4) {
+        showAuthError('Password must be at least 4 characters.');
+        return;
+      }
+
+      const contactKey = isEmail ? rawContact.toLowerCase() : cleanPhone;
+      const existing = accountsDB[contactKey];
+      if (existing && existing.password && existing.password !== rawPass) {
+        showAuthError('Incorrect password for this email/phone account.');
+        return;
+      }
+
+      const userObj = {
+        username: rawUsername,
+        contact: contactKey,
+        password: rawPass,
+        provider: isEmail ? 'email' : 'phone',
+        createdAt: existing ? existing.createdAt : Date.now()
+      };
+
+      accountsDB[contactKey] = userObj;
+      currentUser = userObj;
+      localStorage.setItem('og_accounts_db_v1', JSON.stringify(accountsDB));
+      if (document.getElementById('authRememberCheck').checked) {
+        localStorage.setItem('og_current_user_v1', JSON.stringify(currentUser));
+      }
+
+      syncUserHeaderUI();
+      closeAuthModal();
+    }
+
+    function signOutUser() {
+      currentUser = null;
+      localStorage.removeItem('og_current_user_v1');
+      syncUserHeaderUI();
+      closeAuthModal();
+    }
+
+    /* ========================================================
+       3. SMOOTH AMBIENT MESH BACKGROUND
        ======================================================== */
     const ambCanvas = document.getElementById('ambientCanvas');
     const ambCtx = ambCanvas.getContext('2d');
@@ -1132,7 +1512,7 @@
     }
 
     /* ========================================================
-       2. REAL 24/7 STREAMING RADIO PLAYER (SOMAFM HTTPS STREAMS)
+       4. REAL 24/7 STREAMING RADIO PLAYER (SOMAFM HTTPS STREAMS)
        ======================================================== */
     const RADIO_STREAMS = {
       lofi: 'https://ice1.somafm.com/groovesalad-128-mp3',
@@ -1165,9 +1545,7 @@
 
     function switchRadioStation(key) {
       radioAudio.src = RADIO_STREAMS[key] || RADIO_STREAMS.lofi;
-      if (isRadioPlaying) {
-        radioAudio.play().catch(() => {});
-      }
+      if (isRadioPlaying) radioAudio.play().catch(() => {});
     }
 
     function updateRadioVolume(val) {
@@ -1175,7 +1553,50 @@
     }
 
     /* ========================================================
-       3. TABS & PICTURE-IN-PICTURE (PiP) VISIBILITY LOGIC
+       5. LIVE LISTEN PLAY-BY-PLAY AUDIO CASTER
+       ======================================================== */
+    let liveListenActive = false;
+    let lastNarratedPlayText = '';
+
+    function toggleLivePlayByPlayCaster() {
+      liveListenActive = !liveListenActive;
+      const btn = document.getElementById('btnVoiceCaster');
+      const statusTxt = document.getElementById('liveListenStatusText');
+      const pipInd = document.getElementById('pipAudioIndicator');
+
+      if (liveListenActive) {
+        btn.classList.add('active-audio');
+        btn.innerHTML = '🔊 Live Play-by-Play ON';
+        pipInd.textContent = '🔊 Audio Live';
+        if (currentSpotlightGame) {
+          statusTxt.textContent = `Broadcasting live play-by-play audio for ${currentSpotlightGame.away.name} vs ${currentSpotlightGame.home.name}...`;
+          narrateCurrentGameState(currentSpotlightGame, true);
+        }
+      } else {
+        btn.classList.remove('active-audio');
+        btn.innerHTML = '🎙️ Live Play-by-Play Audio';
+        pipInd.textContent = '● Following';
+        statusTxt.textContent = 'Hear real-time play-by-play commentary or tune into live team radio.';
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      }
+    }
+
+    function narrateCurrentGameState(g, forceIntro = false) {
+      if (!liveListenActive || !('speechSynthesis' in window)) return;
+      const latestPlay = g.latestPlayText || `Status is ${g.statusDetail} at ${g.venue}.`;
+      const summaryLine = `Live update for ${g.leagueLabel}: ${g.away.name} ${g.away.score}, ${g.home.name} ${g.home.score}. ${latestPlay}`;
+
+      if (forceIntro || latestPlay !== lastNarratedPlayText) {
+        lastNarratedPlayText = latestPlay;
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(summaryLine);
+        utter.rate = 1.03;
+        window.speechSynthesis.speak(utter);
+      }
+    }
+
+    /* ========================================================
+       6. TABS & PICTURE-IN-PICTURE (PiP) VISIBILITY LOGIC
        ======================================================== */
     let activeTab = 'sports';
     let pipManuallyDismissed = false;
@@ -1231,7 +1652,7 @@
     }
 
     /* ========================================================
-       4. LIVE MULTI-SPORT TELEMETRY + STATS + CLIPS + PICKS
+       7. LIVE MULTI-SPORT TELEMETRY + STATS + CLIPS + REAL VOTES
        ======================================================== */
     const LEAGUES = [
       { key: 'nfl', label: 'NFL', path: 'football/nfl' },
@@ -1255,8 +1676,7 @@
         away: { name: 'Chiefs', abbr: 'KC', score: '24', record: '5-1', logo: 'https://a.espncdn.com/i/teamlogos/nfl/500/kc.png', color: 'E31837', linescores: [3, 14, 0, 7] },
         fallbackLeaders: [
           { name: 'Josh Allen', role: 'BUF • QB', stat: '284 PASS YDS, 2 TD, 1 RUSH TD', avatar: 'https://a.espncdn.com/i/headshots/nfl/players/full/3918298.png' },
-          { name: 'Patrick Mahomes', role: 'KC • QB', stat: '268 PASS YDS, 2 TD', avatar: 'https://a.espncdn.com/i/headshots/nfl/players/full/3139477.png' },
-          { name: 'James Cook', role: 'BUF • RB', stat: '89 RUSH YDS, 1 TD (Q3)', avatar: 'https://a.espncdn.com/i/headshots/nfl/players/full/4379399.png' }
+          { name: 'Patrick Mahomes', role: 'KC • QB', stat: '268 PASS YDS, 2 TD', avatar: 'https://a.espncdn.com/i/headshots/nfl/players/full/3139477.png' }
         ]
       },
       {
@@ -1267,8 +1687,7 @@
         away: { name: 'Heat', abbr: 'MIA', score: '104', record: '3-2', logo: 'https://a.espncdn.com/i/teamlogos/nba/500/mia.png', color: '98002E', linescores: [25, 30, 26, 23] },
         fallbackLeaders: [
           { name: 'Paolo Banchero', role: 'ORL • PF', stat: '31 PTS, 9 REB, 5 AST', avatar: 'https://a.espncdn.com/i/headshots/nba/players/full/4432573.png' },
-          { name: 'Bam Adebayo', role: 'MIA • C', stat: '24 PTS, 12 REB, 3 BLK', avatar: 'https://a.espncdn.com/i/headshots/nba/players/full/4066261.png' },
-          { name: 'Franz Wagner', role: 'ORL • SF', stat: '23 PTS, 4 REB, 4 AST', avatar: 'https://a.espncdn.com/i/headshots/nba/players/full/4566434.png' }
+          { name: 'Bam Adebayo', role: 'MIA • C', stat: '24 PTS, 12 REB, 3 BLK', avatar: 'https://a.espncdn.com/i/headshots/nba/players/full/4066261.png' }
         ]
       },
       {
@@ -1278,7 +1697,7 @@
         home: { name: 'Lightning', abbr: 'TB', score: '3', record: '3-1-0', logo: 'https://a.espncdn.com/i/teamlogos/nhl/500/tb.png', color: '002868', linescores: [1, 1, 1] },
         away: { name: 'Panthers', abbr: 'FLA', score: '4', record: '4-1-0', logo: 'https://a.espncdn.com/i/teamlogos/nhl/500/fla.png', color: 'C8102E', linescores: [2, 1, 1] },
         fallbackLeaders: [
-          { name: 'Sam Reinhart', role: 'FLA • C', stat: '2 G, 1 A (Power Play Goal)', avatar: 'https://a.espncdn.com/i/headshots/nhl/players/full/3114720.png' },
+          { name: 'Sam Reinhart', role: 'FLA • C', stat: '2 G, 1 A (PPG)', avatar: 'https://a.espncdn.com/i/headshots/nhl/players/full/3114720.png' },
           { name: 'Nikita Kucherov', role: 'TB • RW', stat: '1 G, 2 A, 5 SOG', avatar: 'https://a.espncdn.com/i/headshots/nhl/players/full/2563060.png' }
         ]
       },
@@ -1290,7 +1709,7 @@
         away: { name: 'Dodgers', abbr: 'LAD', score: '6', record: '98-64', logo: 'https://a.espncdn.com/i/teamlogos/mlb/500/lad.png', color: '005A9C', linescores: [0, 2, 0, 1, 0, 2, 0, 1, 0] },
         fallbackLeaders: [
           { name: 'Shohei Ohtani', role: 'LAD • DH', stat: '3-5, HR (420 ft), 3 RBI', avatar: 'https://a.espncdn.com/i/headshots/mlb/players/full/39832.png' },
-          { name: 'Fernando Tatis Jr.', role: 'SD • RF', stat: '2-4, HR, 2 RBI, 1 SB', avatar: 'https://a.espncdn.com/i/headshots/mlb/players/full/35983.png' }
+          { name: 'Fernando Tatis Jr.', role: 'SD • RF', stat: '2-4, HR, 2 RBI', avatar: 'https://a.espncdn.com/i/headshots/mlb/players/full/35983.png' }
         ]
       }
     ];
@@ -1334,6 +1753,8 @@
                 }
               });
 
+              const lastPlay = comp.situation && comp.situation.lastPlay ? comp.situation.lastPlay.text : '';
+
               fetchedGames.push({
                 id: ev.id,
                 leagueKey: lg.key,
@@ -1341,7 +1762,8 @@
                 leaguePath: lg.path,
                 name: ev.name,
                 statusDetail: ev.status.type.shortDetail || ev.status.type.detail,
-                venue: comp.venue ? comp.venue.fullName : lg.label + ' Stadium',
+                venue: comp.venue ? comp.venue.fullName : lg.label + ' Arena',
+                latestPlayText: lastPlay,
                 inlineLeaders,
                 home: {
                   name: home.team.shortDisplayName || home.team.displayName,
@@ -1415,12 +1837,17 @@
       if (!currentSpotlightGame || !list.some(g => String(g.id) === String(currentSpotlightGame.id))) {
         selectSpotlightGame(list[0]);
       } else {
-        selectSpotlightGame(currentSpotlightGame);
+        const updated = list.find(g => String(g.id) === String(currentSpotlightGame.id));
+        if (updated) selectSpotlightGame(updated);
       }
 
       grid.innerHTML = list.map(g => {
-        const locked = lockedPicks[g.id];
+        const userKey = currentUser ? currentUser.contact : 'guest';
+        const locked = lockedPicks[`${userKey}_${g.id}`];
+        const tally = getVoteTallyForGame(g.id);
+        const totalVotes = tally.away + tally.home;
         const isCurrent = currentSpotlightGame && String(currentSpotlightGame.id) === String(g.id);
+
         return `
           <div class="game-card ${isCurrent ? 'active-card' : ''}" onclick="selectSpotlightById('${g.id}')">
             <div style="display:flex; justify-content:space-between; font-size:0.74rem; color:var(--text-muted);">
@@ -1448,9 +1875,9 @@
               <strong style="font-size:1.15rem;">${g.home.score}</strong>
             </div>
             <div style="font-size:0.72rem; color:var(--text-muted); border-top:1px solid rgba(255,255,255,0.06); padding-top:8px; display:flex; justify-content:space-between;">
-              <span>📍 ${g.venue}</span>
+              <span>📊 ${totalVotes} ${totalVotes === 1 ? 'vote' : 'votes'}</span>
               <span style="color:${locked ? '#4ade80' : 'var(--accent)'}; font-weight:700;">
-                ${locked ? `🔒 Picked ${locked.abbr}` : '💬 Chat & Pick →'}
+                ${locked ? `🔒 Picked ${locked.abbr}` : '🎧 Listen & Pick →'}
               </span>
             </div>
           </div>
@@ -1481,6 +1908,10 @@
       document.getElementById('spotStatus').textContent = g.statusDetail;
       document.getElementById('spotVenue').textContent = `${g.name} • ${g.venue}`;
 
+      // Update Live Radio search link for this specific matchup
+      const radioQuery = encodeURIComponent(`${g.away.name} ${g.home.name} live radio`);
+      document.getElementById('btnTuneInRadio').href = `https://tunein.com/search/?query=${radioQuery}`;
+
       // Update Circulating Team Colors on Spotlight & PiP
       const col1 = '#' + (g.away.color || '00338D').replace('#', '');
       const col2 = '#' + (g.home.color || 'E31837').replace('#', '');
@@ -1497,55 +1928,71 @@
       document.getElementById('pipScore').textContent = `${g.away.score} - ${g.home.score}`;
       document.getElementById('pipStatus').textContent = g.statusDetail;
 
-      updatePickButtonsUI(g);
+      updatePickAndVoteBarUI(g);
       renderGameChat(g);
       updateMomentumChart(g);
       await loadPlayerStatsAndClips(g);
+      if (liveListenActive) narrateCurrentGameState(g, false);
       evaluatePiPVisibility();
     }
 
     /* ========================================================
-       5. ONE-TIME LOCKED PICKS & LEADERBOARD
+       8. REAL VOTE COUNTS, 1-PICK LOCK & AUTHENTIC LEADERBOARD
        ======================================================== */
-    let lockedPicks = JSON.parse(localStorage.getItem('og_locked_picks_v2') || '{}');
-    let predictorName = localStorage.getItem('og_predictor_name') || 'Oscar';
-    document.getElementById('currentNickLabel').textContent = predictorName;
+    let lockedPicks = JSON.parse(localStorage.getItem('og_locked_picks_v3') || '{}');
+    let voteTallies = JSON.parse(localStorage.getItem('og_vote_tallies_v3') || '{}');
 
-    function changeUserNickname() {
-      const next = prompt('Enter your nickname for the Leaderboard & Game Chat:', predictorName);
-      if (next && next.trim()) {
-        predictorName = next.trim();
-        localStorage.setItem('og_predictor_name', predictorName);
-        document.getElementById('currentNickLabel').textContent = predictorName;
-        renderLeaderboard();
+    function getVoteTallyForGame(gameId) {
+      if (!voteTallies[gameId]) {
+        voteTallies[gameId] = { away: 0, home: 0 };
       }
+      return voteTallies[gameId];
     }
 
     function lockInGamePick(side) {
       if (!currentSpotlightGame) return;
+      if (!currentUser) {
+        openAuthModal();
+        showAuthError('Please sign in with Google, Email, or Phone Number so your vote and rank are saved!');
+        return;
+      }
+
       const g = currentSpotlightGame;
-      // Enforce strict 1-pick lock per game
-      if (lockedPicks[g.id]) return;
+      const pickKey = `${currentUser.contact}_${g.id}`;
+
+      // Enforce strict 1-pick lock per account per game
+      if (lockedPicks[pickKey]) return;
 
       const chosen = side === 'away' ? g.away : g.home;
-      lockedPicks[g.id] = {
+      lockedPicks[pickKey] = {
+        gameId: g.id,
+        user: currentUser.username,
+        contact: currentUser.contact,
         side,
         teamName: chosen.name,
         abbr: chosen.abbr,
         timestamp: Date.now()
       };
-      localStorage.setItem('og_locked_picks_v2', JSON.stringify(lockedPicks));
+      localStorage.setItem('og_locked_picks_v3', JSON.stringify(lockedPicks));
 
-      updatePickButtonsUI(g);
+      // Increment authentic vote tally
+      const tally = getVoteTallyForGame(g.id);
+      if (side === 'away') tally.away += 1;
+      else tally.home += 1;
+      voteTallies[g.id] = tally;
+      localStorage.setItem('og_vote_tallies_v3', JSON.stringify(voteTallies));
+
+      updatePickAndVoteBarUI(g);
       renderScoreboard();
       renderLeaderboard();
 
-      // Announce pick in the game's live chat
-      pushMessageToGameChat(g.id, predictorName, `🔒 Locked in my pick for the ${chosen.name} to win!`);
+      // SportsBot announces the real locked vote in the game chat
+      pushMessageToGameChat(g.id, 'SportsBot', `📊 @${currentUser.username} locked in a vote for the ${chosen.name}!`, true);
     }
 
-    function updatePickButtonsUI(g) {
-      const existing = lockedPicks[g.id];
+    function updatePickAndVoteBarUI(g) {
+      const userKey = currentUser ? currentUser.contact : 'guest';
+      const existing = lockedPicks[`${userKey}_${g.id}`];
       const btnAway = document.getElementById('btnPickAway');
       const btnHome = document.getElementById('btnPickHome');
       const label = document.getElementById('pickLockLabel');
@@ -1559,38 +2006,77 @@
         btnHome.disabled = true;
         if (existing.side === 'away') {
           btnAway.classList.add('locked-choice');
-          btnAway.textContent = `🔒 Picked ${g.away.name}`;
+          btnAway.textContent = `🔒 Voted ${g.away.name}`;
           btnHome.textContent = g.home.name;
         } else {
           btnHome.classList.add('locked-choice');
-          btnHome.textContent = `🔒 Picked ${g.home.name}`;
+          btnHome.textContent = `🔒 Voted ${g.home.name}`;
           btnAway.textContent = g.away.name;
         }
-        label.innerHTML = `<strong style="color:#4ade80;">✓ Pick Locked for ${existing.teamName}</strong> (Cannot be changed)`;
+        label.innerHTML = `<strong style="color:#4ade80;">✓ Vote Locked for ${existing.teamName}</strong>`;
         pipPick.textContent = `🔒 Pick: ${existing.abbr}`;
       } else {
         btnAway.disabled = false;
         btnHome.disabled = false;
-        btnAway.textContent = `🏆 Pick ${g.away.name}`;
-        btnHome.textContent = `🏆 Pick ${g.home.name}`;
-        label.textContent = `🎯 Lock in your winner (1 pick per game):`;
+        btnAway.textContent = `🏆 Vote ${g.away.name}`;
+        btnHome.textContent = `🏆 Vote ${g.home.name}`;
+        label.textContent = currentUser
+          ? `🎯 Lock in your winner as @${currentUser.username} (1 vote per game):`
+          : `🎯 Sign in to lock in your winner (1 vote per game):`;
         pipPick.textContent = `No pick locked`;
       }
+
+      // Render Real Vote Counts & Percentage Bar
+      const tally = getVoteTallyForGame(g.id);
+      const total = tally.away + tally.home;
+      const awayPct = total > 0 ? Math.round((tally.away / total) * 100) : 0;
+      const homePct = total > 0 ? 100 - awayPct : 0;
+
+      document.getElementById('voteAwayStats').textContent = `${g.away.abbr}: ${tally.away} ${tally.away === 1 ? 'vote' : 'votes'} (${awayPct}%)`;
+      document.getElementById('voteHomeStats').textContent = `${g.home.abbr}: ${tally.home} ${tally.home === 1 ? 'vote' : 'votes'} (${homePct}%)`;
+      document.getElementById('voteTotalLabel').textContent = `${total} Total ${total === 1 ? 'Vote' : 'Votes'}`;
+
+      document.getElementById('voteBarAway').style.width = total > 0 ? `${awayPct}%` : '50%';
+      document.getElementById('voteBarHome').style.width = total > 0 ? `${homePct}%` : '50%';
     }
 
     function renderLeaderboard() {
-      const count = Object.keys(lockedPicks).length;
-      const userPts = 320 + count * 110;
-      const board = [
-        { name: `${predictorName} (You)`, locked: count, pts: userPts, me: true },
-        { name: 'OrlandoMagicFan', locked: 8, pts: 980, me: false },
-        { name: 'HeatNation305', locked: 7, pts: 860, me: false },
-        { name: 'WestCoastScouts', locked: 6, pts: 740, me: false },
-        { name: 'ClutchPicks99', locked: 4, pts: 520, me: false }
-      ].sort((a, b) => b.pts - a.pts);
+      // Build authentic leaderboard from registered accounts + SportsBot benchmark
+      const rows = [];
+      const allAccounts = Object.values(accountsDB);
 
-      document.getElementById('leaderboardBody').innerHTML = board.map((p, i) => `
-        <tr style="${p.me ? 'background:rgba(56,189,248,0.14); font-weight:700;' : ''}">
+      allAccounts.forEach(acc => {
+        const userPickCount = Object.values(lockedPicks).filter(p => p.contact === acc.contact).length;
+        rows.push({
+          name: `@${acc.username}${currentUser && currentUser.contact === acc.contact ? ' (You)' : ''}`,
+          locked: userPickCount,
+          pts: userPickCount * 100,
+          isMe: currentUser && currentUser.contact === acc.contact
+        });
+      });
+
+      if (rows.length === 0 && currentUser) {
+        const userPickCount = Object.values(lockedPicks).filter(p => p.contact === currentUser.contact).length;
+        rows.push({
+          name: `@${currentUser.username} (You)`,
+          locked: userPickCount,
+          pts: userPickCount * 100,
+          isMe: true
+        });
+      }
+
+      // Include SportsBot as the official AI baseline (no fake human accounts)
+      rows.push({
+        name: '🤖 SportsBot (AI)',
+        locked: allGamesPool.length || 4,
+        pts: (allGamesPool.length || 4) * 100,
+        isMe: false
+      });
+
+      rows.sort((a, b) => b.pts - a.pts);
+
+      document.getElementById('leaderboardBody').innerHTML = rows.map((p, i) => `
+        <tr style="${p.isMe ? 'background:rgba(56,189,248,0.14); font-weight:700;' : ''}">
           <td>${i + 1}</td>
           <td>${p.name}</td>
           <td>${p.locked} 🔒</td>
@@ -1598,30 +2084,32 @@
         </tr>
       `).join('');
     }
-    renderLeaderboard();
 
     /* ========================================================
-       6. PER-GAME LIVE CHAT ROOMS
+       9. PER-GAME LIVE CHAT (SPORTSBOT + REAL USERS ONLY)
        ======================================================== */
-    let gameChats = JSON.parse(localStorage.getItem('og_game_chats_v2') || '{}');
+    let gameChats = JSON.parse(localStorage.getItem('og_game_chats_v3') || '{}');
 
-    function ensureSeedChatForGame(g) {
+    function ensureSportsBotIntro(g) {
       if (!gameChats[g.id]) {
         gameChats[g.id] = [
-          { user: 'SportsBot', text: `Welcome to the live game thread for ${g.away.name} vs ${g.home.name}!`, time: 'Live' },
-          { user: `${g.home.abbr}_Diehard`, text: `Let's go ${g.home.name}! Big energy in ${g.venue} tonight.`, time: '2m ago' },
-          { user: `HoopsAndHype`, text: `Who did y'all lock in for this matchup? Taking ${g.away.abbr} on the road.`, time: '1m ago' }
+          {
+            user: '🤖 SportsBot',
+            text: `Welcome to the official ${g.away.name} vs ${g.home.name} live thread at ${g.venue}. Current status: ${g.statusDetail} (${g.away.abbr} ${g.away.score} - ${g.home.abbr} ${g.home.score}).`,
+            time: 'Auto',
+            isBot: true
+          }
         ];
       }
     }
 
     function renderGameChat(g) {
-      ensureSeedChatForGame(g);
+      ensureSportsBotIntro(g);
       document.getElementById('chatRoomTitle').textContent = `💬 ${g.away.abbr} vs ${g.home.abbr} Chat`;
       const feed = document.getElementById('gameChatFeed');
       const msgs = gameChats[g.id];
       feed.innerHTML = msgs.map(m => `
-        <div class="chat-msg">
+        <div class="chat-msg ${m.isBot ? 'bot-msg' : ''}">
           <span class="msg-time">${m.time}</span>
           <strong>${m.user}:</strong> <span>${m.text}</span>
         </div>
@@ -1629,11 +2117,11 @@
       feed.scrollTop = feed.scrollHeight;
     }
 
-    function pushMessageToGameChat(gameId, user, text) {
+    function pushMessageToGameChat(gameId, user, text, isBot = false) {
       if (!gameChats[gameId]) gameChats[gameId] = [];
       const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      gameChats[gameId].push({ user, text, time: now });
-      localStorage.setItem('og_game_chats_v2', JSON.stringify(gameChats));
+      gameChats[gameId].push({ user: isBot ? '🤖 SportsBot' : `@${user}`, text, time: now, isBot });
+      localStorage.setItem('og_game_chats_v3', JSON.stringify(gameChats));
       if (currentSpotlightGame && String(currentSpotlightGame.id) === String(gameId)) {
         renderGameChat(currentSpotlightGame);
       }
@@ -1641,15 +2129,28 @@
 
     function sendGameChatMessage() {
       if (!currentSpotlightGame) return;
+      if (!currentUser) {
+        openAuthModal();
+        showAuthError('Please sign in or create an account to post in the live game chat.');
+        return;
+      }
       const inp = document.getElementById('gameChatInput');
       const txt = inp.value.trim();
       if (!txt) return;
+
+      // Filter chat message against racist slurs as well
+      const safety = validateUsernameSafety(txt);
+      if (!safety.valid) {
+        alert('Message blocked: Racist language or hate speech is not allowed.');
+        return;
+      }
+
       inp.value = '';
-      pushMessageToGameChat(currentSpotlightGame.id, predictorName, txt);
+      pushMessageToGameChat(currentSpotlightGame.id, currentUser.username, txt, false);
     }
 
     /* ========================================================
-       7. PLAYER STATS, SCORERS & SOCIAL/YOUTUBE CLIPS
+       10. PLAYER STATS, SCORERS & SOCIAL/YOUTUBE CLIPS
        ======================================================== */
     async function loadPlayerStatsAndClips(g) {
       const statsEl = document.getElementById('playerStatsList');
@@ -1671,8 +2172,11 @@
         const sumRes = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${g.leaguePath}/summary?event=${g.id}`);
         const sumData = await sumRes.json();
 
-        // Scoring Plays
         if (sumData.scoringPlays && sumData.scoringPlays.length > 0) {
+          const newestPlay = sumData.scoringPlays[sumData.scoringPlays.length - 1];
+          if (newestPlay && newestPlay.text) {
+            g.latestPlayText = newestPlay.text;
+          }
           sumData.scoringPlays.slice(-4).reverse().forEach(sp => {
             leadersToRender.push({
               name: sp.team ? `${sp.team.abbreviation} Scoring Play` : 'Scoring Play',
@@ -1683,7 +2187,6 @@
           });
         }
 
-        // Player Stat Leaders
         if (sumData.leaders && sumData.leaders.length > 0) {
           sumData.leaders.forEach(tb => {
             const tAbbr = tb.team ? tb.team.abbreviation : '';
@@ -1703,7 +2206,6 @@
           });
         }
 
-        // Playable Highlight Clips
         if (sumData.videos && sumData.videos.length > 0) {
           sumData.videos.slice(0, 4).forEach(v => {
             const mp4 = (v.links && v.links.source && (v.links.source.HD ? v.links.source.HD.href : v.links.source.href)) || '';
@@ -1798,141 +2300,7 @@
     }
 
     /* ========================================================
-       8. DEALS & PRICE GLITCHES TAB (CURATED + LIVE REDDIT DEALS)
-       ======================================================== */
-    const CURATED_DEALS = [
-      {
-        cat: 'glitch',
-        tag: '⚡ PRICE GLITCH ALERT',
-        title: 'Amazon Resale / Warehouse Stacking 35% Off Open-Box Electronics',
-        price: '$44.99',
-        oldPrice: '$129.99',
-        save: 'Save 65% at Checkout',
-        store: 'Amazon Resale',
-        url: 'https://www.amazon.com/Warehouse-Deals/b?ie=UTF8&node=10158976011'
-      },
-      {
-        cat: 'glitch',
-        tag: '🔥 GLITCH TRACKER',
-        title: 'Slickdeals Frontpage Price Mistakes & Unadvertised Promo Codes',
-        price: 'Up to 80% Off',
-        oldPrice: 'MSRP',
-        save: 'Verified Price Errors',
-        store: 'Slickdeals Live',
-        url: 'https://slickdeals.net/deals/price-mistake/'
-      },
-      {
-        cat: 'tech',
-        tag: '💻 PC & HARDWARE',
-        title: '2TB NVMe PCIe Gen4 M.2 Internal Gaming SSD (7,300 MB/s)',
-        price: '$99.99',
-        oldPrice: '$169.99',
-        save: 'Save $70',
-        store: 'r/buildapcsales',
-        url: 'https://www.reddit.com/r/buildapcsales/'
-      },
-      {
-        cat: 'gaming',
-        tag: '🎮 GAMING STEAL',
-        title: 'Woot! Clearance Video Games, Controllers & Headset Liquidation',
-        price: '$14.99+',
-        oldPrice: '$59.99',
-        save: 'Up to 75% Off',
-        store: 'Woot! by Amazon',
-        url: 'https://electronics.woot.com/plus/video-games'
-      },
-      {
-        cat: 'glitch',
-        tag: '⚡ FLASH CLEARANCE',
-        title: 'Keepa Real-Time Amazon Price Drop & Lightning Glitch Scanner',
-        price: '70%+ Drops',
-        oldPrice: 'Retail',
-        save: 'Instant Drop Feed',
-        store: 'Keepa Deals',
-        url: 'https://keepa.com/#!deals'
-      },
-      {
-        cat: 'gaming',
-        tag: '🎮 FREE & GLITCH GAMES',
-        title: 'Live GameDeals Feed (100% Off Freebies, Steam & Console Bugs)',
-        price: 'FREE / $0.00',
-        oldPrice: '$29.99',
-        save: '100% Off',
-        store: 'r/GameDeals',
-        url: 'https://www.reddit.com/r/GameDeals/'
-      }
-    ];
-
-    let allDealsPool = [...CURATED_DEALS];
-    let currentDealFilter = 'all';
-
-    async function fetchLiveRedditDeals() {
-      try {
-        const res = await fetch('https://www.reddit.com/r/buildapcsales/hot.json?limit=6');
-        const data = await res.json();
-        if (data && data.data && data.data.children) {
-          const liveItems = data.data.children
-            .filter(c => !c.data.stickied)
-            .map(c => ({
-              cat: 'tech',
-              tag: '🔴 LIVE COMMUNITY DEAL',
-              title: c.data.title.slice(0, 95),
-              price: 'Check Deal',
-              oldPrice: 'MSRP',
-              save: `👍 ${c.data.ups} Upvotes`,
-              store: 'Reddit Live Deal',
-              url: c.data.url || `https://www.reddit.com${c.data.permalink}`
-            }));
-          allDealsPool = [...CURATED_DEALS, ...liveItems];
-        }
-      } catch (e) {
-        allDealsPool = [...CURATED_DEALS];
-      }
-      renderDeals();
-    }
-
-    function filterDeals(cat, btnEl) {
-      currentDealFilter = cat;
-      document.querySelectorAll('#tab-deals .filter-btn').forEach(b => b.classList.remove('active'));
-      if (btnEl) btnEl.classList.add('active');
-      renderDeals();
-    }
-
-    function renderDeals() {
-      const grid = document.getElementById('dealsGrid');
-      const list = currentDealFilter === 'all'
-        ? allDealsPool
-        : allDealsPool.filter(d => d.cat === currentDealFilter);
-
-      grid.innerHTML = list.map(d => `
-        <div class="deal-card">
-          <div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-              <span class="glitch-badge">${d.tag}</span>
-              <span style="font-size:0.74rem; color:var(--text-muted);">${d.store}</span>
-            </div>
-            <h3 style="font-size:1rem; line-height:1.4; margin-bottom:12px;">${d.title}</h3>
-            <div class="price-row">
-              <span class="deal-price">${d.price}</span>
-              <span class="old-price">${d.oldPrice}</span>
-              <span class="save-pill">${d.save}</span>
-            </div>
-          </div>
-          <a
-            href="${d.url}"
-            target="_blank"
-            rel="noopener"
-            class="action-btn"
-            style="justify-content:center; text-decoration:none; background:rgba(56,189,248,0.14); border-color:var(--accent); color:var(--accent); margin-top:8px;"
-          >
-            Claim Deal / View Glitch ↗
-          </a>
-        </div>
-      `).join('');
-    }
-
-    /* ========================================================
-       9. NEWS & PAYPAL DONATION (@oscar1975)
+       11. NEWS & PAYPAL DONATION (@oscar1975)
        ======================================================== */
     function renderNews(articles) {
       const grid = document.getElementById('newsGrid');
@@ -1963,9 +2331,9 @@
     }
 
     // Boot
+    syncUserHeaderUI();
     loadAllSports();
-    fetchLiveRedditDeals();
-    setInterval(loadAllSports, 45000);
+    setInterval(loadAllSports, 30000);
   </script>
 </body>
 </html>
