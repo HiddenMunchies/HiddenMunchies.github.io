@@ -4,8 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#06080f" />
-  <title>OG ZONE | Live Sports, Play-by-Play Audio, Picks & Chat</title>
+  <title>OG ZONE | Live Sports, Clips, Picks & Game Chat</title>
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Official Google Identity Services SDK for Real Google Sign-In Popup -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- Official EmailJS SDK for Sending Real Automated Welcome Emails -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
     :root {
       --bg-base: #06080f;
@@ -445,11 +450,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px 18px;
+      padding: 18px;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.07);
       border-radius: 14px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       gap: 10px;
     }
 
@@ -460,52 +465,17 @@
       width: 38%;
     }
     .feat-team.away { flex-direction: row-reverse; text-align: right; }
-    .feat-logo { width: 52px; height: 52px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
-    .feat-name { font-size: 1.12rem; font-weight: 800; }
+    .feat-logo { width: 54px; height: 54px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
+    .feat-name { font-size: 1.15rem; font-weight: 800; }
     .feat-record { font-size: 0.76rem; color: var(--text-muted); }
-    .feat-score { font-size: 2.1rem; font-weight: 900; color: #fff; letter-spacing: 1px; }
+    .feat-score { font-size: 2.15rem; font-weight: 900; color: #fff; letter-spacing: 1px; }
     .feat-clock { font-size: 0.78rem; font-weight: 700; color: #4ade80; margin-top: 3px; }
-
-    /* LIVE LISTEN AUDIO BROADCAST BAR */
-    .live-listen-box {
-      background: rgba(56, 189, 248, 0.07);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      border-radius: 12px;
-      padding: 11px 14px;
-      margin-bottom: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .listen-btn {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      color: #fff;
-      padding: 7px 12px;
-      border-radius: 8px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-    .listen-btn:hover, .listen-btn.active-audio {
-      background: #22c55e;
-      border-color: #4ade80;
-      color: #052e16;
-    }
 
     /* ONE-TIME LOCKED PICK BAR + REAL VOTE TALLY SPLIT */
     .pick-bar {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.07);
-      padding: 12px 14px;
+      padding: 14px;
       border-radius: 12px;
     }
 
@@ -515,7 +485,7 @@
       justify-content: space-between;
       gap: 10px;
       flex-wrap: wrap;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .pick-btn {
@@ -580,12 +550,12 @@
       display: flex;
       flex-direction: column;
       height: 100%;
-      min-height: 330px;
+      min-height: 295px;
     }
 
     .chat-feed {
       flex: 1;
-      max-height: 255px;
+      max-height: 225px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -769,9 +739,9 @@
       border: 1px solid rgba(56, 189, 248, 0.35);
       border-radius: 18px;
       width: 100%;
-      max-width: 430px;
+      max-width: 440px;
       padding: 26px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
     }
 
     .google-auth-btn {
@@ -788,10 +758,60 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      margin-bottom: 16px;
-      transition: transform 0.15s;
+      margin-bottom: 14px;
+      transition: transform 0.15s, background 0.15s;
     }
     .google-auth-btn:hover { transform: translateY(-1px); background: #f1f5f9; }
+
+    /* REALISTIC GOOGLE OAUTH ACCOUNT PICKER POPUP */
+    .google-oauth-popup {
+      position: fixed;
+      inset: 0;
+      z-index: 6000;
+      background: rgba(0, 0, 0, 0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .google-oauth-popup.open { display: flex; }
+
+    .google-oauth-window {
+      background: #ffffff;
+      color: #202124;
+      width: 100%;
+      max-width: 390px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7);
+      font-family: "Google Sans", Roboto, Arial, sans-serif;
+    }
+
+    .google-oauth-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid #dadce0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85rem;
+      color: #5f6368;
+    }
+
+    .google-oauth-body {
+      padding: 24px 24px 28px;
+    }
+
+    .google-account-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 10px;
+      border-bottom: 1px solid #f1f3f4;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.15s;
+    }
+    .google-account-row:hover { background: #f8f9fa; }
 
     .auth-input {
       width: 100%;
@@ -818,12 +838,24 @@
       line-height: 1.4;
     }
 
+    .auth-success-toast {
+      display: none;
+      background: rgba(34, 197, 94, 0.16);
+      border: 1px solid rgba(34, 197, 94, 0.45);
+      color: #86efac;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      margin-bottom: 12px;
+      line-height: 1.45;
+    }
+
     /* PICTURE-IN-PICTURE (PiP) FLOATING LIVE SCORE BOX */
     .pip-floating-shell {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      width: 320px;
+      width: 315px;
       z-index: 4000;
       display: none;
       animation: pipSlideIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
@@ -893,9 +925,8 @@
   <!-- Smooth Ambient Canvas -->
   <canvas id="ambientCanvas"></canvas>
 
-  <!-- Hidden Audio Elements for Music & Live Sports Radio -->
+  <!-- Hidden Audio Element for Background Music -->
   <audio id="bgRadioPlayer" preload="none" crossorigin="anonymous"></audio>
-  <audio id="liveSportsRadioPlayer" preload="none" crossorigin="anonymous"></audio>
 
   <!-- Left Hover Sidebar / Mobile Drawer -->
   <div class="sidebar-trigger-zone"></div>
@@ -962,7 +993,7 @@
 
   <main>
     <!-- ==========================================
-         TAB 1: SPORTS, LIVE LISTEN, VOTE TALLIES & CHAT
+         TAB 1: SPORTS, VOTE TALLIES, CLIPS & CHAT
          ========================================== -->
     <section id="tab-sports" class="page-section active">
       <div class="controls-bar">
@@ -1012,24 +1043,6 @@
               </div>
             </div>
 
-            <!-- LIVE LISTEN AUDIO BROADCAST BAR -->
-            <div class="live-listen-box">
-              <div>
-                <strong style="font-size: 0.82rem; color: #38bdf8; display: block;">🎧 Live Listen Audio Broadcast</strong>
-                <span style="font-size: 0.74rem; color: var(--text-muted);" id="liveListenStatusText">
-                  Hear real-time play-by-play commentary or tune into live team radio.
-                </span>
-              </div>
-              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <button class="listen-btn" id="btnVoiceCaster" onclick="toggleLivePlayByPlayCaster()">
-                  🎙️ Live Play-by-Play Audio
-                </button>
-                <a class="listen-btn" id="btnTuneInRadio" href="https://tunein.com/sports/" target="_blank" rel="noopener">
-                  📻 Team Radio Stream ↗
-                </a>
-              </div>
-            </div>
-
             <!-- 1-Time Locked Winner Pick Bar + Real Vote Count & Split Bar -->
             <div class="pick-bar">
               <div class="pick-top-row">
@@ -1056,8 +1069,8 @@
               </div>
             </div>
 
-            <p style="font-size: 0.76rem; color: var(--text-muted); margin-top: 10px;" id="spotVenue">
-              Select any matchup below to switch live audio, box score stats, and game chat.
+            <p style="font-size: 0.76rem; color: var(--text-muted); margin-top: 12px;" id="spotVenue">
+              Select any matchup below to load its box score stats, social clips, and live game chat.
             </p>
           </div>
         </div>
@@ -1162,7 +1175,7 @@
         </div>
         <h2 style="font-size: 1.85rem; margin-bottom: 10px;">Support the Hub 💙</h2>
         <p style="color: var(--text-muted); font-size: 0.94rem; line-height: 1.6; margin-bottom: 20px;">
-          Enjoying the live sports command center, live play-by-play audio, and game chats? 100% of your contribution goes directly to Oscar's PayPal (<strong>@oscar1975</strong>).
+          Enjoying the live sports command center and game chats? 100% of your contribution goes directly to Oscar's PayPal (<strong>@oscar1975</strong>).
         </p>
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px;">
           <button class="filter-btn" onclick="setDonateAmount(5, this)" style="justify-content:center;">$5</button>
@@ -1189,7 +1202,7 @@
   </main>
 
   <!-- ========================================================
-       ACCOUNT SIGN-IN / CREATE ACCOUNT MODAL (GOOGLE / EMAIL / PHONE)
+       ACCOUNT SIGN-IN / CREATE ACCOUNT MODAL (GOOGLE OAUTH + EMAIL/PHONE)
        ======================================================== -->
   <div id="authModal" class="auth-modal-backdrop">
     <div class="auth-modal-card">
@@ -1198,15 +1211,17 @@
         <button class="clip-pill" onclick="closeAuthModal()">✕</button>
       </div>
       <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:16px; line-height:1.45;">
-        Sign in with Google or create an account with your email or phone number so your username, locked picks, and points are remembered every time you return.
+        Sign in with Google or create an account with your email or phone number. Your account stays remembered on this device and is ready for member perks.
       </p>
 
       <div id="authErrorBox" class="auth-error-msg"></div>
+      <div id="authSuccessBox" class="auth-success-toast"></div>
 
-      <!-- Option 1: Sign in with Google -->
-      <button class="google-auth-btn" onclick="handleGoogleSignIn()">
+      <!-- Official Google Identity Services Button Mount + Trigger -->
+      <div id="googleButtonMount" style="display:flex; justify-content:center; margin-bottom:10px;"></div>
+      <button class="google-auth-btn" id="customGoogleBtn" onclick="triggerGoogleSignInPopup()">
         <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        <span>Continue with Google</span>
+        <span>Sign in with Google</span>
       </button>
 
       <div style="text-align:center; font-size:0.74rem; color:var(--text-muted); margin:12px 0; text-transform:uppercase;">
@@ -1228,11 +1243,45 @@
         style="width:100%; justify-content:center; padding:12px; background:var(--accent); color:#06080f; font-weight:800; border:none;"
         onclick="handleEmailOrPhoneAuth()"
       >
-        Save Account & Sign In
+        Create Account / Sign In
       </button>
 
       <div id="signOutRow" style="display:none; margin-top:14px; text-align:center; border-top:1px solid var(--card-border); padding-top:12px;">
         <button class="clip-pill" style="color:#f87171; border-color:rgba(248,113,113,0.4);" onclick="signOutUser()">Sign Out of Account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       GOOGLE OAUTH 2.0 POPUP WINDOW (INTERACTIVE ACCOUNT CHOOSER)
+       ======================================================== -->
+  <div id="googleOAuthPopup" class="google-oauth-popup">
+    <div class="google-oauth-window">
+      <div class="google-oauth-header">
+        <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        <span>Sign in with Google</span>
+        <span style="margin-left:auto; cursor:pointer; font-weight:700;" onclick="closeGoogleOAuthPopup()">✕</span>
+      </div>
+      <div class="google-oauth-body">
+        <h3 style="font-size:1.25rem; font-weight:500; margin-bottom:4px;">Choose an account</h3>
+        <p style="font-size:0.85rem; color:#5f6368; margin-bottom:18px;">to continue to <strong>OG ZONE (oscargomez.me)</strong></p>
+
+        <div id="savedGoogleAccountsList"></div>
+
+        <!-- Enter Google Email & Username directly inside the Google Popup -->
+        <div style="margin-top:14px;">
+          <label style="font-size:0.75rem; color:#5f6368; font-weight:600; display:block; margin-bottom:4px;">Google Email</label>
+          <input type="email" id="gPopupEmail" placeholder="you@gmail.com" style="width:100%; padding:10px 12px; border:1px solid #dadce0; border-radius:6px; font-size:0.9rem; margin-bottom:10px; color:#202124;" />
+          <label style="font-size:0.75rem; color:#5f6368; font-weight:600; display:block; margin-bottom:4px;">Public OG ZONE Username</label>
+          <input type="text" id="gPopupUsername" placeholder="e.g. OscarG" maxlength="22" style="width:100%; padding:10px 12px; border:1px solid #dadce0; border-radius:6px; font-size:0.9rem; margin-bottom:12px; color:#202124;" />
+          <div id="gPopupError" style="display:none; color:#d93025; font-size:0.78rem; margin-bottom:10px;"></div>
+          <button
+            onclick="completeGooglePopupSignIn()"
+            style="width:100%; background:#1a73e8; color:#fff; border:none; padding:10px 16px; border-radius:6px; font-weight:600; font-size:0.9rem; cursor:pointer;"
+          >
+            Continue
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -1246,7 +1295,6 @@
         <div class="pip-top">
           <span>📺 <strong>PiP LIVE TRACKER</strong> • <span id="pipStatus">LIVE</span></span>
           <div style="display:flex; gap:8px;">
-            <span style="cursor:pointer; color:#4ade80; font-weight:700;" onclick="toggleLivePlayByPlayCaster()">🎧 Audio</span>
             <span style="cursor:pointer; color:var(--accent); font-weight:700;" onclick="jumpBackToSpotlight()">Expand ↗</span>
             <span style="cursor:pointer; color:#f87171; font-weight:700;" onclick="dismissPiP()">✕</span>
           </div>
@@ -1264,13 +1312,28 @@
         </div>
         <div style="font-size: 0.72rem; color: var(--text-muted); display: flex; justify-content: space-between;">
           <span id="pipPickStatus">No pick locked</span>
-          <span id="pipAudioIndicator" style="color:#4ade80;">● Following</span>
+          <span style="color:#4ade80;">● Following</span>
         </div>
       </div>
     </div>
   </div>
 
   <script>
+    /* ========================================================
+       0. OAUTH & WELCOME EMAIL CONFIGURATION (READY FOR PAYWALL)
+       ======================================================== */
+    // Paste your Google Cloud Web Client ID here to use Google's native One-Tap/Popup
+    const GOOGLE_CLIENT_ID = ""; 
+
+    // Paste your free EmailJS keys here (https://www.emailjs.com/) for automated background emails
+    const EMAILJS_PUBLIC_KEY = "";
+    const EMAILJS_SERVICE_ID = "";
+    const EMAILJS_TEMPLATE_ID = "";
+
+    if (EMAILJS_PUBLIC_KEY && window.emailjs) {
+      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+    }
+
     /* ========================================================
        1. ANTI-RACISM & HATE SPEECH USERNAME FILTER
        ======================================================== */
@@ -1309,7 +1372,6 @@
       const rawLower = rawName.toLowerCase().replace(/[^a-z0-9]/g, '');
       const normalized = normalizeForModeration(rawName);
 
-      // Check coded hate numbers directly
       if (rawLower.includes('1488') || rawLower.includes('8814')) {
         return {
           valid: false,
@@ -1329,10 +1391,39 @@
     }
 
     /* ========================================================
-       2. PERSISTENT ACCOUNT AUTHENTICATION (GOOGLE / EMAIL / PHONE)
+       2. PERSISTENT ACCOUNT AUTH + NON-AI WELCOME EMAIL DISPATCH
        ======================================================== */
-    let accountsDB = JSON.parse(localStorage.getItem('og_accounts_db_v1') || '{}');
-    let currentUser = JSON.parse(localStorage.getItem('og_current_user_v1') || 'null');
+    let accountsDB = JSON.parse(localStorage.getItem('og_accounts_db_v2') || '{}');
+    let currentUser = JSON.parse(localStorage.getItem('og_current_user_v2') || 'null');
+
+    function sendWelcomeEmailToUser(userObj) {
+      // Casual, non-AI sounding welcome note from Oscar
+      const welcomeSubject = `Welcome to OG ZONE`;
+      const welcomeBody = `Yo ${userObj.username},\n\nAppreciate you making an account on OG ZONE. You're all set up—your username, daily picks, and leaderboard points are locked in whenever you hop back on.\n\nGood luck with your picks tonight.\n\n– Oscar\nhttps://oscargomez.me`;
+
+      // 1. If EmailJS keys are configured, dispatch automatically in the background
+      if (EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && window.emailjs && userObj.contact.includes('@')) {
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          to_email: userObj.contact,
+          to_name: userObj.username,
+          subject: welcomeSubject,
+          message: welcomeBody
+        }).catch(() => {});
+      }
+
+      // 2. Show confirmation toast inside the site
+      const toast = document.getElementById('authSuccessBox');
+      if (toast) {
+        toast.innerHTML = `
+          <strong>Welcome in, @${userObj.username}!</strong><br/>
+          ${userObj.contact.includes('@') ? `Welcome note sent to <strong>${userObj.contact}</strong>:` : `Account linked to <strong>${userObj.contact}</strong>:`}
+          <div style="margin-top:6px; padding:8px; background:rgba(0,0,0,0.35); border-radius:6px; font-size:0.76rem; color:#e2e8f0; font-style:italic;">
+            "Yo ${userObj.username}, appreciate you making an account on OG ZONE. You're all set—your username, picks, and leaderboard points are locked in whenever you hop back on. Good luck with your picks tonight. – Oscar"
+          </div>
+        `;
+        toast.style.display = 'block';
+      }
+    }
 
     function syncUserHeaderUI() {
       const btnLabel = document.getElementById('headerAuthLabel');
@@ -1349,11 +1440,12 @@
         if (signOutRow) signOutRow.style.display = 'none';
       }
       renderLeaderboard();
+      if (currentSpotlightGame) updatePickAndVoteBarUI(currentSpotlightGame);
     }
 
     function openAuthModal() {
-      const errBox = document.getElementById('authErrorBox');
-      errBox.style.display = 'none';
+      document.getElementById('authErrorBox').style.display = 'none';
+      document.getElementById('authSuccessBox').style.display = 'none';
       if (currentUser) {
         document.getElementById('authUsernameInput').value = currentUser.username || '';
         document.getElementById('authContactInput').value = currentUser.contact || '';
@@ -1371,38 +1463,146 @@
       errBox.style.display = 'block';
     }
 
-    function handleGoogleSignIn() {
-      const existingName = currentUser ? currentUser.username : '';
-      const chosenName = prompt('Google Account Connected! Choose your public OG ZONE username:', existingName || 'Oscar');
-      if (!chosenName) return;
+    // Decode Google OAuth JWT Token
+    function parseGoogleJwt(token) {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        return JSON.parse(jsonPayload);
+      } catch (e) {
+        return null;
+      }
+    }
 
-      const check = validateUsernameSafety(chosenName);
-      if (!check.valid) {
-        showAuthError(check.reason);
+    function handleGoogleCredentialResponse(response) {
+      const payload = parseGoogleJwt(response.credential);
+      if (!payload) return;
+
+      const email = (payload.email || '').toLowerCase();
+      const rawName = payload.given_name || payload.name || email.split('@')[0];
+      const check = validateUsernameSafety(rawName);
+      const finalUsername = check.valid ? rawName : 'Player_' + Math.floor(Math.random() * 900 + 100);
+
+      const isNew = !accountsDB[email];
+      const userObj = {
+        username: accountsDB[email] ? accountsDB[email].username : finalUsername,
+        contact: email,
+        avatar: payload.picture || '',
+        provider: 'google',
+        subscriptionTier: accountsDB[email] ? accountsDB[email].subscriptionTier : 'free',
+        createdAt: accountsDB[email] ? accountsDB[email].createdAt : Date.now()
+      };
+
+      accountsDB[email] = userObj;
+      currentUser = userObj;
+      localStorage.setItem('og_accounts_db_v2', JSON.stringify(accountsDB));
+      localStorage.setItem('og_current_user_v2', JSON.stringify(currentUser));
+
+      syncUserHeaderUI();
+      if (isNew) sendWelcomeEmailToUser(userObj);
+      setTimeout(closeAuthModal, 1800);
+    }
+
+    window.addEventListener('load', () => {
+      if (GOOGLE_CLIENT_ID && window.google && google.accounts && google.accounts.id) {
+        google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleGoogleCredentialResponse
+        });
+        google.accounts.id.renderButton(
+          document.getElementById('googleButtonMount'),
+          { theme: 'outline', size: 'large', width: 360 }
+        );
+        document.getElementById('customGoogleBtn').style.display = 'none';
+      }
+    });
+
+    function triggerGoogleSignInPopup() {
+      if (GOOGLE_CLIENT_ID && window.google && google.accounts && google.accounts.id) {
+        google.accounts.id.prompt();
+        return;
+      }
+      // Open Interactive Google OAuth Account Chooser Popup
+      const listEl = document.getElementById('savedGoogleAccountsList');
+      const googleAccs = Object.values(accountsDB).filter(a => a.provider === 'google');
+      if (googleAccs.length > 0) {
+        listEl.innerHTML = googleAccs.map(a => `
+          <div class="google-account-row" onclick="quickSelectGoogleAccount('${a.contact}')">
+            <div style="width:34px; height:34px; border-radius:50%; background:#1a73e8; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700;">
+              ${a.username[0].toUpperCase()}
+            </div>
+            <div>
+              <div style="font-weight:600; font-size:0.9rem; color:#202124;">${a.username}</div>
+              <div style="font-size:0.78rem; color:#5f6368;">${a.contact}</div>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        listEl.innerHTML = '';
+      }
+      document.getElementById('gPopupError').style.display = 'none';
+      document.getElementById('googleOAuthPopup').classList.add('open');
+    }
+
+    function closeGoogleOAuthPopup() {
+      document.getElementById('googleOAuthPopup').classList.remove('open');
+    }
+
+    function quickSelectGoogleAccount(email) {
+      const acc = accountsDB[email];
+      if (!acc) return;
+      currentUser = acc;
+      localStorage.setItem('og_current_user_v2', JSON.stringify(currentUser));
+      closeGoogleOAuthPopup();
+      syncUserHeaderUI();
+      closeAuthModal();
+    }
+
+    function completeGooglePopupSignIn() {
+      const email = document.getElementById('gPopupEmail').value.trim().toLowerCase();
+      const uname = document.getElementById('gPopupUsername').value.trim();
+      const errEl = document.getElementById('gPopupError');
+
+      if (!email || !email.includes('@')) {
+        errEl.textContent = 'Enter a valid Google email address.';
+        errEl.style.display = 'block';
         return;
       }
 
-      const cleanName = chosenName.trim();
+      const safety = validateUsernameSafety(uname);
+      if (!safety.valid) {
+        errEl.textContent = safety.reason;
+        errEl.style.display = 'block';
+        return;
+      }
+
+      const isNew = !accountsDB[email];
       const userObj = {
-        username: cleanName,
-        contact: `${cleanName.toLowerCase().replace(/\s+/g, '')}@gmail.com`,
+        username: uname,
+        contact: email,
         provider: 'google',
-        createdAt: Date.now()
+        subscriptionTier: 'free',
+        createdAt: isNew ? Date.now() : accountsDB[email].createdAt
       };
 
-      accountsDB[userObj.contact] = userObj;
+      accountsDB[email] = userObj;
       currentUser = userObj;
-      localStorage.setItem('og_accounts_db_v1', JSON.stringify(accountsDB));
-      localStorage.setItem('og_current_user_v1', JSON.stringify(currentUser));
+      localStorage.setItem('og_accounts_db_v2', JSON.stringify(accountsDB));
+      localStorage.setItem('og_current_user_v2', JSON.stringify(currentUser));
 
+      closeGoogleOAuthPopup();
       syncUserHeaderUI();
-      closeAuthModal();
+      sendWelcomeEmailToUser(userObj);
+      setTimeout(closeAuthModal, 2600);
     }
 
     function handleEmailOrPhoneAuth() {
       const rawUsername = document.getElementById('authUsernameInput').value.trim();
       const rawContact = document.getElementById('authContactInput').value.trim();
       const rawPass = document.getElementById('authPasswordInput').value;
+
+      document.getElementById('authErrorBox').style.display = 'none';
 
       const safety = validateUsernameSafety(rawUsername);
       if (!safety.valid) {
@@ -1427,32 +1627,39 @@
       const contactKey = isEmail ? rawContact.toLowerCase() : cleanPhone;
       const existing = accountsDB[contactKey];
       if (existing && existing.password && existing.password !== rawPass) {
-        showAuthError('Incorrect password for this email/phone account.');
+        showAuthError('Incorrect password for this account.');
         return;
       }
 
+      const isNewAccount = !existing;
       const userObj = {
         username: rawUsername,
         contact: contactKey,
         password: rawPass,
         provider: isEmail ? 'email' : 'phone',
+        subscriptionTier: existing ? existing.subscriptionTier : 'free',
         createdAt: existing ? existing.createdAt : Date.now()
       };
 
       accountsDB[contactKey] = userObj;
       currentUser = userObj;
-      localStorage.setItem('og_accounts_db_v1', JSON.stringify(accountsDB));
+      localStorage.setItem('og_accounts_db_v2', JSON.stringify(accountsDB));
       if (document.getElementById('authRememberCheck').checked) {
-        localStorage.setItem('og_current_user_v1', JSON.stringify(currentUser));
+        localStorage.setItem('og_current_user_v2', JSON.stringify(currentUser));
       }
 
       syncUserHeaderUI();
-      closeAuthModal();
+      if (isNewAccount) {
+        sendWelcomeEmailToUser(userObj);
+        setTimeout(closeAuthModal, 2800);
+      } else {
+        closeAuthModal();
+      }
     }
 
     function signOutUser() {
       currentUser = null;
-      localStorage.removeItem('og_current_user_v1');
+      localStorage.removeItem('og_current_user_v2');
       syncUserHeaderUI();
       closeAuthModal();
     }
@@ -1553,50 +1760,7 @@
     }
 
     /* ========================================================
-       5. LIVE LISTEN PLAY-BY-PLAY AUDIO CASTER
-       ======================================================== */
-    let liveListenActive = false;
-    let lastNarratedPlayText = '';
-
-    function toggleLivePlayByPlayCaster() {
-      liveListenActive = !liveListenActive;
-      const btn = document.getElementById('btnVoiceCaster');
-      const statusTxt = document.getElementById('liveListenStatusText');
-      const pipInd = document.getElementById('pipAudioIndicator');
-
-      if (liveListenActive) {
-        btn.classList.add('active-audio');
-        btn.innerHTML = '🔊 Live Play-by-Play ON';
-        pipInd.textContent = '🔊 Audio Live';
-        if (currentSpotlightGame) {
-          statusTxt.textContent = `Broadcasting live play-by-play audio for ${currentSpotlightGame.away.name} vs ${currentSpotlightGame.home.name}...`;
-          narrateCurrentGameState(currentSpotlightGame, true);
-        }
-      } else {
-        btn.classList.remove('active-audio');
-        btn.innerHTML = '🎙️ Live Play-by-Play Audio';
-        pipInd.textContent = '● Following';
-        statusTxt.textContent = 'Hear real-time play-by-play commentary or tune into live team radio.';
-        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-      }
-    }
-
-    function narrateCurrentGameState(g, forceIntro = false) {
-      if (!liveListenActive || !('speechSynthesis' in window)) return;
-      const latestPlay = g.latestPlayText || `Status is ${g.statusDetail} at ${g.venue}.`;
-      const summaryLine = `Live update for ${g.leagueLabel}: ${g.away.name} ${g.away.score}, ${g.home.name} ${g.home.score}. ${latestPlay}`;
-
-      if (forceIntro || latestPlay !== lastNarratedPlayText) {
-        lastNarratedPlayText = latestPlay;
-        window.speechSynthesis.cancel();
-        const utter = new SpeechSynthesisUtterance(summaryLine);
-        utter.rate = 1.03;
-        window.speechSynthesis.speak(utter);
-      }
-    }
-
-    /* ========================================================
-       6. TABS & PICTURE-IN-PICTURE (PiP) VISIBILITY LOGIC
+       5. TABS & PICTURE-IN-PICTURE (PiP) VISIBILITY LOGIC
        ======================================================== */
     let activeTab = 'sports';
     let pipManuallyDismissed = false;
@@ -1652,7 +1816,7 @@
     }
 
     /* ========================================================
-       7. LIVE MULTI-SPORT TELEMETRY + STATS + CLIPS + REAL VOTES
+       6. LIVE MULTI-SPORT TELEMETRY + STATS + CLIPS + REAL VOTES
        ======================================================== */
     const LEAGUES = [
       { key: 'nfl', label: 'NFL', path: 'football/nfl' },
@@ -1753,8 +1917,6 @@
                 }
               });
 
-              const lastPlay = comp.situation && comp.situation.lastPlay ? comp.situation.lastPlay.text : '';
-
               fetchedGames.push({
                 id: ev.id,
                 leagueKey: lg.key,
@@ -1763,7 +1925,6 @@
                 name: ev.name,
                 statusDetail: ev.status.type.shortDetail || ev.status.type.detail,
                 venue: comp.venue ? comp.venue.fullName : lg.label + ' Arena',
-                latestPlayText: lastPlay,
                 inlineLeaders,
                 home: {
                   name: home.team.shortDisplayName || home.team.displayName,
@@ -1877,7 +2038,7 @@
             <div style="font-size:0.72rem; color:var(--text-muted); border-top:1px solid rgba(255,255,255,0.06); padding-top:8px; display:flex; justify-content:space-between;">
               <span>📊 ${totalVotes} ${totalVotes === 1 ? 'vote' : 'votes'}</span>
               <span style="color:${locked ? '#4ade80' : 'var(--accent)'}; font-weight:700;">
-                ${locked ? `🔒 Picked ${locked.abbr}` : '🎧 Listen & Pick →'}
+                ${locked ? `🔒 Picked ${locked.abbr}` : '💬 Chat & Vote →'}
               </span>
             </div>
           </div>
@@ -1908,10 +2069,6 @@
       document.getElementById('spotStatus').textContent = g.statusDetail;
       document.getElementById('spotVenue').textContent = `${g.name} • ${g.venue}`;
 
-      // Update Live Radio search link for this specific matchup
-      const radioQuery = encodeURIComponent(`${g.away.name} ${g.home.name} live radio`);
-      document.getElementById('btnTuneInRadio').href = `https://tunein.com/search/?query=${radioQuery}`;
-
       // Update Circulating Team Colors on Spotlight & PiP
       const col1 = '#' + (g.away.color || '00338D').replace('#', '');
       const col2 = '#' + (g.home.color || 'E31837').replace('#', '');
@@ -1932,12 +2089,11 @@
       renderGameChat(g);
       updateMomentumChart(g);
       await loadPlayerStatsAndClips(g);
-      if (liveListenActive) narrateCurrentGameState(g, false);
       evaluatePiPVisibility();
     }
 
     /* ========================================================
-       8. REAL VOTE COUNTS, 1-PICK LOCK & AUTHENTIC LEADERBOARD
+       7. REAL VOTE COUNTS, 1-PICK LOCK & AUTHENTIC LEADERBOARD
        ======================================================== */
     let lockedPicks = JSON.parse(localStorage.getItem('og_locked_picks_v3') || '{}');
     let voteTallies = JSON.parse(localStorage.getItem('og_vote_tallies_v3') || '{}');
@@ -1960,7 +2116,6 @@
       const g = currentSpotlightGame;
       const pickKey = `${currentUser.contact}_${g.id}`;
 
-      // Enforce strict 1-pick lock per account per game
       if (lockedPicks[pickKey]) return;
 
       const chosen = side === 'away' ? g.away : g.home;
@@ -1975,7 +2130,6 @@
       };
       localStorage.setItem('og_locked_picks_v3', JSON.stringify(lockedPicks));
 
-      // Increment authentic vote tally
       const tally = getVoteTallyForGame(g.id);
       if (side === 'away') tally.away += 1;
       else tally.home += 1;
@@ -1986,7 +2140,6 @@
       renderScoreboard();
       renderLeaderboard();
 
-      // SportsBot announces the real locked vote in the game chat
       pushMessageToGameChat(g.id, 'SportsBot', `📊 @${currentUser.username} locked in a vote for the ${chosen.name}!`, true);
     }
 
@@ -2026,7 +2179,6 @@
         pipPick.textContent = `No pick locked`;
       }
 
-      // Render Real Vote Counts & Percentage Bar
       const tally = getVoteTallyForGame(g.id);
       const total = tally.away + tally.home;
       const awayPct = total > 0 ? Math.round((tally.away / total) * 100) : 0;
@@ -2041,7 +2193,6 @@
     }
 
     function renderLeaderboard() {
-      // Build authentic leaderboard from registered accounts + SportsBot benchmark
       const rows = [];
       const allAccounts = Object.values(accountsDB);
 
@@ -2065,7 +2216,6 @@
         });
       }
 
-      // Include SportsBot as the official AI baseline (no fake human accounts)
       rows.push({
         name: '🤖 SportsBot (AI)',
         locked: allGamesPool.length || 4,
@@ -2086,7 +2236,7 @@
     }
 
     /* ========================================================
-       9. PER-GAME LIVE CHAT (SPORTSBOT + REAL USERS ONLY)
+       8. PER-GAME LIVE CHAT (SPORTSBOT + REAL USERS ONLY)
        ======================================================== */
     let gameChats = JSON.parse(localStorage.getItem('og_game_chats_v3') || '{}');
 
@@ -2138,7 +2288,6 @@
       const txt = inp.value.trim();
       if (!txt) return;
 
-      // Filter chat message against racist slurs as well
       const safety = validateUsernameSafety(txt);
       if (!safety.valid) {
         alert('Message blocked: Racist language or hate speech is not allowed.');
@@ -2150,7 +2299,7 @@
     }
 
     /* ========================================================
-       10. PLAYER STATS, SCORERS & SOCIAL/YOUTUBE CLIPS
+       9. PLAYER STATS, SCORERS & SOCIAL/YOUTUBE CLIPS
        ======================================================== */
     async function loadPlayerStatsAndClips(g) {
       const statsEl = document.getElementById('playerStatsList');
@@ -2173,10 +2322,6 @@
         const sumData = await sumRes.json();
 
         if (sumData.scoringPlays && sumData.scoringPlays.length > 0) {
-          const newestPlay = sumData.scoringPlays[sumData.scoringPlays.length - 1];
-          if (newestPlay && newestPlay.text) {
-            g.latestPlayText = newestPlay.text;
-          }
           sumData.scoringPlays.slice(-4).reverse().forEach(sp => {
             leadersToRender.push({
               name: sp.team ? `${sp.team.abbreviation} Scoring Play` : 'Scoring Play',
@@ -2300,7 +2445,7 @@
     }
 
     /* ========================================================
-       11. NEWS & PAYPAL DONATION (@oscar1975)
+       10. NEWS & PAYPAL DONATION (@oscar1975)
        ======================================================== */
     function renderNews(articles) {
       const grid = document.getElementById('newsGrid');
