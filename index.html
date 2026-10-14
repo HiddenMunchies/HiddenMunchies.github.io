@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#06080f" />
-  <title>OG ZONE | Live Sports, Clips, Picks & Game Chat</title>
+  <title>OG ZONE | Live Sports, Twitch-Style Predictions & Points Shop</title>
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Official Google Identity Services SDK for Real Google Sign-In Popup -->
+  <!-- Official Google Identity Services SDK -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <!-- Official EmailJS SDK for Sending Real Automated Welcome Emails -->
+  <!-- Official EmailJS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
     :root {
@@ -20,6 +20,7 @@
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --accent: #38bdf8;
+      --gold: #facc15;
       --team-col-1: #00338D;
       --team-col-2: #E31837;
       --glow-rgb1: 0, 51, 141;
@@ -84,6 +85,14 @@
       );
       animation: rotateTeamAura 4.5s linear infinite;
       z-index: 0;
+    }
+
+    .circulating-border.rainbow-override::before {
+      background: conic-gradient(
+        from 0deg,
+        #ff0055, #ffdd00, #00ff88, #00ccff, #aa00ff, #ff0055
+      );
+      animation: rotateTeamAura 2.4s linear infinite;
     }
 
     @keyframes rotateTeamAura {
@@ -214,7 +223,7 @@
       box-shadow: 0 0 18px rgba(56, 189, 248, 0.14);
     }
 
-    /* TOP HEADER, STREAMING RADIO BAR & AUTH BUTTON */
+    /* TOP HEADER, STREAMING RADIO BAR, POINTS PILL & AUTH BUTTON */
     header {
       position: sticky;
       top: 0;
@@ -258,8 +267,27 @@
     .header-right {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
+    }
+
+    .points-wallet-pill {
+      background: rgba(250, 204, 21, 0.14);
+      border: 1px solid rgba(250, 204, 21, 0.4);
+      color: var(--gold);
+      padding: 6px 13px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .points-wallet-pill:hover {
+      background: rgba(250, 204, 21, 0.24);
+      transform: translateY(-1px);
     }
 
     .music-bar {
@@ -365,6 +393,21 @@
     .page-section { display: none; }
     .page-section.active { display: block; animation: fadeIn 0.25s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PINNED SHOUTOUT BANNER (UNLOCKED FROM SHOP) */
+    .shoutout-banner {
+      display: none;
+      background: linear-gradient(90deg, rgba(250, 204, 21, 0.16), rgba(56, 189, 248, 0.16));
+      border: 1px solid rgba(250, 204, 21, 0.45);
+      border-radius: 12px;
+      padding: 10px 16px;
+      margin-bottom: 16px;
+      font-size: 0.85rem;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .shoutout-banner.active { display: flex; }
 
     .card {
       background: var(--card-bg);
@@ -479,12 +522,58 @@
     .feat-score { font-size: 2.15rem; font-weight: 900; color: #fff; letter-spacing: 1px; }
     .feat-clock { font-size: 0.78rem; font-weight: 700; color: #4ade80; margin-top: 3px; }
 
-    /* ONE-TIME LOCKED PICK BAR + REAL VOTE TALLY SPLIT */
-    .pick-bar {
+    /* TWITCH-STYLE CHANNEL POINTS PREDICTION POOL BOX */
+    .prediction-pool-box {
       background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      padding: 14px;
-      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 14px 16px;
+      border-radius: 14px;
+    }
+
+    .wager-controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .wager-chips {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .wager-chip {
+      background: rgba(250, 204, 21, 0.1);
+      border: 1px solid rgba(250, 204, 21, 0.3);
+      color: var(--gold);
+      padding: 5px 10px;
+      border-radius: 7px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .wager-chip:hover {
+      background: rgba(250, 204, 21, 0.25);
+    }
+
+    .wager-input {
+      width: 95px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(250, 204, 21, 0.45);
+      background: rgba(0, 0, 0, 0.5);
+      color: var(--gold);
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-align: center;
+      outline: none;
     }
 
     .pick-top-row {
@@ -498,20 +587,20 @@
 
     .pick-btn {
       flex: 1;
-      min-width: 125px;
-      padding: 9px 14px;
-      border-radius: 9px;
+      min-width: 135px;
+      padding: 10px 14px;
+      border-radius: 10px;
       border: 1px solid rgba(255, 255, 255, 0.14);
       background: rgba(255, 255, 255, 0.06);
       color: #fff;
-      font-weight: 700;
+      font-weight: 800;
       font-size: 0.82rem;
       cursor: pointer;
       transition: all 0.2s;
     }
     .pick-btn:hover:not(:disabled) {
-      border-color: var(--accent);
-      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--gold);
+      background: rgba(250, 204, 21, 0.18);
     }
     .pick-btn.locked-choice {
       background: rgba(34, 197, 94, 0.22);
@@ -519,22 +608,22 @@
       color: #4ade80;
     }
     .pick-btn:disabled {
-      opacity: 0.6;
+      opacity: 0.65;
       cursor: not-allowed;
     }
 
     .vote-stats-labels {
       display: flex;
       justify-content: space-between;
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       color: var(--text-muted);
-      margin-bottom: 5px;
-      font-weight: 600;
+      margin-bottom: 6px;
+      font-weight: 700;
     }
 
     .vote-progress-track {
       width: 100%;
-      height: 8px;
+      height: 9px;
       background: rgba(255, 255, 255, 0.08);
       border-radius: 999px;
       overflow: hidden;
@@ -558,12 +647,12 @@
       display: flex;
       flex-direction: column;
       height: 100%;
-      min-height: 295px;
+      min-height: 315px;
     }
 
     .chat-feed {
       flex: 1;
-      max-height: 225px;
+      max-height: 245px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -604,6 +693,11 @@
       outline: none;
     }
     .chat-input-group input:focus { border-color: var(--accent); }
+
+    /* SHOP EQUIPPED COSMETIC NAME COLORS */
+    .name-gold { color: #facc15 !important; text-shadow: 0 0 10px rgba(250, 204, 21, 0.55); }
+    .name-cyan { color: #22d3ee !important; text-shadow: 0 0 10px rgba(34, 211, 238, 0.55); }
+    .name-crimson { color: #fb7185 !important; text-shadow: 0 0 10px rgba(251, 113, 133, 0.55); }
 
     /* PLAYER STATS & SCORING PLAYS */
     .leaders-list {
@@ -726,6 +820,63 @@
     .game-card.active-card {
       border-color: var(--accent);
       box-shadow: 0 0 20px rgba(56, 189, 248, 0.22);
+    }
+
+    /* POINTS SHOP GRID */
+    .shop-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(275px, 1fr));
+      gap: 18px;
+    }
+
+    .shop-item-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .shop-item-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(250, 204, 21, 0.45);
+    }
+
+    .shop-icon-preview {
+      height: 78px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .shop-buy-btn {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(250, 204, 21, 0.45);
+      background: rgba(250, 204, 21, 0.14);
+      color: var(--gold);
+      font-weight: 800;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .shop-buy-btn:hover {
+      background: var(--gold);
+      color: #06080f;
+    }
+    .shop-buy-btn.equipped {
+      background: rgba(34, 197, 94, 0.22);
+      border-color: #22c55e;
+      color: #4ade80;
     }
 
     /* ACCOUNT / AUTHENTICATION MODAL */
@@ -906,13 +1057,16 @@
       </div>
 
       <nav class="sidebar-nav">
-        <button class="side-btn active" onclick="switchTab('sports', this)">
-          <span>🏈</span> <span>Sports & Picks</span>
+        <button class="side-btn active" id="navBtnSports" onclick="switchTab('sports', this)">
+          <span>🏈</span> <span>Sports & Predictions</span>
         </button>
-        <button class="side-btn" onclick="switchTab('news', this)">
+        <button class="side-btn" id="navBtnShop" onclick="switchTab('shop', this)">
+          <span>🛒</span> <span>OG Points Shop</span>
+        </button>
+        <button class="side-btn" id="navBtnNews" onclick="switchTab('news', this)">
           <span>📰</span> <span>Sports Wire</span>
         </button>
-        <button class="side-btn" onclick="switchTab('donate', this)">
+        <button class="side-btn" id="navBtnDonate" onclick="switchTab('donate', this)">
           <span>💙</span> <span>Donate</span>
         </button>
       </nav>
@@ -923,7 +1077,7 @@
     </div>
   </aside>
 
-  <!-- Sticky Header with Music Stream & Account Login -->
+  <!-- Sticky Header with Music Stream, OG Points Balance & Account Login -->
   <header>
     <div class="brand-left">
       <button class="mobile-nav-toggle" onclick="toggleMobileDrawer()">☰</button>
@@ -950,6 +1104,13 @@
         <input type="range" id="radioVolume" min="0" max="1" step="0.05" value="0.5" style="width: 52px; cursor: pointer;" oninput="updateRadioVolume(this.value)" />
       </div>
 
+      <!-- Live OG Points Wallet Pill (Opens Shop) -->
+      <button class="points-wallet-pill" onclick="switchTab('shop', document.getElementById('navBtnShop'))" title="Open OG Points Shop">
+        <span>🪙</span>
+        <span id="headerPointsBalance">1,000</span>
+        <span style="font-size:0.7rem; opacity:0.85;">PTS</span>
+      </button>
+
       <button class="auth-trigger-btn" id="headerAuthBtn" onclick="openAuthModal()">
         <img id="headerUserAvatar" class="user-avatar-sm" src="" alt="" />
         <span id="headerUserIcon">👤</span>
@@ -960,9 +1121,19 @@
 
   <main>
     <!-- ==========================================
-         TAB 1: SPORTS, VOTE TALLIES, CLIPS & CHAT
+         TAB 1: SPORTS, TWITCH PREDICTIONS, CLIPS & CHAT
          ========================================== -->
     <section id="tab-sports" class="page-section active">
+      <!-- Pinned Banner Shoutout (Unlocked from Points Shop) -->
+      <div id="pinnedShoutoutBanner" class="shoutout-banner">
+        <div>
+          <span class="league-badge" style="background:rgba(250,204,21,0.2); color:var(--gold); margin-right:8px;">📣 PINNED SHOUTOUT</span>
+          <strong id="shoutoutUser" style="color:var(--gold);">@User:</strong>
+          <span id="shoutoutText">Welcome to OG ZONE!</span>
+        </div>
+        <span style="font-size:0.72rem; color:var(--text-muted);">Redeemed via OG Shop</span>
+      </div>
+
       <div class="controls-bar">
         <div class="sport-filters">
           <button class="filter-btn active" onclick="filterSport('all', this)">All Sports (Randomized)</button>
@@ -980,10 +1151,10 @@
       <!-- ROW 1: CIRCULATING BORDER SPOTLIGHT + PER-GAME LIVE CHAT -->
       <div class="top-command-grid" id="spotlightAnchor">
         <!-- Spotlight Box with Circulating Team Colors -->
-        <div class="circulating-border">
+        <div class="circulating-border" id="mainSpotlightBorder">
           <div class="circulating-inner">
             <div class="card-header">
-              <span>Selected Matchup • Circulating Team Aura</span>
+              <span>Selected Matchup • Twitch-Style Points Pool</span>
               <span class="league-badge" id="spotLeague">LIVE</span>
             </div>
 
@@ -1010,33 +1181,60 @@
               </div>
             </div>
 
-            <!-- 1-Time Locked Winner Pick Bar + Real Vote Count & Split Bar -->
-            <div class="pick-bar">
-              <div class="pick-top-row">
-                <span style="font-size: 0.78rem; color: var(--text-muted);" id="pickLockLabel">
-                  🎯 Lock in your winner (1 pick per game):
-                </span>
-                <div style="display: flex; gap: 8px; flex: 1; justify-content: flex-end;">
-                  <button class="pick-btn" id="btnPickAway" onclick="lockInGamePick('away')">Pick Away</button>
-                  <button class="pick-btn" id="btnPickHome" onclick="lockInGamePick('home')">Pick Home</button>
+            <!-- TWITCH-STYLE CHANNEL POINTS PREDICTION BOX -->
+            <div class="prediction-pool-box">
+              <div class="wager-controls-row">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:0.78rem; font-weight:700; color:var(--gold);">🪙 Wager Points:</span>
+                  <input type="number" id="wagerAmountInput" class="wager-input" value="100" min="10" step="50" />
+                </div>
+                <div class="wager-chips">
+                  <button class="wager-chip" onclick="setWagerPreset(100)">100</button>
+                  <button class="wager-chip" onclick="setWagerPreset(250)">250</button>
+                  <button class="wager-chip" onclick="setWagerPreset(500)">500</button>
+                  <button class="wager-chip" onclick="setWagerPreset('max')">ALL IN</button>
+                  <button class="wager-chip" style="border-color:var(--accent); color:var(--accent);" onclick="claimFreePointsBonus()" title="Claim +250 Free Points if low">+250 Free</button>
                 </div>
               </div>
 
-              <!-- Real Vote Tally & Percentage Progress Bar -->
+              <div class="pick-top-row">
+                <span style="font-size: 0.78rem; color: var(--text-muted);" id="pickLockLabel">
+                  🎯 Choose your amount & lock in a side (Winning side splits the entire pot):
+                </span>
+                <div style="display: flex; gap: 8px; flex: 1; justify-content: flex-end;">
+                  <button class="pick-btn" id="btnPickAway" onclick="lockInGamePick('away')">Bet Away</button>
+                  <button class="pick-btn" id="btnPickHome" onclick="lockInGamePick('home')">Bet Home</button>
+                </div>
+              </div>
+
+              <!-- Real Pool Pot & Voter Split Bar -->
               <div>
                 <div class="vote-stats-labels">
-                  <span id="voteAwayStats">Away: 0 votes (0%)</span>
-                  <span id="voteTotalLabel">0 Total Votes</span>
-                  <span id="voteHomeStats">Home: 0 votes (0%)</span>
+                  <span id="voteAwayStats">Away: 0 pts (0 voters)</span>
+                  <span id="voteTotalLabel" style="color:var(--gold);">Pot: 0 🪙</span>
+                  <span id="voteHomeStats">Home: 0 pts (0 voters)</span>
                 </div>
                 <div class="vote-progress-track">
                   <div class="vote-fill-away" id="voteBarAway" style="width: 50%;"></div>
                   <div class="vote-fill-home" id="voteBarHome" style="width: 50%;"></div>
                 </div>
               </div>
+
+              <!-- Settle / Test Payout Row -->
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05); font-size:0.73rem; color:var(--text-muted); flex-wrap:wrap; gap:8px;">
+                <span id="poolPayoutFormulaNote">Losing side loses bet • Winning voters split the total pool</span>
+                <div style="display:flex; gap:6px;">
+                  <button class="clip-pill" style="color:#4ade80; border-color:rgba(74,222,128,0.35);" onclick="simulateSettlePrediction('away')">
+                    ⚡ Test Away Win Payout
+                  </button>
+                  <button class="clip-pill" style="color:#4ade80; border-color:rgba(74,222,128,0.35);" onclick="simulateSettlePrediction('home')">
+                    ⚡ Test Home Win Payout
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <p style="font-size: 0.76rem; color: var(--text-muted); margin-top: 12px;" id="spotVenue">
+            <p style="font-size: 0.76rem; color: var(--text-muted); margin-top: 10px;" id="spotVenue">
               Select any matchup below to load its box score stats, social clips, and live game chat.
             </p>
           </div>
@@ -1089,10 +1287,10 @@
           <div class="social-links-grid" id="socialBuzzLinks"></div>
         </div>
 
-        <!-- 3. Authentic Picks & Rank Leaderboard -->
+        <!-- 3. Authentic Points & Rank Leaderboard -->
         <div class="card">
           <div class="card-header">
-            <span>🏆 Picks Leaderboard</span>
+            <span>🏆 OG Points Leaderboard</span>
             <button class="clip-pill" onclick="openAuthModal()">👤 <span id="currentNickLabel">Guest</span></button>
           </div>
           <table class="leaderboard-table">
@@ -1100,8 +1298,8 @@
               <tr>
                 <th>#</th>
                 <th>Account</th>
-                <th>Locked</th>
-                <th>Pts</th>
+                <th>Bets</th>
+                <th>🪙 Balance</th>
               </tr>
             </thead>
             <tbody id="leaderboardBody"></tbody>
@@ -1117,7 +1315,30 @@
     </section>
 
     <!-- ==========================================
-         TAB 2: SPORTS NEWS WIRE
+         TAB 2: OG POINTS REDEMPTION SHOP
+         ========================================== -->
+    <section id="tab-shop" class="page-section">
+      <div class="card" style="margin-bottom: 22px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;">
+        <div>
+          <div class="card-header" style="margin-bottom:6px;">
+            <span>🛒 OG ZONE POINTS REDEMPTION SHOP</span>
+          </div>
+          <h2 style="font-size:1.5rem; margin-bottom:4px;">Redeem Your Prediction Winnings</h2>
+          <p style="font-size:0.86rem; color:var(--text-muted);">
+            Unlock chat badges, glowing username colors, custom spotlight borders, and pinned site-wide shoutouts using the OG Points you win from sports predictions.
+          </p>
+        </div>
+        <div style="background:rgba(250,204,21,0.12); border:1px solid rgba(250,204,21,0.4); padding:14px 22px; border-radius:14px; text-align:center;">
+          <span style="font-size:0.72rem; text-transform:uppercase; color:var(--text-muted); display:block;">Your Available Balance</span>
+          <strong style="font-size:1.65rem; color:var(--gold);" id="shopPageBalance">🪙 1,000</strong>
+        </div>
+      </div>
+
+      <div class="shop-grid" id="shopItemsGrid"></div>
+    </section>
+
+    <!-- ==========================================
+         TAB 3: SPORTS NEWS WIRE
          ========================================== -->
     <section id="tab-news" class="page-section">
       <div class="card" style="margin-bottom: 20px;">
@@ -1133,7 +1354,7 @@
     </section>
 
     <!-- ==========================================
-         TAB 3: DONATE (@oscar1975)
+         TAB 4: DONATE (@oscar1975)
          ========================================== -->
     <section id="tab-donate" class="page-section">
       <div class="card" style="max-width: 560px; margin: 28px auto; text-align: center;">
@@ -1142,7 +1363,7 @@
         </div>
         <h2 style="font-size: 1.85rem; margin-bottom: 10px;">Support the Hub 💙</h2>
         <p style="color: var(--text-muted); font-size: 0.94rem; line-height: 1.6; margin-bottom: 20px;">
-          Enjoying the live sports command center and game chats? 100% of your contribution goes directly to Oscar's PayPal (<strong>@oscar1975</strong>).
+          Enjoying the live sports command center, predictions, and game chats? 100% of your contribution goes directly to Oscar's PayPal (<strong>@oscar1975</strong>).
         </p>
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px;">
           <button class="filter-btn" onclick="setDonateAmount(5, this)" style="justify-content:center;">$5</button>
@@ -1184,10 +1405,9 @@
       <!-- VIEW 1: SHOWN ONLY WHEN LOGGED OUT -->
       <div id="loggedOutAuthView">
         <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:16px; line-height:1.45;">
-          Sign in with Google or create an account with your email or phone number. Your account stays remembered on this device and sends a quick welcome note.
+          Sign in with Google or create an account with your email or phone number. New accounts start with <strong>1,000 🪙 OG Points</strong>!
         </p>
 
-        <!-- Official Google Identity Services Button Mount -->
         <div id="googleButtonMount" style="display:flex; justify-content:center; margin-bottom:14px;"></div>
 
         <div style="text-align:center; font-size:0.74rem; color:var(--text-muted); margin:12px 0; text-transform:uppercase;">
@@ -1212,7 +1432,7 @@
         </button>
       </div>
 
-      <!-- VIEW 2: SHOWN ONLY WHEN ALREADY LOGGED IN (Hides Google Button & Password Form) -->
+      <!-- VIEW 2: SHOWN ONLY WHEN ALREADY LOGGED IN -->
       <div id="loggedInProfileView" style="display:none;">
         <div class="active-profile-box">
           <img id="profileModalAvatarImg" class="profile-avatar-lg" src="" alt="" style="display:none;" />
@@ -1223,7 +1443,7 @@
               <span class="league-badge" style="color:#4ade80; background:rgba(34,197,94,0.16);">✓ Signed In</span>
             </div>
             <div id="profileModalContact" style="font-size:0.8rem; color:var(--text-muted); margin-top:3px; text-overflow:ellipsis; overflow:hidden;"></div>
-            <div id="profileModalStats" style="font-size:0.75rem; color:var(--accent); margin-top:4px; font-weight:700;">0 Picks Locked • 0 Pts</div>
+            <div id="profileModalStats" style="font-size:0.78rem; color:var(--gold); margin-top:4px; font-weight:800;">🪙 1,000 OG Points</div>
           </div>
         </div>
 
@@ -1276,7 +1496,7 @@
           </div>
         </div>
         <div style="font-size: 0.72rem; color: var(--text-muted); display: flex; justify-content: space-between;">
-          <span id="pipPickStatus">No pick locked</span>
+          <span id="pipPickStatus">No bet locked</span>
           <span style="color:#4ade80;">● Following</span>
         </div>
       </div>
@@ -1353,16 +1573,39 @@
     }
 
     /* ========================================================
-       2. PERSISTENT ACCOUNT AUTH + OPTION 1 WELCOME EMAIL
+       2. PERSISTENT ACCOUNT AUTH + WALLET + OPTION 1 WELCOME EMAIL
        ======================================================== */
     let accountsDB = JSON.parse(localStorage.getItem('og_accounts_db_v2') || '{}');
     let currentUser = JSON.parse(localStorage.getItem('og_current_user_v2') || 'null');
-    let lockedPicks = JSON.parse(localStorage.getItem('og_locked_picks_v3') || '{}');
-    let voteTallies = JSON.parse(localStorage.getItem('og_vote_tallies_v3') || '{}');
+    let lockedPicks = JSON.parse(localStorage.getItem('og_locked_picks_v4') || '{}');
+    let gamePools = JSON.parse(localStorage.getItem('og_game_pools_v4') || '{}');
+    let pinnedShoutout = JSON.parse(localStorage.getItem('og_pinned_shoutout_v1') || 'null');
+
+    function ensureUserWalletFields(u) {
+      if (!u) return null;
+      if (typeof u.points !== 'number') u.points = 1000;
+      if (!Array.isArray(u.ownedItems)) u.ownedItems = [];
+      if (!u.equippedBadge) u.equippedBadge = '';
+      if (!u.equippedColor) u.equippedColor = '';
+      if (typeof u.rainbowBorder !== 'boolean') u.rainbowBorder = false;
+      return u;
+    }
+
+    if (currentUser) {
+      currentUser = ensureUserWalletFields(currentUser);
+      accountsDB[currentUser.contact] = currentUser;
+    }
+
+    function saveCurrentUserAndDB() {
+      if (currentUser) {
+        accountsDB[currentUser.contact] = currentUser;
+        localStorage.setItem('og_current_user_v2', JSON.stringify(currentUser));
+      }
+      localStorage.setItem('og_accounts_db_v2', JSON.stringify(accountsDB));
+    }
 
     function sendWelcomeEmailToUser(userObj) {
       const welcomeSubject = `Welcome to OG ZONE`;
-      // Option 1: Casual & Direct Student Project Note
       const welcomeBody = `Yo ${userObj.username}, thanks for checking out OG ZONE and giving it a shot.\n\nI’m building this as a student project right now, so things are actively being worked on and I’ve got more updates rolling out soon. Your account, username, and picks are all saved whenever you hop back on.\n\nIf there’s a specific stat, sport, or feature you think would make the site better, feel free to reply directly to this email—I read all of them.\n\nAppreciate you stopping by,\nOscar\nhttps://oscargomez.me`;
 
       if (EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && window.emailjs && userObj.contact.includes('@')) {
@@ -1379,7 +1622,7 @@
       const toast = document.getElementById('authSuccessBox');
       if (toast) {
         toast.innerHTML = `
-          <strong>Welcome in, @${userObj.username}!</strong><br/>
+          <strong>Welcome in, @${userObj.username}! (+1,000 🪙 Starting Points)</strong><br/>
           ${userObj.contact.includes('@') ? `Welcome email sent to <strong>${userObj.contact}</strong>.` : `Account saved for <strong>${userObj.contact}</strong>.`}
         `;
         toast.style.display = 'block';
@@ -1391,10 +1634,22 @@
       const nickBadge = document.getElementById('currentNickLabel');
       const avatarImg = document.getElementById('headerUserAvatar');
       const userIcon = document.getElementById('headerUserIcon');
+      const headerPts = document.getElementById('headerPointsBalance');
+      const shopPts = document.getElementById('shopPageBalance');
+      const spotBorder = document.getElementById('mainSpotlightBorder');
 
       if (currentUser && currentUser.username) {
-        btnLabel.textContent = `@${currentUser.username}`;
-        nickBadge.textContent = currentUser.username;
+        currentUser = ensureUserWalletFields(currentUser);
+        const badgePrefix = currentUser.equippedBadge ? `${currentUser.equippedBadge} ` : '';
+        btnLabel.textContent = `${badgePrefix}@${currentUser.username}`;
+        nickBadge.textContent = `${badgePrefix}${currentUser.username}`;
+        headerPts.textContent = currentUser.points.toLocaleString();
+        if (shopPts) shopPts.textContent = `🪙 ${currentUser.points.toLocaleString()}`;
+
+        if (spotBorder) {
+          spotBorder.classList.toggle('rainbow-override', !!currentUser.rainbowBorder);
+        }
+
         if (currentUser.avatar) {
           avatarImg.src = currentUser.avatar;
           avatarImg.style.display = 'block';
@@ -1406,15 +1661,20 @@
       } else {
         btnLabel.textContent = 'Sign In / Join';
         nickBadge.textContent = 'Sign In';
+        headerPts.textContent = '1,000';
+        if (shopPts) shopPts.textContent = '🪙 1,000 (Sign In)';
+        if (spotBorder) spotBorder.classList.remove('rainbow-override');
         avatarImg.style.display = 'none';
         userIcon.style.display = 'inline';
       }
+
+      renderPinnedShoutoutBanner();
       syncModalAuthStateView();
       renderLeaderboard();
+      renderShopItems();
       if (currentSpotlightGame) updatePickAndVoteBarUI(currentSpotlightGame);
     }
 
-    // Switches Modal cleanly between Logged-Out Sign-In Form vs. Logged-In Active Profile
     function syncModalAuthStateView() {
       const loggedOutView = document.getElementById('loggedOutAuthView');
       const loggedInView = document.getElementById('loggedInProfileView');
@@ -1425,12 +1685,13 @@
         loggedInView.style.display = 'block';
         heading.textContent = 'Your OG ZONE Profile';
 
-        document.getElementById('profileModalUsername').textContent = `@${currentUser.username}`;
+        const badge = currentUser.equippedBadge ? `${currentUser.equippedBadge} ` : '';
+        document.getElementById('profileModalUsername').textContent = `${badge}@${currentUser.username}`;
         document.getElementById('profileModalContact').textContent = currentUser.contact || '';
         document.getElementById('updateUsernameInput').value = currentUser.username;
 
         const userPickCount = Object.values(lockedPicks).filter(p => p.contact === currentUser.contact).length;
-        document.getElementById('profileModalStats').textContent = `${userPickCount} Picks Locked • ${userPickCount * 100} Pts`;
+        document.getElementById('profileModalStats').textContent = `🪙 ${currentUser.points.toLocaleString()} OG Points • ${userPickCount} Bets Placed`;
 
         const avImg = document.getElementById('profileModalAvatarImg');
         const avFallback = document.getElementById('profileModalAvatarFallback');
@@ -1444,7 +1705,6 @@
           avFallback.textContent = currentUser.username[0].toUpperCase();
         }
 
-        // Dismiss any lingering Google One-Tap floating prompts since user is already signed in
         if (window.google && google.accounts && google.accounts.id) {
           google.accounts.id.cancel();
         }
@@ -1468,17 +1728,14 @@
       }
 
       currentUser.username = nextName;
-      accountsDB[currentUser.contact] = currentUser;
-      localStorage.setItem('og_accounts_db_v2', JSON.stringify(accountsDB));
-      localStorage.setItem('og_current_user_v2', JSON.stringify(currentUser));
+      saveCurrentUserAndDB();
 
-      // Also update username on any locked picks
       Object.keys(lockedPicks).forEach(k => {
         if (lockedPicks[k].contact === currentUser.contact) {
           lockedPicks[k].user = nextName;
         }
       });
-      localStorage.setItem('og_locked_picks_v3', JSON.stringify(lockedPicks));
+      localStorage.setItem('og_locked_picks_v4', JSON.stringify(lockedPicks));
 
       syncUserHeaderUI();
       const toast = document.getElementById('authSuccessBox');
@@ -1522,15 +1779,14 @@
       if (!payload) return;
 
       const email = (payload.email || '').toLowerCase();
-      const isNew = !accountsDB[email];
+      const existing = accountsDB[email];
+      const isNew = !existing;
 
-      let chosenUsername = accountsDB[email] ? accountsDB[email].username : (payload.given_name || payload.name || email.split('@')[0]);
+      let chosenUsername = existing ? existing.username : (payload.given_name || payload.name || email.split('@')[0]);
 
       if (isNew) {
         const customInput = document.getElementById('authUsernameInput').value.trim();
-        if (customInput) {
-          chosenUsername = customInput;
-        }
+        if (customInput) chosenUsername = customInput;
       }
 
       const check = validateUsernameSafety(chosenUsername);
@@ -1539,21 +1795,23 @@
         return;
       }
 
-      const userObj = {
+      const userObj = ensureUserWalletFields({
         username: chosenUsername,
         contact: email,
         avatar: payload.picture || '',
         provider: 'google',
-        subscriptionTier: accountsDB[email] ? accountsDB[email].subscriptionTier : 'free',
-        createdAt: accountsDB[email] ? accountsDB[email].createdAt : Date.now()
-      };
+        points: existing && typeof existing.points === 'number' ? existing.points : 1000,
+        ownedItems: existing && existing.ownedItems ? existing.ownedItems : [],
+        equippedBadge: existing ? existing.equippedBadge : '',
+        equippedColor: existing ? existing.equippedColor : '',
+        rainbowBorder: existing ? existing.rainbowBorder : false,
+        createdAt: existing ? existing.createdAt : Date.now()
+      });
 
-      accountsDB[email] = userObj;
       currentUser = userObj;
-      localStorage.setItem('og_accounts_db_v2', JSON.stringify(accountsDB));
-      localStorage.setItem('og_current_user_v2', JSON.stringify(currentUser));
-
+      saveCurrentUserAndDB();
       syncUserHeaderUI();
+
       if (isNew) {
         sendWelcomeEmailToUser(userObj);
       }
@@ -1624,24 +1882,24 @@
       }
 
       const isNewAccount = !existing;
-      const userObj = {
+      const userObj = ensureUserWalletFields({
         username: rawUsername,
         contact: contactKey,
         password: rawPass,
         avatar: existing ? existing.avatar : '',
         provider: isEmail ? 'email' : 'phone',
-        subscriptionTier: existing ? existing.subscriptionTier : 'free',
+        points: existing && typeof existing.points === 'number' ? existing.points : 1000,
+        ownedItems: existing && existing.ownedItems ? existing.ownedItems : [],
+        equippedBadge: existing ? existing.equippedBadge : '',
+        equippedColor: existing ? existing.equippedColor : '',
+        rainbowBorder: existing ? existing.rainbowBorder : false,
         createdAt: existing ? existing.createdAt : Date.now()
-      };
+      });
 
-      accountsDB[contactKey] = userObj;
       currentUser = userObj;
-      localStorage.setItem('og_accounts_db_v2', JSON.stringify(accountsDB));
-      if (document.getElementById('authRememberCheck').checked) {
-        localStorage.setItem('og_current_user_v2', JSON.stringify(currentUser));
-      }
-
+      saveCurrentUserAndDB();
       syncUserHeaderUI();
+
       if (isNewAccount) {
         sendWelcomeEmailToUser(userObj);
       }
@@ -1771,6 +2029,7 @@
       if (btnEl) btnEl.classList.add('active');
       document.getElementById('mainSidebar').classList.remove('mobile-open');
 
+      if (tabId === 'shop') renderShopItems();
       pipManuallyDismissed = false;
       evaluatePiPVisibility();
     }
@@ -1799,8 +2058,7 @@
     window.addEventListener('scroll', evaluatePiPVisibility, { passive: true });
 
     function jumpBackToSpotlight() {
-      const sportsBtn = document.querySelector('.side-btn');
-      switchTab('sports', sportsBtn);
+      switchTab('sports', document.getElementById('navBtnSports'));
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -1810,7 +2068,7 @@
     }
 
     /* ========================================================
-       6. LIVE MULTI-SPORT TELEMETRY + STATS + CLIPS + REAL VOTES
+       6. LIVE MULTI-SPORT TELEMETRY + STATS + CLIPS
        ======================================================== */
     const LEAGUES = [
       { key: 'nfl', label: 'NFL', path: 'football/nfl' },
@@ -1829,7 +2087,7 @@
       {
         id: '401671789', leagueKey: 'nfl', leagueLabel: 'NFL', leaguePath: 'football/nfl',
         name: 'Kansas City Chiefs at Buffalo Bills',
-        statusDetail: 'Q4 - 02:14', venue: 'Highmark Stadium',
+        statusDetail: 'Q4 - 02:14', completed: false, venue: 'Highmark Stadium',
         home: { name: 'Bills', abbr: 'BUF', score: '27', record: '5-1', logo: 'https://a.espncdn.com/i/teamlogos/nfl/500/buf.png', color: '00338D', linescores: [7, 10, 3, 7] },
         away: { name: 'Chiefs', abbr: 'KC', score: '24', record: '5-1', logo: 'https://a.espncdn.com/i/teamlogos/nfl/500/kc.png', color: 'E31837', linescores: [3, 14, 0, 7] },
         fallbackLeaders: [
@@ -1840,7 +2098,7 @@
       {
         id: '401704628', leagueKey: 'nba', leagueLabel: 'NBA', leaguePath: 'basketball/nba',
         name: 'Miami Heat at Orlando Magic',
-        statusDetail: 'Q4 - 03:40', venue: 'Kia Center',
+        statusDetail: 'Q4 - 03:40', completed: false, venue: 'Kia Center',
         home: { name: 'Magic', abbr: 'ORL', score: '108', record: '4-1', logo: 'https://a.espncdn.com/i/teamlogos/nba/500/orl.png', color: '0077C0', linescores: [28, 31, 25, 24] },
         away: { name: 'Heat', abbr: 'MIA', score: '104', record: '3-2', logo: 'https://a.espncdn.com/i/teamlogos/nba/500/mia.png', color: '98002E', linescores: [25, 30, 26, 23] },
         fallbackLeaders: [
@@ -1851,7 +2109,7 @@
       {
         id: '401687601', leagueKey: 'nhl', leagueLabel: 'NHL', leaguePath: 'hockey/nhl',
         name: 'Florida Panthers at Tampa Bay Lightning',
-        statusDetail: '3rd Period - 04:15', venue: 'Amalie Arena',
+        statusDetail: '3rd Period - 04:15', completed: false, venue: 'Amalie Arena',
         home: { name: 'Lightning', abbr: 'TB', score: '3', record: '3-1-0', logo: 'https://a.espncdn.com/i/teamlogos/nhl/500/tb.png', color: '002868', linescores: [1, 1, 1] },
         away: { name: 'Panthers', abbr: 'FLA', score: '4', record: '4-1-0', logo: 'https://a.espncdn.com/i/teamlogos/nhl/500/fla.png', color: 'C8102E', linescores: [2, 1, 1] },
         fallbackLeaders: [
@@ -1862,7 +2120,7 @@
       {
         id: '401701045', leagueKey: 'mlb', leagueLabel: 'MLB', leaguePath: 'baseball/mlb',
         name: 'Los Angeles Dodgers at San Diego Padres',
-        statusDetail: 'Final - 9th Inning', venue: 'Petco Park',
+        statusDetail: '9th Inning', completed: false, venue: 'Petco Park',
         home: { name: 'Padres', abbr: 'SD', score: '5', record: '93-69', logo: 'https://a.espncdn.com/i/teamlogos/mlb/500/sd.png', color: '2F241D', linescores: [1, 0, 2, 0, 1, 0, 1, 0, 0] },
         away: { name: 'Dodgers', abbr: 'LAD', score: '6', record: '98-64', logo: 'https://a.espncdn.com/i/teamlogos/mlb/500/lad.png', color: '005A9C', linescores: [0, 2, 0, 1, 0, 2, 0, 1, 0] },
         fallbackLeaders: [
@@ -1911,13 +2169,14 @@
                 }
               });
 
-              fetchedGames.push({
+              const gObj = {
                 id: ev.id,
                 leagueKey: lg.key,
                 leagueLabel: lg.label,
                 leaguePath: lg.path,
                 name: ev.name,
                 statusDetail: ev.status.type.shortDetail || ev.status.type.detail,
+                completed: !!ev.status.type.completed,
                 venue: comp.venue ? comp.venue.fullName : lg.label + ' Arena',
                 inlineLeaders,
                 home: {
@@ -1938,7 +2197,18 @@
                   color: away.team.color || 'E31837',
                   linescores: away.linescores ? away.linescores.map(l => Number(l.value)) : []
                 }
-              });
+              };
+
+              // Auto-settle completed real games if there is an active unsettled wager
+              if (gObj.completed) {
+                const aScore = Number(gObj.away.score);
+                const hScore = Number(gObj.home.score);
+                if (aScore !== hScore) {
+                  settleGamePredictionPool(gObj.id, aScore > hScore ? 'away' : 'home', gObj);
+                }
+              }
+
+              fetchedGames.push(gObj);
             });
           }
         } catch (e) {}
@@ -1999,8 +2269,8 @@
       grid.innerHTML = list.map(g => {
         const userKey = currentUser ? currentUser.contact : 'guest';
         const locked = lockedPicks[`${userKey}_${g.id}`];
-        const tally = getVoteTallyForGame(g.id);
-        const totalVotes = tally.away + tally.home;
+        const pool = getGamePool(g.id);
+        const totalPot = pool.awayPts + pool.homePts;
         const isCurrent = currentSpotlightGame && String(currentSpotlightGame.id) === String(g.id);
 
         return `
@@ -2030,9 +2300,9 @@
               <strong style="font-size:1.15rem;">${g.home.score}</strong>
             </div>
             <div style="font-size:0.72rem; color:var(--text-muted); border-top:1px solid rgba(255,255,255,0.06); padding-top:8px; display:flex; justify-content:space-between;">
-              <span>📊 ${totalVotes} ${totalVotes === 1 ? 'vote' : 'votes'}</span>
+              <span style="color:var(--gold); font-weight:700;">🪙 Pot: ${totalPot.toLocaleString()}</span>
               <span style="color:${locked ? '#4ade80' : 'var(--accent)'}; font-weight:700;">
-                ${locked ? `🔒 Picked ${locked.abbr}` : '💬 Chat & Vote →'}
+                ${locked ? (locked.settled ? `✓ ${locked.resultText}` : `🔒 ${locked.amount} on ${locked.abbr}`) : '🪙 Bet Points →'}
               </span>
             </div>
           </div>
@@ -2085,20 +2355,51 @@
     }
 
     /* ========================================================
-       7. REAL VOTE COUNTS, 1-PICK LOCK & AUTHENTIC LEADERBOARD
+       7. TWITCH-STYLE CHANNEL POINTS PREDICTION POOL ENGINE
        ======================================================== */
-    function getVoteTallyForGame(gameId) {
-      if (!voteTallies[gameId]) {
-        voteTallies[gameId] = { away: 0, home: 0 };
+    function getGamePool(gameId) {
+      if (!gamePools[gameId]) {
+        // SportsBot places an initial 250 pt house bet on one side so there's always an active pot to win
+        const botSide = String(gameId).charCodeAt(String(gameId).length - 1) % 2 === 0 ? 'away' : 'home';
+        gamePools[gameId] = {
+          awayPts: botSide === 'away' ? 250 : 0,
+          homePts: botSide === 'home' ? 250 : 0,
+          awayVoters: botSide === 'away' ? 1 : 0,
+          homeVoters: botSide === 'home' ? 1 : 0,
+          settled: false,
+          winnerSide: null
+        };
+        localStorage.setItem('og_game_pools_v4', JSON.stringify(gamePools));
       }
-      return voteTallies[gameId];
+      return gamePools[gameId];
+    }
+
+    function setWagerPreset(val) {
+      const inp = document.getElementById('wagerAmountInput');
+      if (val === 'max') {
+        inp.value = currentUser ? Math.max(10, currentUser.points) : 1000;
+      } else {
+        inp.value = val;
+      }
+    }
+
+    function claimFreePointsBonus() {
+      if (!currentUser) {
+        openAuthModal();
+        showAuthError('Sign in to claim your +250 free OG Points bonus!');
+        return;
+      }
+      currentUser.points += 250;
+      saveCurrentUserAndDB();
+      syncUserHeaderUI();
+      alert(`+250 🪙 Free OG Points added! Balance: ${currentUser.points.toLocaleString()} PTS`);
     }
 
     function lockInGamePick(side) {
       if (!currentSpotlightGame) return;
       if (!currentUser) {
         openAuthModal();
-        showAuthError('Please sign in with Google, Email, or Phone Number so your vote and rank are saved!');
+        showAuthError('Please sign in with Google, Email, or Phone Number to bet your OG Points!');
         return;
       }
 
@@ -2107,7 +2408,32 @@
 
       if (lockedPicks[pickKey]) return;
 
+      const wagerAmt = Math.floor(Number(document.getElementById('wagerAmountInput').value) || 0);
+      if (wagerAmt < 10) {
+        alert('Minimum wager is 10 OG Points.');
+        return;
+      }
+      if (wagerAmt > currentUser.points) {
+        alert(`Not enough OG Points! Your balance is ${currentUser.points.toLocaleString()} PTS. Click "+250 Free" if you need a refill.`);
+        return;
+      }
+
+      // Deduct wager from user wallet
+      currentUser.points -= wagerAmt;
+      saveCurrentUserAndDB();
+
       const chosen = side === 'away' ? g.away : g.home;
+      const pool = getGamePool(g.id);
+      if (side === 'away') {
+        pool.awayPts += wagerAmt;
+        pool.awayVoters += 1;
+      } else {
+        pool.homePts += wagerAmt;
+        pool.homeVoters += 1;
+      }
+      gamePools[g.id] = pool;
+      localStorage.setItem('og_game_pools_v4', JSON.stringify(gamePools));
+
       lockedPicks[pickKey] = {
         gameId: g.id,
         user: currentUser.username,
@@ -2115,21 +2441,99 @@
         side,
         teamName: chosen.name,
         abbr: chosen.abbr,
+        amount: wagerAmt,
+        settled: false,
+        resultText: '',
         timestamp: Date.now()
       };
-      localStorage.setItem('og_locked_picks_v3', JSON.stringify(lockedPicks));
+      localStorage.setItem('og_locked_picks_v4', JSON.stringify(lockedPicks));
 
-      const tally = getVoteTallyForGame(g.id);
-      if (side === 'away') tally.away += 1;
-      else tally.home += 1;
-      voteTallies[g.id] = tally;
-      localStorage.setItem('og_vote_tallies_v3', JSON.stringify(voteTallies));
-
+      syncUserHeaderUI();
       updatePickAndVoteBarUI(g);
       renderScoreboard();
-      renderLeaderboard();
 
-      pushMessageToGameChat(g.id, 'SportsBot', `📊 @${currentUser.username} locked in a vote for the ${chosen.name}!`, true);
+      pushMessageToGameChat(
+        g.id,
+        'SportsBot',
+        `🪙 @${currentUser.username} wagered ${wagerAmt.toLocaleString()} OG Points on the ${chosen.name}! Total Pot is now ${(pool.awayPts + pool.homePts).toLocaleString()} PTS.`,
+        true
+      );
+    }
+
+    // Divides the total pool among the voters on the winning side, while the losing side loses their wager
+    function settleGamePredictionPool(gameId, winningSide, gameObj) {
+      const pool = getGamePool(gameId);
+      const totalPot = pool.awayPts + pool.homePts;
+      const winningVotersCount = winningSide === 'away' ? pool.awayVoters : pool.homeVoters;
+      const losingPoolPts = winningSide === 'away' ? pool.homePts : pool.awayPts;
+
+      Object.keys(lockedPicks).forEach(k => {
+        const bet = lockedPicks[k];
+        if (String(bet.gameId) === String(gameId) && !bet.settled) {
+          bet.settled = true;
+          const acc = accountsDB[bet.contact];
+
+          if (bet.side === winningSide) {
+            // Winning voter gets their wager back + equal share of the losing side's pool divided by number of winning voters
+            const bonusShare = winningVotersCount > 0 ? Math.round(losingPoolPts / winningVotersCount) : 0;
+            const totalPayout = bet.amount + bonusShare;
+            bet.resultText = `Won +${totalPayout.toLocaleString()} 🪙`;
+
+            if (acc) {
+              acc.points = (acc.points || 0) + totalPayout;
+              if (currentUser && currentUser.contact === acc.contact) {
+                currentUser.points = acc.points;
+              }
+            }
+
+            pushMessageToGameChat(
+              gameId,
+              'SportsBot',
+              `🏆 PREDICTION SETTLED! ${bet.teamName} won! @${bet.user} won ${totalPayout.toLocaleString()} 🪙 OG Points (Wager: ${bet.amount} + Pool Share: ${bonusShare} split among ${winningVotersCount} winning ${winningVotersCount === 1 ? 'voter' : 'voters'})!`,
+              true
+            );
+          } else {
+            // Losing side loses their bet
+            bet.resultText = `Lost -${bet.amount.toLocaleString()} 🪙`;
+            pushMessageToGameChat(
+              gameId,
+              'SportsBot',
+              `❌ Prediction Settled: @${bet.user} lost their ${bet.amount.toLocaleString()} 🪙 wager on ${bet.teamName}.`,
+              true
+            );
+          }
+        }
+      });
+
+      localStorage.setItem('og_locked_picks_v4', JSON.stringify(lockedPicks));
+      saveCurrentUserAndDB();
+      syncUserHeaderUI();
+      if (gameObj) updatePickAndVoteBarUI(gameObj);
+      renderScoreboard();
+    }
+
+    function simulateSettlePrediction(winningSide) {
+      if (!currentSpotlightGame) return;
+      const g = currentSpotlightGame;
+      const userKey = currentUser ? currentUser.contact : 'guest';
+      const existing = lockedPicks[`${userKey}_${g.id}`];
+
+      if (!existing) {
+        alert('Place a point wager on either Away or Home first so you can test the pool payout!');
+        return;
+      }
+      if (existing.settled) {
+        // Reset settled flag so user can test another wager on this game if desired
+        delete lockedPicks[`${userKey}_${g.id}`];
+        delete gamePools[g.id];
+        localStorage.setItem('og_locked_picks_v4', JSON.stringify(lockedPicks));
+        localStorage.setItem('og_game_pools_v4', JSON.stringify(gamePools));
+        updatePickAndVoteBarUI(g);
+        renderScoreboard();
+        return;
+      }
+
+      settleGamePredictionPool(g.id, winningSide, g);
     }
 
     function updatePickAndVoteBarUI(g) {
@@ -2148,37 +2552,39 @@
         btnHome.disabled = true;
         if (existing.side === 'away') {
           btnAway.classList.add('locked-choice');
-          btnAway.textContent = `🔒 Voted ${g.away.name}`;
+          btnAway.textContent = existing.settled ? `${existing.resultText}` : `🔒 ${existing.amount} 🪙 on ${g.away.name}`;
           btnHome.textContent = g.home.name;
         } else {
           btnHome.classList.add('locked-choice');
-          btnHome.textContent = `🔒 Voted ${g.home.name}`;
+          btnHome.textContent = existing.settled ? `${existing.resultText}` : `🔒 ${existing.amount} 🪙 on ${g.home.name}`;
           btnAway.textContent = g.away.name;
         }
-        label.innerHTML = `<strong style="color:#4ade80;">✓ Vote Locked for ${existing.teamName}</strong>`;
-        pipPick.textContent = `🔒 Pick: ${existing.abbr}`;
+        label.innerHTML = existing.settled
+          ? `<strong style="color:var(--gold);">✓ Pool Settled: ${existing.resultText}</strong> (Click a Test Payout button again to reset & bet again)`
+          : `<strong style="color:#4ade80;">✓ Locked ${existing.amount.toLocaleString()} 🪙 on ${existing.teamName}</strong>`;
+        pipPick.textContent = existing.settled ? existing.resultText : `🔒 ${existing.amount} 🪙 on ${existing.abbr}`;
       } else {
         btnAway.disabled = false;
         btnHome.disabled = false;
-        btnAway.textContent = `🏆 Vote ${g.away.name}`;
-        btnHome.textContent = `🏆 Vote ${g.home.name}`;
+        btnAway.textContent = `🪙 Bet ${g.away.name}`;
+        btnHome.textContent = `🪙 Bet ${g.home.name}`;
         label.textContent = currentUser
-          ? `🎯 Lock in your winner as @${currentUser.username} (1 vote per game):`
-          : `🎯 Sign in to lock in your winner (1 vote per game):`;
-        pipPick.textContent = `No pick locked`;
+          ? `🎯 Choose points & lock in your side as @${currentUser.username}:`
+          : `🎯 Sign in to wager your OG Points (Start with 1,000 free pts):`;
+        pipPick.textContent = `No bet locked`;
       }
 
-      const tally = getVoteTallyForGame(g.id);
-      const total = tally.away + tally.home;
-      const awayPct = total > 0 ? Math.round((tally.away / total) * 100) : 0;
-      const homePct = total > 0 ? 100 - awayPct : 0;
+      const pool = getGamePool(g.id);
+      const totalPts = pool.awayPts + pool.homePts;
+      const awayPct = totalPts > 0 ? Math.round((pool.awayPts / totalPts) * 100) : 50;
+      const homePct = totalPts > 0 ? 100 - awayPct : 50;
 
-      document.getElementById('voteAwayStats').textContent = `${g.away.abbr}: ${tally.away} ${tally.away === 1 ? 'vote' : 'votes'} (${awayPct}%)`;
-      document.getElementById('voteHomeStats').textContent = `${g.home.abbr}: ${tally.home} ${tally.home === 1 ? 'vote' : 'votes'} (${homePct}%)`;
-      document.getElementById('voteTotalLabel').textContent = `${total} Total ${total === 1 ? 'Vote' : 'Votes'}`;
+      document.getElementById('voteAwayStats').textContent = `${g.away.abbr}: ${pool.awayPts.toLocaleString()} 🪙 (${pool.awayVoters} ${pool.awayVoters === 1 ? 'voter' : 'voters'} • ${awayPct}%)`;
+      document.getElementById('voteHomeStats').textContent = `${g.home.abbr}: ${pool.homePts.toLocaleString()} 🪙 (${pool.homeVoters} ${pool.homeVoters === 1 ? 'voter' : 'voters'} • ${homePct}%)`;
+      document.getElementById('voteTotalLabel').textContent = `Total Pot: ${totalPts.toLocaleString()} 🪙`;
 
-      document.getElementById('voteBarAway').style.width = total > 0 ? `${awayPct}%` : '50%';
-      document.getElementById('voteBarHome').style.width = total > 0 ? `${homePct}%` : '50%';
+      document.getElementById('voteBarAway').style.width = `${awayPct}%`;
+      document.getElementById('voteBarHome').style.width = `${homePct}%`;
     }
 
     function renderLeaderboard() {
@@ -2186,29 +2592,21 @@
       const allAccounts = Object.values(accountsDB);
 
       allAccounts.forEach(acc => {
+        ensureUserWalletFields(acc);
         const userPickCount = Object.values(lockedPicks).filter(p => p.contact === acc.contact).length;
+        const badge = acc.equippedBadge ? `${acc.equippedBadge} ` : '';
         rows.push({
-          name: `@${acc.username}${currentUser && currentUser.contact === acc.contact ? ' (You)' : ''}`,
+          name: `${badge}@${acc.username}${currentUser && currentUser.contact === acc.contact ? ' (You)' : ''}`,
           locked: userPickCount,
-          pts: userPickCount * 100,
+          pts: acc.points,
           isMe: currentUser && currentUser.contact === acc.contact
         });
       });
 
-      if (rows.length === 0 && currentUser) {
-        const userPickCount = Object.values(lockedPicks).filter(p => p.contact === currentUser.contact).length;
-        rows.push({
-          name: `@${currentUser.username} (You)`,
-          locked: userPickCount,
-          pts: userPickCount * 100,
-          isMe: true
-        });
-      }
-
       rows.push({
-        name: '🤖 SportsBot (AI)',
+        name: '🤖 SportsBot (House)',
         locked: allGamesPool.length || 4,
-        pts: (allGamesPool.length || 4) * 100,
+        pts: 1000,
         isMe: false
       });
 
@@ -2218,14 +2616,200 @@
         <tr style="${p.isMe ? 'background:rgba(56,189,248,0.14); font-weight:700;' : ''}">
           <td>${i + 1}</td>
           <td>${p.name}</td>
-          <td>${p.locked} 🔒</td>
-          <td style="color:var(--accent); font-weight:800;">${p.pts}</td>
+          <td>${p.locked}</td>
+          <td style="color:var(--gold); font-weight:800;">🪙 ${p.pts.toLocaleString()}</td>
         </tr>
       `).join('');
     }
 
     /* ========================================================
-       8. PER-GAME LIVE CHAT (SPORTSBOT + REAL USERS ONLY)
+       8. OG POINTS REDEMPTION SHOP ENGINE
+       ======================================================== */
+    const SHOP_CATALOG = [
+      {
+        id: 'badge_crown',
+        type: 'badge',
+        value: '👑',
+        title: 'VIP Crown Chat Badge',
+        desc: 'Displays a permanent 👑 Crown next to your username in all Live Game Chats and on the Leaderboard.',
+        cost: 300
+      },
+      {
+        id: 'badge_goat',
+        type: 'badge',
+        value: '🐐',
+        title: 'GOAT Predictor Badge',
+        desc: 'Show off your prediction skills with the 🐐 GOAT icon beside your username across OG ZONE.',
+        cost: 500
+      },
+      {
+        id: 'badge_bolt',
+        type: 'badge',
+        value: '⚡',
+        title: 'High Roller Lightning Badge',
+        desc: 'Equips the ⚡ High Roller emblem next to your @username in chat rooms and rankings.',
+        cost: 250
+      },
+      {
+        id: 'color_gold',
+        type: 'color',
+        value: 'name-gold',
+        title: '24K Gold Username Glow',
+        desc: 'Makes your username shine in glowing 24K Gold whenever you post in any game chat room.',
+        cost: 400
+      },
+      {
+        id: 'color_cyan',
+        type: 'color',
+        value: 'name-cyan',
+        title: 'Neon Diamond Username',
+        desc: 'Gives your username an electric Neon Cyan glow inside all live game threads.',
+        cost: 350
+      },
+      {
+        id: 'color_crimson',
+        type: 'color',
+        value: 'name-crimson',
+        title: 'Crimson Flame Username',
+        desc: 'Highlights your username in glowing Crimson Red across all live game chats.',
+        cost: 350
+      },
+      {
+        id: 'border_rainbow',
+        type: 'border',
+        value: 'rainbow',
+        title: 'RGB Rainbow Spotlight Aura',
+        desc: 'Overrides the main Matchup Center border with a high-speed circulating RGB Rainbow neon aura.',
+        cost: 600
+      },
+      {
+        id: 'perk_shoutout',
+        type: 'consumable',
+        value: 'shoutout',
+        title: 'Pin Site-Wide Banner Shoutout',
+        desc: 'Pin your custom message & username right at the very top of the OG ZONE Sports page!',
+        cost: 450
+      }
+    ];
+
+    function renderShopItems() {
+      const grid = document.getElementById('shopItemsGrid');
+      if (!grid) return;
+
+      grid.innerHTML = SHOP_CATALOG.map(item => {
+        const owned = currentUser && currentUser.ownedItems && currentUser.ownedItems.includes(item.id);
+        const isEquipped = currentUser && (
+          (item.type === 'badge' && currentUser.equippedBadge === item.value) ||
+          (item.type === 'color' && currentUser.equippedColor === item.value) ||
+          (item.type === 'border' && currentUser.rainbowBorder === true)
+        );
+
+        let btnLabel = `Redeem • 🪙 ${item.cost} PTS`;
+        if (owned && item.type !== 'consumable') {
+          btnLabel = isEquipped ? '✓ Equipped (Click to Unequip)' : 'Owned • Click to Equip';
+        }
+
+        return `
+          <div class="shop-item-card">
+            <div>
+              <div class="shop-icon-preview">
+                ${item.type === 'color'
+                  ? `<span class="${item.value}" style="font-size:1.15rem; font-weight:800;">@${currentUser ? currentUser.username : 'Oscar'}</span>`
+                  : `<span>${item.type === 'border' ? '🌈' : item.type === 'consumable' ? '📣' : item.value}</span>`
+                }
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <h3 style="font-size:1rem;">${item.title}</h3>
+                <span class="league-badge" style="color:var(--gold); background:rgba(250,204,21,0.14);">🪙 ${item.cost}</span>
+              </div>
+              <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.45;">${item.desc}</p>
+            </div>
+            <button
+              class="shop-buy-btn ${isEquipped ? 'equipped' : ''}"
+              onclick="handleShopAction('${item.id}')"
+            >
+              ${btnLabel}
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function handleShopAction(itemId) {
+      if (!currentUser) {
+        openAuthModal();
+        showAuthError('Please sign in to redeem and equip items from the OG Points Shop!');
+        return;
+      }
+
+      const item = SHOP_CATALOG.find(i => i.id === itemId);
+      if (!item) return;
+
+      currentUser = ensureUserWalletFields(currentUser);
+      const alreadyOwned = currentUser.ownedItems.includes(item.id);
+
+      // Consumable: Pinned Site-Wide Shoutout
+      if (item.type === 'consumable') {
+        if (currentUser.points < item.cost) {
+          alert(`You need ${item.cost} 🪙 OG Points for this perk! Win a prediction or click "+250 Free" on the Sports tab.`);
+          return;
+        }
+        const msg = prompt('Enter the message you want pinned to the top of OG ZONE:', 'Let’s go Magic & Heat!');
+        if (!msg || !msg.trim()) return;
+        const safety = validateUsernameSafety(msg);
+        if (!safety.valid) {
+          alert('Shoutout blocked: Racist or hateful language is prohibited.');
+          return;
+        }
+        currentUser.points -= item.cost;
+        pinnedShoutout = {
+          user: `${currentUser.equippedBadge ? currentUser.equippedBadge + ' ' : ''}@${currentUser.username}`,
+          text: msg.trim()
+        };
+        localStorage.setItem('og_pinned_shoutout_v1', JSON.stringify(pinnedShoutout));
+        saveCurrentUserAndDB();
+        syncUserHeaderUI();
+        switchTab('sports', document.getElementById('navBtnSports'));
+        return;
+      }
+
+      // Buy permanent item if not owned yet
+      if (!alreadyOwned) {
+        if (currentUser.points < item.cost) {
+          alert(`Not enough OG Points! You have ${currentUser.points} 🪙, and this costs ${item.cost} 🪙.`);
+          return;
+        }
+        currentUser.points -= item.cost;
+        currentUser.ownedItems.push(item.id);
+      }
+
+      // Toggle Equip / Unequip
+      if (item.type === 'badge') {
+        currentUser.equippedBadge = (alreadyOwned && currentUser.equippedBadge === item.value) ? '' : item.value;
+      } else if (item.type === 'color') {
+        currentUser.equippedColor = (alreadyOwned && currentUser.equippedColor === item.value) ? '' : item.value;
+      } else if (item.type === 'border') {
+        currentUser.rainbowBorder = alreadyOwned ? !currentUser.rainbowBorder : true;
+      }
+
+      saveCurrentUserAndDB();
+      syncUserHeaderUI();
+    }
+
+    function renderPinnedShoutoutBanner() {
+      const banner = document.getElementById('pinnedShoutoutBanner');
+      if (!banner) return;
+      if (pinnedShoutout && pinnedShoutout.text) {
+        document.getElementById('shoutoutUser').textContent = pinnedShoutout.user + ':';
+        document.getElementById('shoutoutText').textContent = pinnedShoutout.text;
+        banner.classList.add('active');
+      } else {
+        banner.classList.remove('active');
+      }
+    }
+
+    /* ========================================================
+       9. PER-GAME LIVE CHAT (WITH EQUIPPED SHOP BADGES & GLOWS)
        ======================================================== */
     let gameChats = JSON.parse(localStorage.getItem('og_game_chats_v3') || '{}');
 
@@ -2234,9 +2818,10 @@
         gameChats[g.id] = [
           {
             user: '🤖 SportsBot',
-            text: `Welcome to the official ${g.away.name} vs ${g.home.name} live thread at ${g.venue}. Current status: ${g.statusDetail} (${g.away.abbr} ${g.away.score} - ${g.home.abbr} ${g.home.score}).`,
+            text: `Welcome to the official ${g.away.name} vs ${g.home.name} live thread at ${g.venue}. Wager your 🪙 OG Points on the winner—winning side splits the pot!`,
             time: 'Auto',
-            isBot: true
+            isBot: true,
+            colorClass: ''
           }
         ];
       }
@@ -2250,16 +2835,22 @@
       feed.innerHTML = msgs.map(m => `
         <div class="chat-msg ${m.isBot ? 'bot-msg' : ''}">
           <span class="msg-time">${m.time}</span>
-          <strong>${m.user}:</strong> <span>${m.text}</span>
+          <strong class="${m.colorClass || ''}">${m.user}:</strong> <span>${m.text}</span>
         </div>
       `).join('');
       feed.scrollTop = feed.scrollHeight;
     }
 
-    function pushMessageToGameChat(gameId, user, text, isBot = false) {
+    function pushMessageToGameChat(gameId, user, text, isBot = false, colorClass = '') {
       if (!gameChats[gameId]) gameChats[gameId] = [];
       const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      gameChats[gameId].push({ user: isBot ? '🤖 SportsBot' : `@${user}`, text, time: now, isBot });
+      gameChats[gameId].push({
+        user: isBot ? '🤖 SportsBot' : user,
+        text,
+        time: now,
+        isBot,
+        colorClass
+      });
       localStorage.setItem('og_game_chats_v3', JSON.stringify(gameChats));
       if (currentSpotlightGame && String(currentSpotlightGame.id) === String(gameId)) {
         renderGameChat(currentSpotlightGame);
@@ -2284,11 +2875,12 @@
       }
 
       inp.value = '';
-      pushMessageToGameChat(currentSpotlightGame.id, currentUser.username, txt, false);
+      const displayUser = `${currentUser.equippedBadge ? currentUser.equippedBadge + ' ' : ''}@${currentUser.username}`;
+      pushMessageToGameChat(currentSpotlightGame.id, displayUser, txt, false, currentUser.equippedColor || '');
     }
 
     /* ========================================================
-       9. PLAYER STATS, SCORERS & SOCIAL/YOUTUBE CLIPS
+       10. PLAYER STATS, SCORERS & SOCIAL/YOUTUBE CLIPS
        ======================================================== */
     async function loadPlayerStatsAndClips(g) {
       const statsEl = document.getElementById('playerStatsList');
@@ -2434,7 +3026,7 @@
     }
 
     /* ========================================================
-       10. NEWS & PAYPAL DONATION (@oscar1975)
+       11. NEWS & PAYPAL DONATION (@oscar1975)
        ======================================================== */
     function renderNews(articles) {
       const grid = document.getElementById('newsGrid');
