@@ -789,6 +789,32 @@
       line-height: 1.45;
     }
 
+    .active-profile-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .profile-avatar-lg {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: rgba(56, 189, 248, 0.2);
+      border: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: #fff;
+    }
+
     /* PICTURE-IN-PICTURE (PiP) FLOATING LIVE SCORE BOX */
     .pip-floating-shell {
       position: fixed;
@@ -1143,48 +1169,84 @@
   </main>
 
   <!-- ========================================================
-       ACCOUNT SIGN-IN / CREATE ACCOUNT MODAL (GOOGLE OAUTH + EMAIL/PHONE)
+       ACCOUNT MODAL (SEPARATE LOGGED-OUT vs LOGGED-IN VIEWS)
        ======================================================== -->
   <div id="authModal" class="auth-modal-backdrop">
     <div class="auth-modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-        <h3 style="font-size:1.25rem;">OG ZONE Account</h3>
+        <h3 style="font-size:1.25rem;" id="authModalHeading">OG ZONE Account</h3>
         <button class="clip-pill" onclick="closeAuthModal()">✕</button>
       </div>
-      <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:16px; line-height:1.45;">
-        Sign in with Google or create an account with your email or phone number. Your account stays remembered on this device and sends a quick welcome note.
-      </p>
 
       <div id="authErrorBox" class="auth-error-msg"></div>
       <div id="authSuccessBox" class="auth-success-toast"></div>
 
-      <!-- Official Google Identity Services Button Mount -->
-      <div id="googleButtonMount" style="display:flex; justify-content:center; margin-bottom:14px;"></div>
+      <!-- VIEW 1: SHOWN ONLY WHEN LOGGED OUT -->
+      <div id="loggedOutAuthView">
+        <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:16px; line-height:1.45;">
+          Sign in with Google or create an account with your email or phone number. Your account stays remembered on this device and sends a quick welcome note.
+        </p>
 
-      <div style="text-align:center; font-size:0.74rem; color:var(--text-muted); margin:12px 0; text-transform:uppercase;">
-        — Or Email / Phone Number —
+        <!-- Official Google Identity Services Button Mount -->
+        <div id="googleButtonMount" style="display:flex; justify-content:center; margin-bottom:14px;"></div>
+
+        <div style="text-align:center; font-size:0.74rem; color:var(--text-muted); margin:12px 0; text-transform:uppercase;">
+          — Or Email / Phone Number —
+        </div>
+
+        <input type="text" id="authUsernameInput" class="auth-input" placeholder="Choose Username (e.g. Crunchy, OscarG)" maxlength="22" />
+        <input type="text" id="authContactInput" class="auth-input" placeholder="Email Address or 10-Digit Phone Number" />
+        <input type="password" id="authPasswordInput" class="auth-input" placeholder="Password (min 4 characters)" />
+
+        <label style="display:flex; align-items:center; gap:8px; font-size:0.8rem; color:var(--text-muted); margin-bottom:14px; cursor:pointer;">
+          <input type="checkbox" id="authRememberCheck" checked />
+          <span>Remember me on this device</span>
+        </label>
+
+        <button
+          class="action-btn"
+          style="width:100%; justify-content:center; padding:12px; background:var(--accent); color:#06080f; font-weight:800; border:none;"
+          onclick="handleEmailOrPhoneAuth()"
+        >
+          Save Account / Sign In
+        </button>
       </div>
 
-      <!-- Option 2: Email or Phone + Filtered Username -->
-      <input type="text" id="authUsernameInput" class="auth-input" placeholder="Choose Username (e.g. OscarG, MagicFan)" maxlength="22" />
-      <input type="text" id="authContactInput" class="auth-input" placeholder="Email Address or 10-Digit Phone Number" />
-      <input type="password" id="authPasswordInput" class="auth-input" placeholder="Password (min 4 characters)" />
+      <!-- VIEW 2: SHOWN ONLY WHEN ALREADY LOGGED IN (Hides Google Button & Password Form) -->
+      <div id="loggedInProfileView" style="display:none;">
+        <div class="active-profile-box">
+          <img id="profileModalAvatarImg" class="profile-avatar-lg" src="" alt="" style="display:none;" />
+          <div id="profileModalAvatarFallback" class="profile-avatar-lg">O</div>
+          <div style="flex:1; overflow:hidden;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <strong id="profileModalUsername" style="font-size:1.1rem; color:#fff;">@User</strong>
+              <span class="league-badge" style="color:#4ade80; background:rgba(34,197,94,0.16);">✓ Signed In</span>
+            </div>
+            <div id="profileModalContact" style="font-size:0.8rem; color:var(--text-muted); margin-top:3px; text-overflow:ellipsis; overflow:hidden;"></div>
+            <div id="profileModalStats" style="font-size:0.75rem; color:var(--accent); margin-top:4px; font-weight:700;">0 Picks Locked • 0 Pts</div>
+          </div>
+        </div>
 
-      <label style="display:flex; align-items:center; gap:8px; font-size:0.8rem; color:var(--text-muted); margin-bottom:14px; cursor:pointer;">
-        <input type="checkbox" id="authRememberCheck" checked />
-        <span>Remember me on this device</span>
-      </label>
+        <label style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.6px; display:block; margin-bottom:6px;">
+          Change Display Username
+        </label>
+        <div style="display:flex; gap:8px; margin-bottom:18px;">
+          <input type="text" id="updateUsernameInput" class="auth-input" style="margin-bottom:0;" placeholder="New username..." maxlength="22" />
+          <button
+            class="action-btn"
+            style="background:var(--accent); color:#06080f; font-weight:800; border:none; white-space:nowrap;"
+            onclick="updateLoggedInUsername()"
+          >
+            Update Name
+          </button>
+        </div>
 
-      <button
-        class="action-btn"
-        style="width:100%; justify-content:center; padding:12px; background:var(--accent); color:#06080f; font-weight:800; border:none;"
-        onclick="handleEmailOrPhoneAuth()"
-      >
-        Save Account / Sign In
-      </button>
-
-      <div id="signOutRow" style="display:none; margin-top:14px; text-align:center; border-top:1px solid var(--card-border); padding-top:12px;">
-        <button class="clip-pill" style="color:#f87171; border-color:rgba(248,113,113,0.4);" onclick="signOutUser()">Sign Out of Account</button>
+        <div style="border-top:1px solid var(--card-border); padding-top:14px; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.76rem; color:var(--text-muted);">Session remembered on this device</span>
+          <button class="clip-pill" style="color:#f87171; border-color:rgba(248,113,113,0.4); padding:7px 14px; font-weight:700;" onclick="signOutUser()">
+            Sign Out of Account
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -1291,14 +1353,17 @@
     }
 
     /* ========================================================
-       2. PERSISTENT ACCOUNT AUTH + AUTOMATED WELCOME EMAIL
+       2. PERSISTENT ACCOUNT AUTH + OPTION 1 WELCOME EMAIL
        ======================================================== */
     let accountsDB = JSON.parse(localStorage.getItem('og_accounts_db_v2') || '{}');
     let currentUser = JSON.parse(localStorage.getItem('og_current_user_v2') || 'null');
+    let lockedPicks = JSON.parse(localStorage.getItem('og_locked_picks_v3') || '{}');
+    let voteTallies = JSON.parse(localStorage.getItem('og_vote_tallies_v3') || '{}');
 
     function sendWelcomeEmailToUser(userObj) {
       const welcomeSubject = `Welcome to OG ZONE`;
-      const welcomeBody = `Yo ${userObj.username},\n\nAppreciate you making an account on OG ZONE. You're all set up—your username, daily picks, and leaderboard points are locked in whenever you hop back on.\n\nGood luck with your picks tonight.\n\n– Oscar\nhttps://oscargomez.me`;
+      // Option 1: Casual & Direct Student Project Note
+      const welcomeBody = `Yo ${userObj.username}, thanks for checking out OG ZONE and giving it a shot.\n\nI’m building this as a student project right now, so things are actively being worked on and I’ve got more updates rolling out soon. Your account, username, and picks are all saved whenever you hop back on.\n\nIf there’s a specific stat, sport, or feature you think would make the site better, feel free to reply directly to this email—I read all of them.\n\nAppreciate you stopping by,\nOscar\nhttps://oscargomez.me`;
 
       if (EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && window.emailjs && userObj.contact.includes('@')) {
         emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
@@ -1315,10 +1380,7 @@
       if (toast) {
         toast.innerHTML = `
           <strong>Welcome in, @${userObj.username}!</strong><br/>
-          ${userObj.contact.includes('@') ? `Welcome email sent to <strong>${userObj.contact}</strong>:` : `Account saved for <strong>${userObj.contact}</strong>:`}
-          <div style="margin-top:6px; padding:8px; background:rgba(0,0,0,0.35); border-radius:6px; font-size:0.76rem; color:#e2e8f0; font-style:italic;">
-            "Yo ${userObj.username}, appreciate you making an account on OG ZONE. You're all set—your username, picks, and leaderboard points are locked in whenever you hop back on. Good luck with your picks tonight. – Oscar"
-          </div>
+          ${userObj.contact.includes('@') ? `Welcome email sent to <strong>${userObj.contact}</strong>.` : `Account saved for <strong>${userObj.contact}</strong>.`}
         `;
         toast.style.display = 'block';
       }
@@ -1327,14 +1389,12 @@
     function syncUserHeaderUI() {
       const btnLabel = document.getElementById('headerAuthLabel');
       const nickBadge = document.getElementById('currentNickLabel');
-      const signOutRow = document.getElementById('signOutRow');
       const avatarImg = document.getElementById('headerUserAvatar');
       const userIcon = document.getElementById('headerUserIcon');
 
       if (currentUser && currentUser.username) {
         btnLabel.textContent = `@${currentUser.username}`;
         nickBadge.textContent = currentUser.username;
-        if (signOutRow) signOutRow.style.display = 'block';
         if (currentUser.avatar) {
           avatarImg.src = currentUser.avatar;
           avatarImg.style.display = 'block';
@@ -1346,23 +1406,94 @@
       } else {
         btnLabel.textContent = 'Sign In / Join';
         nickBadge.textContent = 'Sign In';
-        if (signOutRow) signOutRow.style.display = 'none';
         avatarImg.style.display = 'none';
         userIcon.style.display = 'inline';
       }
+      syncModalAuthStateView();
       renderLeaderboard();
       if (currentSpotlightGame) updatePickAndVoteBarUI(currentSpotlightGame);
+    }
+
+    // Switches Modal cleanly between Logged-Out Sign-In Form vs. Logged-In Active Profile
+    function syncModalAuthStateView() {
+      const loggedOutView = document.getElementById('loggedOutAuthView');
+      const loggedInView = document.getElementById('loggedInProfileView');
+      const heading = document.getElementById('authModalHeading');
+
+      if (currentUser && currentUser.username) {
+        loggedOutView.style.display = 'none';
+        loggedInView.style.display = 'block';
+        heading.textContent = 'Your OG ZONE Profile';
+
+        document.getElementById('profileModalUsername').textContent = `@${currentUser.username}`;
+        document.getElementById('profileModalContact').textContent = currentUser.contact || '';
+        document.getElementById('updateUsernameInput').value = currentUser.username;
+
+        const userPickCount = Object.values(lockedPicks).filter(p => p.contact === currentUser.contact).length;
+        document.getElementById('profileModalStats').textContent = `${userPickCount} Picks Locked • ${userPickCount * 100} Pts`;
+
+        const avImg = document.getElementById('profileModalAvatarImg');
+        const avFallback = document.getElementById('profileModalAvatarFallback');
+        if (currentUser.avatar) {
+          avImg.src = currentUser.avatar;
+          avImg.style.display = 'block';
+          avFallback.style.display = 'none';
+        } else {
+          avImg.style.display = 'none';
+          avFallback.style.display = 'flex';
+          avFallback.textContent = currentUser.username[0].toUpperCase();
+        }
+
+        // Dismiss any lingering Google One-Tap floating prompts since user is already signed in
+        if (window.google && google.accounts && google.accounts.id) {
+          google.accounts.id.cancel();
+        }
+      } else {
+        loggedOutView.style.display = 'block';
+        loggedInView.style.display = 'none';
+        heading.textContent = 'Sign In to OG ZONE';
+      }
+    }
+
+    function updateLoggedInUsername() {
+      if (!currentUser) return;
+      document.getElementById('authErrorBox').style.display = 'none';
+      document.getElementById('authSuccessBox').style.display = 'none';
+
+      const nextName = document.getElementById('updateUsernameInput').value.trim();
+      const safety = validateUsernameSafety(nextName);
+      if (!safety.valid) {
+        showAuthError(safety.reason);
+        return;
+      }
+
+      currentUser.username = nextName;
+      accountsDB[currentUser.contact] = currentUser;
+      localStorage.setItem('og_accounts_db_v2', JSON.stringify(accountsDB));
+      localStorage.setItem('og_current_user_v2', JSON.stringify(currentUser));
+
+      // Also update username on any locked picks
+      Object.keys(lockedPicks).forEach(k => {
+        if (lockedPicks[k].contact === currentUser.contact) {
+          lockedPicks[k].user = nextName;
+        }
+      });
+      localStorage.setItem('og_locked_picks_v3', JSON.stringify(lockedPicks));
+
+      syncUserHeaderUI();
+      const toast = document.getElementById('authSuccessBox');
+      toast.textContent = `Username updated to @${nextName}!`;
+      toast.style.display = 'block';
     }
 
     function openAuthModal() {
       document.getElementById('authErrorBox').style.display = 'none';
       document.getElementById('authSuccessBox').style.display = 'none';
-      if (currentUser) {
-        document.getElementById('authUsernameInput').value = currentUser.username || '';
-        document.getElementById('authContactInput').value = currentUser.contact || '';
-      }
+      syncModalAuthStateView();
       document.getElementById('authModal').classList.add('open');
-      initGoogleIdentityButton();
+      if (!currentUser) {
+        initGoogleIdentityButton();
+      }
     }
 
     function closeAuthModal() {
@@ -1422,12 +1553,10 @@
       localStorage.setItem('og_accounts_db_v2', JSON.stringify(accountsDB));
       localStorage.setItem('og_current_user_v2', JSON.stringify(currentUser));
 
-      document.getElementById('authUsernameInput').value = userObj.username;
-      document.getElementById('authContactInput').value = userObj.contact;
-
       syncUserHeaderUI();
-      sendWelcomeEmailToUser(userObj);
-      setTimeout(closeAuthModal, 2400);
+      if (isNew) {
+        sendWelcomeEmailToUser(userObj);
+      }
     }
 
     let googleBtnInitialized = false;
@@ -1455,7 +1584,9 @@
       if (EMAILJS_PUBLIC_KEY && window.emailjs) {
         emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
       }
-      setTimeout(initGoogleIdentityButton, 500);
+      if (!currentUser) {
+        setTimeout(initGoogleIdentityButton, 500);
+      }
     });
 
     function handleEmailOrPhoneAuth() {
@@ -1513,9 +1644,6 @@
       syncUserHeaderUI();
       if (isNewAccount) {
         sendWelcomeEmailToUser(userObj);
-        setTimeout(closeAuthModal, 2600);
-      } else {
-        closeAuthModal();
       }
     }
 
@@ -1525,8 +1653,9 @@
       if (window.google && google.accounts && google.accounts.id) {
         google.accounts.id.disableAutoSelect();
       }
+      document.getElementById('authPasswordInput').value = '';
       syncUserHeaderUI();
-      closeAuthModal();
+      initGoogleIdentityButton();
     }
 
     /* ========================================================
@@ -1958,9 +2087,6 @@
     /* ========================================================
        7. REAL VOTE COUNTS, 1-PICK LOCK & AUTHENTIC LEADERBOARD
        ======================================================== */
-    let lockedPicks = JSON.parse(localStorage.getItem('og_locked_picks_v3') || '{}');
-    let voteTallies = JSON.parse(localStorage.getItem('og_vote_tallies_v3') || '{}');
-
     function getVoteTallyForGame(gameId) {
       if (!voteTallies[gameId]) {
         voteTallies[gameId] = { away: 0, home: 0 };
