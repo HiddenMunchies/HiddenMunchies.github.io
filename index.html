@@ -1152,7 +1152,7 @@
         <button class="clip-pill" onclick="closeAuthModal()">✕</button>
       </div>
       <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:16px; line-height:1.45;">
-        Sign in with Google or create an account with your email or phone number. Your account stays remembered on this device and is ready for member perks.
+        Sign in with Google or create an account with your email or phone number. Your account stays remembered on this device and sends a quick welcome note.
       </p>
 
       <div id="authErrorBox" class="auth-error-msg"></div>
@@ -1223,14 +1223,12 @@
 
   <script>
     /* ========================================================
-       0. LIVE GOOGLE OAUTH CLIENT ID & EMAIL CONFIGURATION
+       0. LIVE GOOGLE OAUTH CLIENT ID & EMAILJS CONFIGURATION
        ======================================================== */
     const GOOGLE_CLIENT_ID = "576837402852-k0jm3dv8ktvrgekofuasv894hk7thol1.apps.googleusercontent.com";
-
-    // Optional: Paste your free EmailJS keys here (https://www.emailjs.com/) for automated background emails
-    const EMAILJS_PUBLIC_KEY = "";
-    const EMAILJS_SERVICE_ID = "";
-    const EMAILJS_TEMPLATE_ID = "";
+    const EMAILJS_PUBLIC_KEY = "jJawTNAAPmyVaRF5i";
+    const EMAILJS_SERVICE_ID = "og_zone_service";
+    const EMAILJS_TEMPLATE_ID = "template_v4wurmm";
 
     if (EMAILJS_PUBLIC_KEY && window.emailjs) {
       emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
@@ -1293,7 +1291,7 @@
     }
 
     /* ========================================================
-       2. PERSISTENT ACCOUNT AUTH + NON-AI WELCOME EMAIL DISPATCH
+       2. PERSISTENT ACCOUNT AUTH + AUTOMATED WELCOME EMAIL
        ======================================================== */
     let accountsDB = JSON.parse(localStorage.getItem('og_accounts_db_v2') || '{}');
     let currentUser = JSON.parse(localStorage.getItem('og_current_user_v2') || 'null');
@@ -1308,14 +1306,16 @@
           to_name: userObj.username,
           subject: welcomeSubject,
           message: welcomeBody
-        }).catch(() => {});
+        }).catch((err) => {
+          console.warn('EmailJS status:', err);
+        });
       }
 
       const toast = document.getElementById('authSuccessBox');
       if (toast) {
         toast.innerHTML = `
           <strong>Welcome in, @${userObj.username}!</strong><br/>
-          ${userObj.contact.includes('@') ? `Welcome note sent to <strong>${userObj.contact}</strong>:` : `Account linked to <strong>${userObj.contact}</strong>:`}
+          ${userObj.contact.includes('@') ? `Welcome email sent to <strong>${userObj.contact}</strong>:` : `Account saved for <strong>${userObj.contact}</strong>:`}
           <div style="margin-top:6px; padding:8px; background:rgba(0,0,0,0.35); border-radius:6px; font-size:0.76rem; color:#e2e8f0; font-style:italic;">
             "Yo ${userObj.username}, appreciate you making an account on OG ZONE. You're all set—your username, picks, and leaderboard points are locked in whenever you hop back on. Good luck with your picks tonight. – Oscar"
           </div>
@@ -1395,7 +1395,6 @@
 
       let chosenUsername = accountsDB[email] ? accountsDB[email].username : (payload.given_name || payload.name || email.split('@')[0]);
 
-      // If first time signing in with Google, let them confirm or customize their OG ZONE username
       if (isNew) {
         const customInput = document.getElementById('authUsernameInput').value.trim();
         if (customInput) {
@@ -1453,6 +1452,9 @@
     }
 
     window.addEventListener('load', () => {
+      if (EMAILJS_PUBLIC_KEY && window.emailjs) {
+        emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+      }
       setTimeout(initGoogleIdentityButton, 500);
     });
 
@@ -1932,7 +1934,6 @@
       document.getElementById('spotStatus').textContent = g.statusDetail;
       document.getElementById('spotVenue').textContent = `${g.name} • ${g.venue}`;
 
-      // Update Circulating Team Colors on Spotlight & PiP
       const col1 = '#' + (g.away.color || '00338D').replace('#', '');
       const col2 = '#' + (g.home.color || 'E31837').replace('#', '');
       document.documentElement.style.setProperty('--team-col-1', col1);
@@ -1940,7 +1941,6 @@
       document.documentElement.style.setProperty('--glow-rgb1', hexToRgbString(col1, '0, 51, 141'));
       document.documentElement.style.setProperty('--glow-rgb2', hexToRgbString(col2, '227, 24, 55'));
 
-      // Update PiP Floating Scorebox
       document.getElementById('pipAwayLogo').src = g.away.logo;
       document.getElementById('pipHomeLogo').src = g.home.logo;
       document.getElementById('pipAwayAbbr').textContent = g.away.abbr;
