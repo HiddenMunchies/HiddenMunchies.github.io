@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OG ZONE | Live Sports, Tabletop Sandbox & Hub</title>
+  <title>OG ZONE | Live Sports & 3D Tabletop with Friends</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <style>
     :root {
       --bg-base: #070a12;
-      --card-bg: rgba(16, 22, 36, 0.8);
-      --card-hover: rgba(26, 35, 58, 0.92);
+      --card-bg: rgba(16, 22, 36, 0.82);
+      --card-hover: rgba(26, 35, 58, 0.94);
       --card-border: rgba(255, 255, 255, 0.09);
       --text-main: #f0f6fc;
       --text-muted: #8b949e;
@@ -43,7 +44,7 @@
       height: 100vh;
       z-index: 0;
       filter: blur(85px);
-      opacity: 0.55;
+      opacity: 0.5;
       pointer-events: none;
     }
 
@@ -54,7 +55,7 @@
       left: 0;
       width: 24px;
       height: 100vh;
-      z-index: 1000;
+      z-index: 2000;
     }
 
     .hover-sidebar {
@@ -63,10 +64,10 @@
       left: 0;
       width: 255px;
       height: 100vh;
-      background: rgba(9, 13, 24, 0.95);
+      background: rgba(9, 13, 24, 0.96);
       backdrop-filter: blur(22px);
       border-right: 1px solid var(--card-border);
-      z-index: 1001;
+      z-index: 2001;
       transform: translateX(-242px);
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
       display: flex;
@@ -83,8 +84,8 @@
       transform: translateY(-50%);
       width: 14px;
       height: 68px;
-      background: rgba(56, 189, 248, 0.28);
-      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(56, 189, 248, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.18);
       border-left: none;
       border-radius: 0 8px 8px 0;
       display: flex;
@@ -99,7 +100,7 @@
     .sidebar-trigger-zone:hover + .hover-sidebar,
     .hover-sidebar:hover {
       transform: translateX(0);
-      box-shadow: 14px 0 44px rgba(0, 0, 0, 0.7);
+      box-shadow: 14px 0 44px rgba(0, 0, 0, 0.75);
     }
 
     .sidebar-trigger-zone:hover + .hover-sidebar::after,
@@ -113,7 +114,7 @@
     }
 
     .sidebar-brand h2 {
-      font-size: 1.35rem;
+      font-size: 1.4rem;
       font-weight: 900;
       letter-spacing: 0.8px;
       background: linear-gradient(90deg, #fff, #38bdf8);
@@ -158,7 +159,7 @@
 
     .side-btn.active {
       color: var(--text-main);
-      background: rgba(56, 189, 248, 0.14);
+      background: rgba(56, 189, 248, 0.15);
       border-color: rgba(56, 189, 248, 0.4);
       box-shadow: 0 0 16px rgba(56, 189, 248, 0.15);
     }
@@ -174,13 +175,13 @@
     header {
       position: relative;
       z-index: 10;
-      padding: 18px 36px;
+      padding: 16px 36px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid var(--card-border);
       backdrop-filter: blur(16px);
-      background: rgba(7, 10, 18, 0.65);
+      background: rgba(7, 10, 18, 0.75);
       flex-wrap: wrap;
       gap: 16px;
     }
@@ -192,9 +193,9 @@
     }
 
     .og-logo {
-      font-size: 1.45rem;
+      font-size: 1.5rem;
       font-weight: 900;
-      letter-spacing: 1px;
+      letter-spacing: 1.2px;
       background: linear-gradient(90deg, #ffffff, #38bdf8);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -239,10 +240,10 @@
     main {
       position: relative;
       z-index: 10;
-      max-width: 1380px;
+      max-width: 1400px;
       width: 100%;
       margin: 0 auto;
-      padding: 28px 32px 60px;
+      padding: 24px 28px 60px;
     }
 
     .page-section {
@@ -259,7 +260,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* SPORT FILTER BAR */
+    /* SPORTS CONTROLS & CARDS */
     .controls-bar {
       display: flex;
       justify-content: space-between;
@@ -302,7 +303,6 @@
       box-shadow: 0 0 14px rgba(56, 189, 248, 0.22);
     }
 
-    /* SPOTLIGHT + STATS + VIDEO ROW */
     .spotlight-grid {
       display: grid;
       grid-template-columns: 1.15fr 0.85fr;
@@ -379,35 +379,12 @@
       object-fit: contain;
     }
 
-    .feat-name {
-      font-size: 1.1rem;
-      font-weight: 700;
-    }
+    .feat-name { font-size: 1.1rem; font-weight: 700; }
+    .feat-record { font-size: 0.78rem; color: var(--text-muted); }
+    .feat-score-box { text-align: center; }
+    .feat-score { font-size: 2rem; font-weight: 800; color: var(--highlight); letter-spacing: 1px; }
+    .feat-clock { font-size: 0.78rem; font-weight: 700; color: #4ade80; margin-top: 2px; }
 
-    .feat-record {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-    }
-
-    .feat-score-box {
-      text-align: center;
-    }
-
-    .feat-score {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--highlight);
-      letter-spacing: 1px;
-    }
-
-    .feat-clock {
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: #4ade80;
-      margin-top: 2px;
-    }
-
-    /* PLAYER STATS & SCORING PLAYS */
     .leaders-list {
       display: flex;
       flex-direction: column;
@@ -427,38 +404,12 @@
       border-radius: 10px;
     }
 
-    .leader-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .leader-left { display: flex; align-items: center; gap: 10px; }
+    .leader-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; background: rgba(255, 255, 255, 0.08); }
+    .leader-name { font-size: 0.9rem; font-weight: 700; }
+    .leader-role { font-size: 0.73rem; color: var(--text-muted); }
+    .leader-stat { font-size: 0.85rem; font-weight: 700; color: var(--highlight); text-align: right; }
 
-    .leader-avatar {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .leader-name {
-      font-size: 0.9rem;
-      font-weight: 700;
-    }
-
-    .leader-role {
-      font-size: 0.73rem;
-      color: var(--text-muted);
-    }
-
-    .leader-stat {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--highlight);
-      text-align: right;
-    }
-
-    /* VIDEO CLIPS & SOCIAL MEDIA */
     .video-box {
       width: 100%;
       border-radius: 12px;
@@ -468,20 +419,8 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .video-box video {
-      width: 100%;
-      max-height: 210px;
-      display: block;
-    }
-
-    .clip-pills {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 6px;
-      margin-bottom: 10px;
-    }
-
+    .video-box video { width: 100%; max-height: 210px; display: block; }
+    .clip-pills { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 10px; }
     .clip-pill {
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid var(--card-border);
@@ -492,18 +431,9 @@
       white-space: nowrap;
       cursor: pointer;
     }
+    .clip-pill.active, .clip-pill:hover { border-color: var(--highlight); color: var(--highlight); }
 
-    .clip-pill.active, .clip-pill:hover {
-      border-color: var(--highlight);
-      color: var(--highlight);
-    }
-
-    .social-links-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
+    .social-links-row { display: flex; gap: 8px; flex-wrap: wrap; }
     .social-chip {
       flex: 1;
       text-align: center;
@@ -517,13 +447,8 @@
       font-weight: 600;
       transition: all 0.2s;
     }
+    .social-chip:hover { border-color: var(--highlight); background: rgba(56, 189, 248, 0.12); }
 
-    .social-chip:hover {
-      border-color: var(--highlight);
-      background: rgba(56, 189, 248, 0.12);
-    }
-
-    /* SCOREBOARD GRID */
     .games-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(295px, 1fr));
@@ -541,299 +466,757 @@
       flex-direction: column;
       gap: 12px;
     }
-
-    .game-card:hover {
-      background: var(--card-hover);
-      border-color: var(--highlight);
-      transform: translateY(-2px);
-    }
-
-    .game-card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
-    .team-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .team-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .team-info img {
-      width: 28px;
-      height: 28px;
-      object-fit: contain;
-    }
-
-    .team-title {
-      font-weight: 600;
-      font-size: 0.95rem;
-    }
-
-    .team-rec {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      margin-left: 4px;
-    }
-
-    .team-pts {
-      font-size: 1.15rem;
-      font-weight: 800;
-    }
+    .game-card:hover { background: var(--card-hover); border-color: var(--highlight); transform: translateY(-2px); }
+    .game-card-top { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: var(--text-muted); }
+    .team-row { display: flex; justify-content: space-between; align-items: center; }
+    .team-info { display: flex; align-items: center; gap: 10px; }
+    .team-info img { width: 28px; height: 28px; object-fit: contain; }
+    .team-title { font-weight: 600; font-size: 0.95rem; }
+    .team-rec { font-size: 0.72rem; color: var(--text-muted); margin-left: 4px; }
+    .team-pts { font-size: 1.15rem; font-weight: 800; }
 
     /* ========================================================
-       TAB 2: TABLETOP WITH FRIENDS (PHYSICS SANDBOX)
+       TAB 2: TABLETOP WITH FRIENDS (EXACT VIDEO REPLICA + 3D)
        ======================================================== */
-    .ttf-wrapper {
-      background: #f6f3ec;
-      color: #1c1917;
+    .ttf-shell {
+      background: #14110e;
+      color: #f5f2eb;
       border-radius: 20px;
-      padding: 34px 38px 50px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.75);
+      min-height: 820px;
+      position: relative;
     }
 
-    .ttf-nav {
+    /* Top bar inside Tabletop with Friends */
+    .ttf-topbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 24px;
-      border-bottom: 1px solid #e5e0d5;
-      margin-bottom: 32px;
-      flex-wrap: wrap;
-      gap: 12px;
+      padding: 16px 32px;
+      background: rgba(20, 17, 14, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      position: relative;
+      z-index: 30;
     }
 
-    .ttf-logo {
+    .ttf-brand {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .ttf-brand-title {
       font-family: Georgia, "Times New Roman", serif;
-      font-size: 1.35rem;
+      font-size: 1.15rem;
       font-weight: 700;
-      color: #1c1917;
+      color: #f5f2eb;
+      cursor: pointer;
+    }
+
+    .ttf-nav-item {
+      font-size: 0.85rem;
+      color: #a8a29e;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .ttf-nav-item:hover, .ttf-nav-item.active { color: #f5f2eb; }
+
+    /* VIEW 1: HERO 3D FELT TABLE + GAME LIBRARY GRID */
+    .ttf-hero-stage {
+      position: relative;
+      height: 450px;
+      width: 100%;
+      background: #192b22;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    #hero3DCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+    #hero3DCanvas:active { cursor: grabbing; }
+
+    .ttf-hero-overlay {
+      position: relative;
+      z-index: 10;
+      pointer-events: none;
+      padding: 48px 44px;
+      max-width: 540px;
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(16, 20, 16, 0.78) 0%, rgba(16, 20, 16, 0.35) 65%, transparent 100%);
+    }
+
+    .ttf-hero-overlay h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 3.3rem;
+      line-height: 1.04;
+      letter-spacing: -1px;
+      color: #f5f2eb;
+      margin-bottom: 12px;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.6);
+    }
+
+    .ttf-hero-overlay p {
+      font-size: 0.96rem;
+      color: #d6d3cd;
+      line-height: 1.55;
+      margin-bottom: 20px;
+    }
+
+    .ttf-hero-btns {
+      display: flex;
       gap: 10px;
+      pointer-events: auto;
+      margin-bottom: 16px;
     }
 
-    .ttf-nav-links {
+    .ttf-btn-cream {
+      background: #f5f0e6;
+      color: #1c1917;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.2s;
+    }
+    .ttf-btn-cream:hover { background: #ffffff; transform: translateY(-1px); }
+
+    .ttf-btn-ghost {
+      background: rgba(255, 255, 255, 0.1);
+      color: #f5f0e6;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+
+    .ttf-code-bar {
       display: flex;
       align-items: center;
-      gap: 20px;
-      font-size: 0.9rem;
-      color: #57534e;
+      gap: 8px;
+      pointer-events: auto;
+      font-size: 0.8rem;
+      color: #d6d3cd;
+      margin-bottom: 22px;
     }
 
-    .ttf-player-pill {
-      background: #e7e2d8;
-      padding: 6px 14px;
+    .ttf-code-bar input {
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 6px;
+      width: 110px;
+      font-size: 0.8rem;
+    }
+
+    .ttf-stats-row {
+      display: flex;
+      gap: 18px;
+      font-size: 0.78rem;
+      color: #c7c2b8;
+    }
+
+    .ttf-grab-hint {
+      position: absolute;
+      bottom: 14px;
+      right: 22px;
+      z-index: 12;
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 6px 12px;
       border-radius: 999px;
-      font-weight: 600;
-      color: #1c1917;
+      font-size: 0.76rem;
+      color: #e7e5e4;
+      pointer-events: none;
+    }
+
+    /* Library Search & Category Filter Row */
+    .ttf-library-section {
+      padding: 32px 36px 56px;
+      background: #14110e;
+    }
+
+    .ttf-filter-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .ttf-search-input {
+      background: #1f1a16;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #f5f2eb;
+      padding: 9px 14px;
+      border-radius: 8px;
+      width: 240px;
       font-size: 0.85rem;
     }
 
-    .ttf-hero {
-      max-width: 720px;
-      margin-bottom: 34px;
-    }
-
-    .ttf-hero h1 {
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 2.7rem;
-      line-height: 1.12;
-      letter-spacing: -0.8px;
-      margin-bottom: 12px;
-      color: #1c1917;
-    }
-
-    .ttf-hero p {
-      font-size: 1.08rem;
-      line-height: 1.6;
-      color: #57534e;
-    }
-
-    /* PHYSICS TABLETOP SANDBOX VIEWPORT */
-    .sandbox-modal {
-      display: none;
-      margin-bottom: 36px;
-      background: #18221b;
-      color: #f5f5f4;
-      border-radius: 18px;
-      padding: 20px;
-      border: 4px solid #3d2817;
-      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.65);
-    }
-
-    .sandbox-modal.open {
-      display: block;
-    }
-
-    .sandbox-toolbar {
+    .ttf-cat-pills {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      gap: 6px;
       flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 14px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     }
 
-    .sandbox-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .sb-btn {
-      background: #2c3e32;
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      padding: 7px 13px;
-      border-radius: 8px;
-      font-size: 0.82rem;
-      font-weight: 600;
+    .ttf-cat-pill {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #a8a29e;
+      padding: 6px 13px;
+      border-radius: 999px;
+      font-size: 0.8rem;
       cursor: pointer;
-      transition: all 0.15s;
+    }
+    .ttf-cat-pill.active, .ttf-cat-pill:hover {
+      background: #f5f0e6;
+      color: #14110e;
+      border-color: #f5f0e6;
+      font-weight: 600;
     }
 
-    .sb-btn:hover {
-      background: #3b5243;
-      border-color: #fde047;
-    }
-
-    .sb-btn.danger {
-      background: #dc2626;
-      border-color: #ef4444;
-    }
-
-    .canvas-container {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      overflow: hidden;
-      border-radius: 12px;
-      background: #101712;
-      border: 2px solid #2b1d12;
-    }
-
-    #tabletopCanvas {
-      max-width: 100%;
-      height: auto;
-      cursor: grab;
-      touch-action: none;
-    }
-
-    #tabletopCanvas:active {
-      cursor: grabbing;
-    }
-
-    .ttf-grid {
+    /* 13-Game Grid */
+    .ttf-catalog-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
       gap: 22px;
     }
 
-    .ttf-card {
-      background: #ffffff;
-      border: 1px solid #e5e0d5;
-      border-radius: 16px;
+    .ttf-box-card {
+      background: #1c1713;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 12px;
       overflow: hidden;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
     }
 
-    .ttf-card:hover {
+    .ttf-box-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 14px 28px rgba(28, 25, 23, 0.08);
+      border-color: rgba(245, 240, 230, 0.35);
     }
 
-    .ttf-banner {
-      height: 132px;
+    .ttf-box-preview {
+      height: 158px;
+      background: radial-gradient(circle at center, #3d2c1e 0%, #1c140d 100%);
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 3.3rem;
+      perspective: 600px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
 
-    .ttf-card-body {
-      padding: 20px;
+    .by-oscar-tag {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(20, 17, 14, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #d6d3cd;
+      font-size: 0.68rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    /* 3D Tilted Box Art inside Card */
+    .box-3d-mesh {
+      width: 130px;
+      height: 92px;
+      border-radius: 4px;
+      transform: rotateX(28deg) rotateZ(-22deg) rotateY(8deg);
+      box-shadow: -10px 14px 22px rgba(0, 0, 0, 0.75), inset 0 0 0 2px rgba(255,255,255,0.18);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      text-align: center;
+      font-family: Georgia, serif;
+      font-weight: 800;
+      position: relative;
+      transition: transform 0.25s ease;
+    }
+
+    .ttf-box-card:hover .box-3d-mesh {
+      transform: rotateX(22deg) rotateZ(-16deg) rotateY(4deg) scale(1.06);
+    }
+
+    .box-3d-mesh::after {
+      content: "";
+      position: absolute;
+      bottom: -8px;
+      left: 2px;
+      width: 100%;
+      height: 8px;
+      background: rgba(0, 0, 0, 0.45);
+      transform: skewX(45deg);
+    }
+
+    .ttf-box-info {
+      padding: 16px;
       flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
     }
 
-    .ttf-creator {
+    .ttf-box-title {
+      font-family: Georgia, serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #f5f2eb;
+      margin-bottom: 6px;
+    }
+
+    .ttf-box-desc {
+      font-size: 0.82rem;
+      color: #a8a29e;
+      line-height: 1.45;
+      margin-bottom: 14px;
+    }
+
+    .ttf-box-meta {
+      font-size: 0.73rem;
+      color: #78716c;
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 10px;
+    }
+
+    /* ========================================================
+       VIEW 2 & 3: 3D GAME DETAIL / LOBBY / FULL 3D OVERHEAD TABLE
+       ======================================================== */
+    .ttf-stage-view {
+      display: none;
+      position: relative;
+      height: 760px;
+      width: 100%;
+      background: #1a120b;
+      overflow: hidden;
+    }
+
+    .ttf-stage-view.active {
+      display: block;
+    }
+
+    #gameStage3DCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+    #gameStage3DCanvas:active { cursor: grabbing; }
+
+    /* Left Overlay Panel for Game Detail & Lobby (Video 1 & 3) */
+    .stage-left-panel {
+      position: absolute;
+      top: 24px;
+      left: 36px;
+      z-index: 20;
+      width: 390px;
+      max-width: calc(100% - 48px);
+      pointer-events: auto;
+    }
+
+    .back-link-btn {
+      background: transparent;
+      border: none;
+      color: #a8a29e;
+      font-size: 0.83rem;
+      cursor: pointer;
+      margin-bottom: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .back-link-btn:hover { color: #fff; }
+
+    .made-by-pill {
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: #57534e;
-      margin-bottom: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      color: #e7e5e4;
+      margin-bottom: 10px;
     }
 
-    .ttf-avatar {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: #1c1917;
-      color: #fff;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.7rem;
-      font-weight: 700;
-    }
-
-    .ttf-title {
+    .stage-game-title {
       font-family: Georgia, serif;
-      font-size: 1.35rem;
+      font-size: 2.8rem;
       font-weight: 700;
-      margin-bottom: 6px;
-      color: #1c1917;
+      color: #f5f2eb;
+      margin-bottom: 8px;
+      line-height: 1.05;
     }
 
-    .ttf-desc {
-      font-size: 0.9rem;
-      color: #57534e;
+    .stage-game-sub {
+      font-size: 0.95rem;
+      color: #d6d3cd;
+      margin-bottom: 12px;
       line-height: 1.45;
-      margin-bottom: 16px;
     }
 
-    .ttf-meta {
-      font-size: 0.78rem;
-      color: #78716c;
-      margin-bottom: 14px;
+    .stage-game-meta {
+      font-size: 0.8rem;
+      color: #a8a29e;
       display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    /* Setup Box & Lobby Card */
+    .lobby-card {
+      background: rgba(24, 19, 15, 0.92);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+    }
+
+    .playing-as-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 0.82rem;
+    }
+
+    .playing-as-row input {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      text-align: right;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .room-link-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      color: #d6d3cd;
+      margin-bottom: 14px;
+    }
+
+    .copy-link-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #f5f2eb;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.73rem;
+      cursor: pointer;
+    }
+
+    .seats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .seat-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
       justify-content: space-between;
     }
 
-    .ttf-start-btn {
-      width: 100%;
-      padding: 11px 16px;
-      background: #1c1917;
-      color: #ffffff;
-      border: none;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: background 0.2s;
+    .lobby-actions-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
     }
 
-    .ttf-start-btn:hover {
-      background: #3f3a36;
+    .add-bot-btn {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: #f5f2eb;
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .add-bot-btn:hover { background: rgba(255, 255, 255, 0.14); }
+
+    .start-match-btn {
+      flex: 1;
+      background: #f5f0e6;
+      color: #14110e;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.86rem;
+      cursor: pointer;
+    }
+    .start-match-btn:hover { background: #ffffff; }
+
+    .table-chat-box {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 10px;
+    }
+
+    .chat-messages {
+      height: 72px;
+      overflow-y: auto;
+      font-size: 0.78rem;
+      color: #a8a29e;
+      margin-bottom: 8px;
+    }
+
+    .chat-input-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .chat-input-row input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      padding: 7px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+    }
+
+    /* Rulebook Hint Button on Preview Table */
+    .rulebook-floating-btn {
+      position: absolute;
+      bottom: 26px;
+      right: 34px;
+      z-index: 22;
+      background: rgba(24, 19, 15, 0.9);
+      border: 1px solid rgba(245, 240, 230, 0.3);
+      color: #f5f0e6;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    }
+    .rulebook-floating-btn:hover { background: #2b2118; }
+
+    /* OVERHEAD ACTIVE GAME HUD OVERLAYS (Video 1 & 3) */
+    .active-game-hud {
+      display: none;
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 25;
+    }
+    .active-game-hud.visible { display: block; }
+
+    .hud-top-bar {
+      position: absolute;
+      top: 18px;
+      left: 24px;
+      right: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: auto;
+    }
+
+    .turn-toast {
+      background: rgba(20, 17, 14, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      padding: 12px 18px;
+      min-width: 250px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.65);
+    }
+
+    .turn-toast h4 {
+      font-size: 0.92rem;
+      color: #fde047;
+      margin-bottom: 4px;
+    }
+
+    .turn-toast p {
+      font-size: 0.78rem;
+      color: #d6d3cd;
+    }
+
+    .bot-huds-col {
+      position: absolute;
+      top: 84px;
+      left: 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      pointer-events: auto;
+    }
+
+    .bot-hud-card {
+      background: rgba(22, 27, 36, 0.9);
+      border: 2px solid #3b82f6;
+      border-radius: 10px;
+      padding: 10px 14px;
+      width: 210px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+
+    .player-bottom-hud {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(34, 24, 20, 0.94);
+      border: 2px solid #ef4444;
+      border-radius: 12px;
+      padding: 12px 22px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      pointer-events: auto;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.75);
+      flex-wrap: wrap;
+    }
+
+    .hud-stat-block {
+      text-align: center;
+    }
+    .hud-stat-block span {
+      display: block;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      color: #a8a29e;
+      letter-spacing: 0.6px;
+    }
+    .hud-stat-block strong {
+      font-size: 1.15rem;
+      color: #f5f2eb;
+    }
+
+    .hud-action-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* INTERACTIVE 3D RULEBOOK FLIPBOOK MODAL (Video 2) */
+    .rulebook-modal {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 60;
+      background: rgba(10, 8, 6, 0.85);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .rulebook-modal.open { display: flex; }
+
+    .book-spread {
+      width: 760px;
+      max-width: 95%;
+      height: 490px;
+      background: #fdf6e2;
+      color: #292524;
+      border-radius: 8px;
+      box-shadow: 0 25px 70px rgba(0,0,0,0.85), 0 0 0 6px #7f1d1d;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .book-page {
+      padding: 28px 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+
+    .book-page.left {
+      border-right: 2px solid rgba(0,0,0,0.12);
+      background: linear-gradient(90deg, #faf0d7 0%, #ede0c4 100%);
+    }
+
+    .book-page.right {
+      background: linear-gradient(90deg, #ede0c4 0%, #faf0d7 100%);
+    }
+
+    .book-page h3 {
+      font-family: Georgia, serif;
+      font-size: 1.35rem;
+      color: #7f1d1d;
+      margin-bottom: 10px;
+      border-bottom: 2px solid #d97706;
+      padding-bottom: 4px;
+    }
+
+    .book-controls {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(20, 17, 14, 0.92);
+      color: #f5f2eb;
+      padding: 6px 14px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.78rem;
+      z-index: 65;
+    }
+
+    .book-ctrl-btn {
+      background: transparent;
+      border: none;
+      color: #fde047;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.9rem;
     }
 
     /* NEWS & DONATE SECTIONS */
@@ -853,28 +1236,10 @@
       justify-content: space-between;
       gap: 12px;
     }
+    .news-card a { color: var(--highlight); text-decoration: none; font-size: 0.85rem; font-weight: 600; }
 
-    .news-card a {
-      color: var(--highlight);
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-
-    /* DONATION HUB */
-    .donate-container {
-      max-width: 620px;
-      margin: 20px auto;
-      text-align: center;
-    }
-
-    .tier-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin: 22px 0;
-    }
-
+    .donate-container { max-width: 620px; margin: 20px auto; text-align: center; }
+    .tier-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 22px 0; }
     .tier-btn {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--card-border);
@@ -886,14 +1251,12 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-
     .tier-btn.active, .tier-btn:hover {
       background: rgba(56, 189, 248, 0.18);
       border-color: var(--highlight);
       color: var(--highlight);
       box-shadow: 0 0 18px rgba(56, 189, 248, 0.25);
     }
-
     .custom-amount-input {
       width: 100%;
       padding: 14px 16px;
@@ -905,7 +1268,6 @@
       margin-bottom: 18px;
       text-align: center;
     }
-
     .paypal-submit-btn {
       width: 100%;
       padding: 15px 24px;
@@ -919,11 +1281,7 @@
       box-shadow: 0 8px 24px rgba(0, 112, 186, 0.4);
       transition: transform 0.2s, box-shadow 0.2s;
     }
-
-    .paypal-submit-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(0, 112, 186, 0.6);
-    }
+    .paypal-submit-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0, 112, 186, 0.6); }
   </style>
 </head>
 <body>
@@ -937,7 +1295,7 @@
     <div>
       <div class="sidebar-brand">
         <h2>OG ZONE</h2>
-        <span>Command & Tabletop Hub</span>
+        <span>Command & 3D Tabletop Hub</span>
       </div>
       <nav class="sidebar-nav">
         <button class="side-btn active" onclick="switchMainTab('sports', this)">
@@ -993,7 +1351,6 @@
         </div>
       </div>
 
-      <!-- Row 1: Featured Matchup + Scoring Chart -->
       <div class="spotlight-grid">
         <div class="card">
           <div class="card-header">
@@ -1033,20 +1390,15 @@
         </div>
       </div>
 
-      <!-- Row 2: Player Stats / Scorers + Video Highlights / Social Clips -->
       <div class="media-stats-grid">
-        <!-- Player Stats & Scoring Summary -->
         <div class="card">
           <div class="card-header">
             <span>🔥 Top Performers & Scoring Plays</span>
-            <span class="league-badge" id="statsSubBadge">BOX SCORE</span>
+            <span class="league-badge">BOX SCORE</span>
           </div>
-          <div class="leaders-list" id="playerStatsList">
-            <!-- Dynamically populated -->
-          </div>
+          <div class="leaders-list" id="playerStatsList"></div>
         </div>
 
-        <!-- Game Highlight Clips & Social Buzz -->
         <div class="card">
           <div class="card-header">
             <span>🎬 Game Highlights & Social Clips</span>
@@ -1062,166 +1414,188 @@
         </div>
       </div>
 
-      <!-- All Matchups Grid -->
       <div class="games-grid" id="scoreboardGrid"></div>
     </section>
 
     <!-- ==========================================
-         TAB 2: GAMES (TABLETOP WITH FRIENDS SANDBOX)
+         TAB 2: GAMES (3D TABLETOP WITH FRIENDS)
          ========================================== -->
     <section id="tab-games" class="page-section">
-      <div class="ttf-wrapper">
-        <div class="ttf-nav">
-          <div class="ttf-logo">
-            <span>🎲</span> <span>Tabletop with Friends</span>
+      <div class="ttf-shell">
+        <!-- Top Navigation Bar -->
+        <div class="ttf-topbar">
+          <div class="ttf-brand">
+            <span class="ttf-brand-title" onclick="returnToCatalog()">Tabletop with Friends</span>
+            <span class="ttf-nav-item active" onclick="returnToCatalog()">Games</span>
+            <span class="ttf-nav-item" onclick="openGameStage('catan')">Studio</span>
           </div>
-          <div class="ttf-nav-links">
-            <span style="font-weight:700; color:#1c1917;">Games</span>
-            <span>Studio</span>
-            <span class="ttf-player-pill">Playing as Oscar</span>
+          <div style="font-size: 0.82rem; color: #d6d3cd;">
+            Playing as <strong style="color: #fff;">Oscar</strong>
           </div>
         </div>
 
-        <div class="ttf-hero">
-          <h1>Board games, beautifully set.</h1>
-          <p>
-            Real tables and real pieces in your browser: grab, lift, slide, and throw pieces across the board. Play the classics with friends or bots, try games Oscar made.
-          </p>
+        <!-- VIEW A: CATALOG + INTERACTIVE 3D HERO FELT TABLE (Video 2) -->
+        <div id="ttfCatalogView">
+          <div class="ttf-hero-stage">
+            <canvas id="hero3DCanvas"></canvas>
+            <div class="ttf-hero-overlay">
+              <h1>Tabletop with<br/>Friends</h1>
+              <p>Real tables and real pieces, in your browser. Play the classics with friends or bots, try games Oscar made, or open the studio and build your own.</p>
+              <div class="ttf-hero-btns">
+                <button class="ttf-btn-cream" onclick="document.getElementById('catalogGridAnchor').scrollIntoView({behavior:'smooth'})">Find a game</button>
+                <button class="ttf-btn-ghost" onclick="openGameStage('catan')">Enter the Studio</button>
+              </div>
+              <div class="ttf-code-bar">
+                <span>Have a table code?</span>
+                <input type="text" placeholder="e.g. A3F-9K" id="joinCodeInput" />
+                <button class="copy-link-btn" onclick="openGameStage('catan')">Join →</button>
+              </div>
+              <div class="ttf-stats-row">
+                <span>🟢 14 players online</span>
+                <span>•</span>
+                <span>14,918 tables played</span>
+                <span>•</span>
+                <span>13 games</span>
+              </div>
+            </div>
+            <div class="ttf-grab-hint">✋ Grab, lift & throw the 3D dice, chips, and pieces on the felt!</div>
+          </div>
+
+          <!-- Game Library Grid -->
+          <div class="ttf-library-section" id="catalogGridAnchor">
+            <div class="ttf-filter-bar">
+              <input type="text" class="ttf-search-input" placeholder="Search games..." oninput="filterCatalogBySearch(this.value)" />
+              <div class="ttf-cat-pills">
+                <button class="ttf-cat-pill active" onclick="filterCatalogByCat('All', this)">All</button>
+                <button class="ttf-cat-pill" onclick="filterCatalogByCat('Strategy', this)">Strategy</button>
+                <button class="ttf-cat-pill" onclick="filterCatalogByCat('Classic', this)">Classic</button>
+                <button class="ttf-cat-pill" onclick="filterCatalogByCat('Cards', this)">Cards</button>
+                <button class="ttf-cat-pill" onclick="filterCatalogByCat('Dice', this)">Dice</button>
+                <button class="ttf-cat-pill" onclick="filterCatalogByCat('Party', this)">Party</button>
+              </div>
+            </div>
+
+            <div class="ttf-catalog-grid" id="ttfCatalogGrid"></div>
+          </div>
         </div>
 
-        <!-- INTERACTIVE PHYSICS TABLETOP SANDBOX -->
-        <div id="sandboxModal" class="sandbox-modal">
-          <div class="sandbox-toolbar">
+        <!-- VIEW B: 3D GAME STAGE (PREVIEW TABLE + LOBBY + OVERHEAD 3D GAMEPLAY) (Video 1, 2, 3) -->
+        <div id="ttfStageView" class="ttf-stage-view">
+          <canvas id="gameStage3DCanvas"></canvas>
+
+          <!-- Left Panel: Game Detail & Lobby (Hidden once overhead match starts) -->
+          <div class="stage-left-panel" id="stageLeftLobbyPanel">
+            <button class="back-link-btn" onclick="returnToCatalog()">← All games</button>
             <div>
-              <strong id="sandboxGameTitle" style="font-size: 1.25rem; color: #fde047;">Chess</strong>
-              <span style="font-size: 0.82rem; color: #a7f3d0; margin-left: 10px;">
-                ✋ Grab & throw pieces • Double-click cards/dice to flip or roll!
-              </span>
+              <span class="made-by-pill">⚫ Made by Oscar</span>
             </div>
-            <div class="sandbox-actions">
-              <button class="sb-btn" onclick="rollAllTableDice()">🎲 Throw / Roll Dice</button>
-              <button class="sb-btn" onclick="spawnExtraPiece()">➕ Deal Card / Token</button>
-              <button class="sb-btn" onclick="botSandboxMove()">🤖 Bot Move</button>
-              <button class="sb-btn" onclick="resetCurrentSandbox()">↺ Reset Table</button>
-              <button class="sb-btn danger" onclick="closeSandbox()">Leave Table ✕</button>
+            <h1 class="stage-game-title" id="stTitle">Catan</h1>
+            <p class="stage-game-sub" id="stSub">Settle the island. Trade, build, and race to 10 victory points.</p>
+            <div class="stage-game-meta">
+              <span id="stPlayers">👥 3–4 players</span>
+              <span id="stTime">⏱️ 75 minutes</span>
             </div>
-          </div>
-          <div class="canvas-container">
-            <canvas id="tabletopCanvas" width="960" height="580"></canvas>
-          </div>
-        </div>
 
-        <!-- All Tabletop with Friends Games Grid -->
-        <div class="ttf-grid">
-          <!-- 1. Chess -->
-          <div class="ttf-card">
-            <div class="ttf-banner" style="background: #e9e4da;">♔ ♞ ♜</div>
-            <div class="ttf-card-body">
-              <div>
-                <div class="ttf-creator"><span class="ttf-avatar">O</span> Made by Oscar</div>
-                <div class="ttf-title">Chess</div>
-                <div class="ttf-desc">The royal game: checkmate the enemy king. Grab and throw 3D wooden pieces.</div>
+            <!-- Step 1: Start a Table Box -->
+            <div class="lobby-card" id="preLobbyBox">
+              <div class="playing-as-row">
+                <span style="color:#a8a29e;">Playing as</span>
+                <input type="text" id="playerNicknameInput" value="Oscar" />
               </div>
-              <div>
-                <div class="ttf-meta"><span>2 players • 30 minutes</span><span>Physics Table</span></div>
-                <button class="ttf-start-btn" onclick="openSandbox('chess')">Start a table</button>
-              </div>
+              <button class="start-match-btn" style="width:100%; padding:12px;" onclick="openLobbyRoom()">
+                🎲 Start a table
+              </button>
             </div>
-          </div>
 
-          <!-- 2. Ticket to Ride -->
-          <div class="ttf-card">
-            <div class="ttf-banner" style="background: #e2e8f0;">🚂 🗺️ 🎟️</div>
-            <div class="ttf-card-body">
-              <div>
-                <div class="ttf-creator"><span class="ttf-avatar">O</span> Made by Oscar</div>
-                <div class="ttf-title">Ticket to Ride</div>
-                <div class="ttf-desc">Cross North America by rail, one route at a time. Place train cars & draw tickets.</div>
+            <!-- Step 2: Active Lobby Box (With + Add a bot, Copy Link, Start the game & Chat) -->
+            <div class="lobby-card" id="activeLobbyBox" style="display:none;">
+              <div class="room-link-bar">
+                <span id="roomUrlText">oscargomez.me/room/catan-9x2</span>
+                <button class="copy-link-btn" onclick="copyRoomLink(this)">Copy link</button>
               </div>
-              <div>
-                <div class="ttf-meta"><span>2–5 players • 60 minutes</span><span>9 plays</span></div>
-                <button class="ttf-start-btn" onclick="openSandbox('ticket')">Start a table</button>
+              <div class="seats-grid" id="lobbySeatsGrid"></div>
+              <div class="lobby-actions-row">
+                <button class="add-bot-btn" onclick="addBotToLobby()">+ Add a bot</button>
+                <button class="start-match-btn" onclick="launchOverhead3DGame()">Start the game</button>
+              </div>
+              <div class="table-chat-box">
+                <div style="font-size:0.7rem; text-transform:uppercase; color:#78716c; margin-bottom:6px;">Table Chat</div>
+                <div class="chat-messages" id="lobbyChatLog">
+                  <div>Say hello while everyone gathers.</div>
+                </div>
+                <div class="chat-input-row">
+                  <input type="text" id="lobbyChatInput" placeholder="Say something..." onkeydown="if(event.key==='Enter')sendLobbyChat()" />
+                  <button class="copy-link-btn" onclick="sendLobbyChat()">Send</button>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- 3. Monopoly -->
-          <div class="ttf-card">
-            <div class="ttf-banner" style="background: #fef3c7;">🎩 🏠 🎲</div>
-            <div class="ttf-card-body">
-              <div>
-                <div class="ttf-creator"><span class="ttf-avatar">O</span> Made by Oscar</div>
-                <div class="ttf-title">Monopoly</div>
-                <div class="ttf-desc">Buy the neighborhood, bankrupt your friends. Toss dice, move movers & stack cash.</div>
+          <!-- Floating Rulebook Button (Also triggered by clicking the 3D Rulebook on the table) -->
+          <button class="rulebook-floating-btn" id="openRulebookBtn" onclick="toggleRulebookModal(true)">
+            📖 Click 3D Rulebook & Almanac (Flip Pages)
+          </button>
+
+          <!-- Step 3: Overhead Active Match HUD (Just like Video 1 & 3) -->
+          <div class="active-game-hud" id="overheadGameHud">
+            <div class="hud-top-bar">
+              <button class="ttf-btn-ghost" style="background:rgba(20,17,14,0.88);" onclick="exitOverheadToLobby()">
+                ← Leave Table
+              </button>
+              <div class="turn-toast">
+                <h4 id="hudTurnHeader">Oscar's turn</h4>
+                <p id="hudTurnSub">Click a highlighted spot or grab & throw any 3D piece/die on the board!</p>
               </div>
-              <div>
-                <div class="ttf-meta"><span>2–8 players • 150 minutes</span><span>3 plays</span></div>
-                <button class="ttf-start-btn" onclick="openSandbox('monopoly')">Start a table</button>
+            </div>
+
+            <!-- Seated Bot Cards on Left -->
+            <div class="bot-huds-col" id="botHudsContainer"></div>
+
+            <!-- Seated Player HUD at Bottom -->
+            <div class="player-bottom-hud">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:36px; height:36px; border-radius:50%; background:#ef4444; display:flex; align-items:center; justify-content:center; font-weight:800;">O</div>
+                <div>
+                  <div style="font-weight:800; font-size:1rem;" id="hudPlayerName">Oscar</div>
+                  <div style="font-size:0.72rem; color:#fca5a5;">Seated at Table</div>
+                </div>
+              </div>
+              <div class="hud-stat-block">
+                <span>Victory Pts</span>
+                <strong id="hudVP">2</strong>
+              </div>
+              <div class="hud-stat-block">
+                <span>Roads / Moves</span>
+                <strong id="hudRoads">13</strong>
+              </div>
+              <div class="hud-stat-block">
+                <span>Pieces</span>
+                <strong id="hudPieces">5</strong>
+              </div>
+              <div class="hud-stat-block">
+                <span>Resource Cards</span>
+                <strong id="hudCards">4</strong>
+              </div>
+              <div class="hud-action-btns">
+                <button class="ttf-btn-cream" onclick="rollStage3DDice()">🎲 Roll 3D Dice</button>
+                <button class="add-bot-btn" onclick="spawnStage3DCard()">🃏 Draw Card</button>
+                <button class="add-bot-btn" onclick="triggerNextTurn()">⏭️ End Turn</button>
               </div>
             </div>
           </div>
 
-          <!-- 4. Dune: Imperium -->
-          <div class="ttf-card">
-            <div class="ttf-banner" style="background: #f5d0a9;">🏜️ ⚔️ 🪐</div>
-            <div class="ttf-card-body">
-              <div>
-                <div class="ttf-creator"><span class="ttf-avatar">O</span> Made by Oscar</div>
-                <div class="ttf-title">Dune: Imperium</div>
-                <div class="ttf-desc">Deploy agents, harvest spice, and control Arrakis on the desert table.</div>
-              </div>
-              <div>
-                <div class="ttf-meta"><span>3–4 players • 120 minutes</span><span>22 plays</span></div>
-                <button class="ttf-start-btn" onclick="openSandbox('dune')">Start a table</button>
-              </div>
+          <!-- Interactive 3D Rulebook Flipbook Modal (Video 2) -->
+          <div class="rulebook-modal" id="rulebookModal">
+            <div class="book-spread">
+              <div class="book-page left" id="bookPageLeft"></div>
+              <div class="book-page right" id="bookPageRight"></div>
             </div>
-          </div>
-
-          <!-- 5. Blackjack -->
-          <div class="ttf-card">
-            <div class="ttf-banner" style="background: #d8e8dc;">🂡 🂱 🪙</div>
-            <div class="ttf-card-body">
-              <div>
-                <div class="ttf-creator"><span class="ttf-avatar">O</span> Made by Oscar</div>
-                <div class="ttf-title">Blackjack</div>
-                <div class="ttf-desc">Beat the dealer to 21 without going bust. Slide casino chips & flip cards.</div>
-              </div>
-              <div>
-                <div class="ttf-meta"><span>1–7 players • 15 minutes</span><span>3 plays</span></div>
-                <button class="ttf-start-btn" onclick="openSandbox('blackjack')">Start a table</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- 6. DC Deck-Building Game -->
-          <div class="ttf-card">
-            <div class="ttf-banner" style="background: #dbeafe;">🦸‍♂️ ⚡ 🃏</div>
-            <div class="ttf-card-body">
-              <div>
-                <div class="ttf-creator"><span class="ttf-avatar">O</span> Made by Oscar</div>
-                <div class="ttf-title">DC Deck-Building Game</div>
-                <div class="ttf-desc">Recruit heroes, master powers, bring down the Super-Villains.</div>
-              </div>
-              <div>
-                <div class="ttf-meta"><span>1–5 players • 45 minutes</span><span>Base game</span></div>
-                <button class="ttf-start-btn" onclick="openSandbox('dc')">Start a table</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- 7. Checkers -->
-          <div class="ttf-card">
-            <div class="ttf-banner" style="background: #f3e8ff;">🔴 ⚫ 👑</div>
-            <div class="ttf-card-body">
-              <div>
-                <div class="ttf-creator"><span class="ttf-avatar">O</span> Made by Oscar</div>
-                <div class="ttf-title">Checkers</div>
-                <div class="ttf-desc">Classic diagonal jumps and crowned kings on the wooden board.</div>
-              </div>
-              <div>
-                <div class="ttf-meta"><span>2 players • 20 minutes</span><span>14 plays</span></div>
-                <button class="ttf-start-btn" onclick="openSandbox('checkers')">Start a table</button>
-              </div>
+            <div class="book-controls">
+              <button class="book-ctrl-btn" onclick="flipRulebookPage(-1)">← Prev</button>
+              <span id="bookPageIndicator">Page 2–3 of 6</span>
+              <button class="book-ctrl-btn" onclick="flipRulebookPage(1)">Next →</button>
+              <span>|</span>
+              <button class="book-ctrl-btn" style="color:#f87171;" onclick="toggleRulebookModal(false)">Close ✕</button>
             </div>
           </div>
         </div>
@@ -1245,16 +1619,16 @@
     </section>
 
     <!-- ==========================================
-         TAB 4: DONATE (PAYPAL SUPPORT)
+         TAB 4: DONATE (PAYPAL @oscar1975)
          ========================================== -->
     <section id="tab-donate" class="page-section">
       <div class="card donate-container">
         <div class="card-header" style="justify-content: center;">
-          <span class="league-badge">SUPPORT OG ZONE</span>
+          <span class="league-badge">SUPPORT OG ZONE • @oscar1975</span>
         </div>
-        <h2 style="font-size: 1.9rem; margin-bottom: 10px;">Support the Hub 💙</h2>
+        <h2 style="font-size: 1.9rem; margin-bottom: 10px;">Support OG ZONE 💙</h2>
         <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 18px;">
-          Enjoying the live sports command center and tabletop games? 100% of your contribution goes directly to Oscar's PayPal to help keep OG ZONE running and building new features.
+          Enjoying the live sports command center and 3D tabletop games? 100% of your contribution goes directly to Oscar's PayPal (<strong>@oscar1975</strong>) to support the site.
         </p>
 
         <div class="tier-grid">
@@ -1274,11 +1648,11 @@
         />
 
         <button class="paypal-submit-btn" onclick="sendPayPalDonation()">
-          💳 Support via PayPal
+          💳 Support @oscar1975 via PayPal
         </button>
 
         <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 14px;">
-          Redirects securely to PayPal Checkout / PayPal.me
+          Redirects directly to paypal.me/oscar1975
         </p>
       </div>
     </section>
@@ -1286,9 +1660,60 @@
 
   <script>
     /* ========================================================
-       PAYPAL CONFIGURATION (Set your PayPal.me username or email)
+       WEB AUDIO SYNTHESIZER (TACTILE WOOD, DICE & PAPER SOUNDS)
        ======================================================== */
-    const PAYPAL_ME_USERNAME = "OscarGomez"; // Change to your exact PayPal.me handle if different
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function ensureAudio() {
+      if (!audioCtx) audioCtx = new AudioCtx();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function playWoodClack(volume = 0.25, pitch = 180) {
+      try {
+        ensureAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(pitch + Math.random() * 60, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(45, audioCtx.currentTime + 0.065);
+        gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.07);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.075);
+      } catch (e) {}
+    }
+
+    function playPageRustle() {
+      try {
+        ensureAudio();
+        const bufferSize = audioCtx.sampleRate * 0.12;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.4));
+        }
+        const noise = audioCtx.createBufferSource();
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 1200;
+        const gain = audioCtx.createGain();
+        gain.gain.value = 0.18;
+        noise.buffer = buffer;
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        noise.start();
+      } catch (e) {}
+    }
+
+    /* ========================================================
+       PAYPAL CONFIGURATION (@oscar1975)
+       ======================================================== */
+    const PAYPAL_ME_HANDLE = "oscar1975";
 
     function selectDonationAmount(amt, btn) {
       document.querySelectorAll('.tier-btn').forEach(b => b.classList.remove('active'));
@@ -1298,7 +1723,7 @@
 
     function sendPayPalDonation() {
       const amount = parseFloat(document.getElementById('customDonateInput').value) || 10;
-      const url = `https://www.paypal.com/paypalme/${PAYPAL_ME_USERNAME}/${amount}USD`;
+      const url = `https://www.paypal.com/paypalme/${PAYPAL_ME_HANDLE}/${amount}`;
       window.open(url, '_blank', 'noopener');
     }
 
@@ -1373,11 +1798,19 @@
 
       const subtitles = {
         sports: 'Multi-Sport Live Telemetry • Highlights • Player Stats',
-        games: 'Tabletop with Friends • Physics Sandbox Made by Oscar',
+        games: 'Tabletop with Friends • 3D Physics Sandbox Made by Oscar',
         news: 'Breaking Sports Wire & Updates',
-        donate: 'Support OG ZONE via PayPal'
+        donate: 'Support OG ZONE (@oscar1975)'
       };
       document.getElementById('headerSubtitle').textContent = subtitles[tab];
+
+      if (tab === 'games') {
+        setTimeout(() => {
+          initHero3DScene();
+          resizeHero3D();
+          resizeStage3D();
+        }, 60);
+      }
     }
 
     /* ========================================================
@@ -1405,7 +1838,7 @@
         fallbackLeaders: [
           { name: 'Josh Allen', role: 'BUF • QB', stat: '284 PASS YDS, 2 TD, 1 RUSH TD', avatar: 'https://a.espncdn.com/i/headshots/nfl/players/full/3918298.png' },
           { name: 'Patrick Mahomes', role: 'KC • QB', stat: '268 PASS YDS, 2 TD', avatar: 'https://a.espncdn.com/i/headshots/nfl/players/full/3139477.png' },
-          { name: 'James Cook', role: 'BUF • RB', stat: '89 RUSH YDS, 1 TD (Q3 06:12)', avatar: 'https://a.espncdn.com/i/headshots/nfl/players/full/4379399.png' }
+          { name: 'James Cook', role: 'BUF • RB', stat: '89 RUSH YDS, 1 TD', avatar: 'https://a.espncdn.com/i/headshots/nfl/players/full/4379399.png' }
         ]
       },
       {
@@ -1416,8 +1849,7 @@
         away: { name: 'Heat', abbr: 'MIA', score: '104', record: '3-2', logo: 'https://a.espncdn.com/i/teamlogos/nba/500/mia.png', color: '98002E', linescores: [25, 30, 26, 23] },
         fallbackLeaders: [
           { name: 'Paolo Banchero', role: 'ORL • PF', stat: '31 PTS, 9 REB, 5 AST', avatar: 'https://a.espncdn.com/i/headshots/nba/players/full/4432573.png' },
-          { name: 'Bam Adebayo', role: 'MIA • C', stat: '24 PTS, 12 REB, 3 BLK', avatar: 'https://a.espncdn.com/i/headshots/nba/players/full/4066261.png' },
-          { name: 'Franz Wagner', role: 'ORL • SF', stat: '23 PTS, 4 REB, 4 AST', avatar: 'https://a.espncdn.com/i/headshots/nba/players/full/4566434.png' }
+          { name: 'Bam Adebayo', role: 'MIA • C', stat: '24 PTS, 12 REB, 3 BLK', avatar: 'https://a.espncdn.com/i/headshots/nba/players/full/4066261.png' }
         ]
       },
       {
@@ -1427,9 +1859,8 @@
         home: { name: 'Lightning', abbr: 'TB', score: '3', record: '3-1-0', logo: 'https://a.espncdn.com/i/teamlogos/nhl/500/tb.png', color: '002868', linescores: [1, 1, 1] },
         away: { name: 'Panthers', abbr: 'FLA', score: '4', record: '4-1-0', logo: 'https://a.espncdn.com/i/teamlogos/nhl/500/fla.png', color: 'C8102E', linescores: [2, 1, 1] },
         fallbackLeaders: [
-          { name: 'Sam Reinhart', role: 'FLA • C', stat: '2 G, 1 A (PPG in 2nd)', avatar: 'https://a.espncdn.com/i/headshots/nhl/players/full/3114720.png' },
-          { name: 'Nikita Kucherov', role: 'TB • RW', stat: '1 G, 2 A, 5 SOG', avatar: 'https://a.espncdn.com/i/headshots/nhl/players/full/2563060.png' },
-          { name: 'Aleksander Barkov', role: 'FLA • C', stat: '1 G, 1 A, +2', avatar: 'https://a.espncdn.com/i/headshots/nhl/players/full/3041969.png' }
+          { name: 'Sam Reinhart', role: 'FLA • C', stat: '2 G, 1 A (PPG)', avatar: 'https://a.espncdn.com/i/headshots/nhl/players/full/3114720.png' },
+          { name: 'Nikita Kucherov', role: 'TB • RW', stat: '1 G, 2 A, 5 SOG', avatar: 'https://a.espncdn.com/i/headshots/nhl/players/full/2563060.png' }
         ]
       },
       {
@@ -1440,8 +1871,7 @@
         away: { name: 'Dodgers', abbr: 'LAD', score: '6', record: '98-64', logo: 'https://a.espncdn.com/i/teamlogos/mlb/500/lad.png', color: '005A9C', linescores: [0, 2, 0, 1, 0, 2, 0, 1, 0] },
         fallbackLeaders: [
           { name: 'Shohei Ohtani', role: 'LAD • DH', stat: '3-5, HR (420 ft), 3 RBI', avatar: 'https://a.espncdn.com/i/headshots/mlb/players/full/39832.png' },
-          { name: 'Fernando Tatis Jr.', role: 'SD • RF', stat: '2-4, HR, 2 RBI, 1 SB', avatar: 'https://a.espncdn.com/i/headshots/mlb/players/full/35983.png' },
-          { name: 'Mookie Betts', role: 'LAD • RF', stat: '2-4, 2B, 2 R, 1 RBI', avatar: 'https://a.espncdn.com/i/headshots/mlb/players/full/33039.png' }
+          { name: 'Fernando Tatis Jr.', role: 'SD • RF', stat: '2-4, HR, 2 RBI', avatar: 'https://a.espncdn.com/i/headshots/mlb/players/full/35983.png' }
         ]
       }
     ];
@@ -1456,7 +1886,6 @@
     }
 
     async function loadAllSports() {
-      document.getElementById('syncStatusText').textContent = 'Syncing NBA, NFL, NHL, MLB...';
       const fetchedGames = [];
       const fetchedNews = [];
 
@@ -1469,8 +1898,6 @@
               const comp = ev.competitions[0];
               const home = comp.competitors.find(c => c.homeAway === 'home');
               const away = comp.competitors.find(c => c.homeAway === 'away');
-
-              // Extract inline leaders from scoreboard if available
               const inlineLeaders = [];
               [away, home].forEach(side => {
                 if (side.leaders) {
@@ -1538,8 +1965,7 @@
 
       LEAGUES.forEach(lg => {
         if (!fetchedGames.some(g => g.leagueKey === lg.key)) {
-          const fb = FALLBACK_GAMES.filter(f => f.leagueKey === lg.key);
-          fetchedGames.push(...fb);
+          fetchedGames.push(...FALLBACK_GAMES.filter(f => f.leagueKey === lg.key));
         }
       });
 
@@ -1565,15 +1991,8 @@
 
     function renderScoreboard() {
       const grid = document.getElementById('scoreboardGrid');
-      const list = currentFilter === 'all'
-        ? allGamesPool
-        : allGamesPool.filter(g => g.leagueKey === currentFilter);
-
-      if (list.length === 0) {
-        grid.innerHTML = `<p style="color:var(--text-muted);">No games found for this filter.</p>`;
-        return;
-      }
-
+      const list = currentFilter === 'all' ? allGamesPool : allGamesPool.filter(g => g.leagueKey === currentFilter);
+      if (!list.length) return;
       selectSpotlightGame(list[0]);
 
       grid.innerHTML = list.map(g => `
@@ -1585,20 +2004,14 @@
           <div class="team-row">
             <div class="team-info">
               <img src="${g.away.logo}" alt="${g.away.name}" />
-              <div>
-                <span class="team-title">${g.away.name}</span>
-                <span class="team-rec">(${g.away.record})</span>
-              </div>
+              <div><span class="team-title">${g.away.name}</span><span class="team-rec">(${g.away.record})</span></div>
             </div>
             <span class="team-pts">${g.away.score}</span>
           </div>
           <div class="team-row">
             <div class="team-info">
               <img src="${g.home.logo}" alt="${g.home.name}" />
-              <div>
-                <span class="team-title">${g.home.name}</span>
-                <span class="team-rec">(${g.home.record})</span>
-              </div>
+              <div><span class="team-title">${g.home.name}</span><span class="team-rec">(${g.home.record})</span></div>
             </div>
             <span class="team-pts">${g.home.score}</span>
           </div>
@@ -1640,9 +2053,7 @@
       const statsEl = document.getElementById('playerStatsList');
       const socialEl = document.getElementById('socialBuzzLinks');
       const clipBar = document.getElementById('clipSelectorBar');
-      statsEl.innerHTML = `<p style="color:var(--text-muted); font-size:0.85rem;">Loading player stats & scoring summary...</p>`;
 
-      // Social Media direct search links for this exact game
       const query = encodeURIComponent(`${g.away.name} ${g.home.name} highlights`);
       socialEl.innerHTML = `
         <a class="social-chip" href="https://x.com/search?q=${query}&f=video" target="_blank" rel="noopener">𝕏 Live Game Clips</a>
@@ -1653,14 +2064,11 @@
       let leadersToRender = [];
       let videosToRender = [];
 
-      // Query ESPN Summary endpoint for real scoring plays, boxscore leaders & MP4 highlight clips
       try {
         const sumRes = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${g.leaguePath}/summary?event=${g.id}`);
         const sumData = await sumRes.json();
-
-        // 1. Parse Scoring Plays (Who scored & when)
         if (sumData.scoringPlays && sumData.scoringPlays.length > 0) {
-          sumData.scoringPlays.slice(-5).reverse().forEach(sp => {
+          sumData.scoringPlays.slice(-4).reverse().forEach(sp => {
             leadersToRender.push({
               name: sp.team ? `${sp.team.abbreviation} Scoring Play` : 'Scoring Play',
               role: sp.period ? `Period/Qtr ${sp.period.number} • ${sp.clock ? sp.clock.displayValue : ''}` : 'Match Event',
@@ -1669,90 +2077,40 @@
             });
           });
         }
-
-        // 2. Parse Player Leaders
-        if (sumData.leaders && sumData.leaders.length > 0) {
-          sumData.leaders.forEach(teamBlock => {
-            const tAbbr = teamBlock.team ? teamBlock.team.abbreviation : '';
-            if (teamBlock.leaders) {
-              teamBlock.leaders.slice(0, 2).forEach(cat => {
-                if (cat.leaders && cat.leaders[0]) {
-                  const p = cat.leaders[0];
-                  leadersToRender.push({
-                    name: p.athlete ? p.athlete.displayName : tAbbr,
-                    role: `${tAbbr} • ${cat.displayName || ''}`,
-                    stat: p.displayValue || '',
-                    avatar: p.athlete && p.athlete.headshot ? p.athlete.headshot.href : g.home.logo
-                  });
-                }
-              });
-            }
-          });
-        }
-
-        // 3. Parse Highlight Videos from ESPN
         if (sumData.videos && sumData.videos.length > 0) {
-          sumData.videos.slice(0, 5).forEach(v => {
+          sumData.videos.slice(0, 4).forEach(v => {
             const mp4 = (v.links && v.links.source && (v.links.source.HD ? v.links.source.HD.href : v.links.source.href)) || '';
-            if (mp4) {
-              videosToRender.push({
-                title: v.headline || 'Game Highlight Clip',
-                mp4,
-                thumb: v.thumbnail || ''
-              });
-            }
+            if (mp4) videosToRender.push({ title: v.headline || 'Highlight', mp4, thumb: v.thumbnail || '' });
           });
         }
-      } catch (err) {}
+      } catch (e) {}
 
-      if (leadersToRender.length === 0) {
-        leadersToRender = (g.inlineLeaders && g.inlineLeaders.length > 0)
-          ? g.inlineLeaders
-          : (g.fallbackLeaders || [
-              { name: `${g.away.name} Star Performer`, role: `${g.away.abbr} • Top Scorer`, stat: `Score: ${g.away.score} • Active Telemetry`, avatar: g.away.logo },
-              { name: `${g.home.name} Star Performer`, role: `${g.home.abbr} • Top Scorer`, stat: `Score: ${g.home.score} • Active Telemetry`, avatar: g.home.logo }
-            ]);
+      if (!leadersToRender.length) {
+        leadersToRender = (g.inlineLeaders && g.inlineLeaders.length) ? g.inlineLeaders : (g.fallbackLeaders || [
+          { name: `${g.away.name} Leader`, role: g.away.abbr, stat: `Score: ${g.away.score}`, avatar: g.away.logo },
+          { name: `${g.home.name} Leader`, role: g.home.abbr, stat: `Score: ${g.home.score}`, avatar: g.home.logo }
+        ]);
       }
 
       statsEl.innerHTML = leadersToRender.map(item => `
         <div class="leader-item">
           <div class="leader-left">
             <img class="leader-avatar" src="${item.avatar}" alt="${item.name}" />
-            <div>
-              <div class="leader-name">${item.name}</div>
-              <div class="leader-role">${item.role}</div>
-            </div>
+            <div><div class="leader-name">${item.name}</div><div class="leader-role">${item.role}</div></div>
           </div>
           <div class="leader-stat">${item.stat}</div>
         </div>
       `).join('');
 
-      // Fallback action reel if ESPN hasn't uploaded MP4 clips for this specific game yet
-      if (videosToRender.length === 0) {
+      if (!videosToRender.length) {
         videosToRender = [
-          {
-            title: `${g.away.abbr} vs ${g.home.abbr} Broadcast Preview Reel`,
-            mp4: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-            thumb: g.home.logo
-          },
-          {
-            title: `${g.leagueLabel} Action Clip #2`,
-            mp4: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-            thumb: g.away.logo
-          }
+          { title: `${g.away.abbr} vs ${g.home.abbr} Highlight Reel`, mp4: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', thumb: g.home.logo }
         ];
-        document.getElementById('clipStatusBadge').textContent = 'SOCIAL & REELS';
-      } else {
-        document.getElementById('clipStatusBadge').textContent = `${videosToRender.length} LIVE CLIPS`;
       }
-
       currentClipsList = videosToRender;
       clipBar.innerHTML = videosToRender.map((c, idx) => `
-        <button class="clip-pill ${idx === 0 ? 'active' : ''}" onclick="playClipIndex(${idx}, this)">
-          ▶ ${c.title.slice(0, 34)}...
-        </button>
+        <button class="clip-pill ${idx === 0 ? 'active' : ''}" onclick="playClipIndex(${idx}, this)">▶ ${c.title.slice(0, 32)}...</button>
       `).join('');
-
       playClipIndex(0);
     }
 
@@ -1764,8 +2122,7 @@
       const clip = currentClipsList[idx];
       if (!clip) return;
       const video = document.getElementById('highlightVideoPlayer');
-      const source = document.getElementById('highlightVideoSource');
-      source.src = clip.mp4;
+      document.getElementById('highlightVideoSource').src = clip.mp4;
       if (clip.thumb) video.poster = clip.thumb;
       video.load();
     }
@@ -1773,7 +2130,6 @@
     function updateMomentumChart(g) {
       const ctx = document.getElementById('sportChart').getContext('2d');
       if (sportChartInstance) sportChartInstance.destroy();
-
       const len = Math.max(g.home.linescores.length, g.away.linescores.length, 4);
       const labels = Array.from({ length: len }, (_, i) => `P${i + 1}`);
       const homeData = g.home.linescores.length ? g.home.linescores : [7, 10, 6, 9];
@@ -1801,10 +2157,7 @@
 
     function renderNews(articles) {
       const grid = document.getElementById('newsGrid');
-      if (!articles || articles.length === 0) {
-        grid.innerHTML = `<div class="news-card"><h3>Sports Wire Ready</h3><p style="color:var(--text-muted);">Live headlines will populate here automatically.</p></div>`;
-        return;
-      }
+      if (!articles || !articles.length) return;
       grid.innerHTML = articles.map(a => `
         <div class="news-card">
           <div>
@@ -1818,533 +2171,1062 @@
     }
 
     loadAllSports();
-    setInterval(loadAllSports, 45000);
 
     /* ========================================================
-       4. 2D TABLETOP PHYSICS ENGINE (GRAB, LIFT, DRAG & THROW)
+       4. TABLETOP WITH FRIENDS: 13 GAMES CATALOG & METADATA
        ======================================================== */
-    const tbCanvas = document.getElementById('tabletopCanvas');
-    const ctxTb = tbCanvas.getContext('2d');
-    let currentSandboxGame = 'chess';
-    let tablePieces = [];
-    let draggedPiece = null;
-    let dragOffset = { x: 0, y: 0 };
-    let pointerHistory = [];
-    let sandboxRunning = false;
+    const TTF_GAMES = [
+      { key: 'dc', title: 'DC Deck-Building Game', desc: 'Recruit heroes, master powers, bring down the Super-Villains.', players: '1–5 players', time: '45 minutes', extra: 'Base game', cat: 'Cards', boxBg: '#1e3a8a', boxFg: '#fde047', boardType: 'cards' },
+      { key: 'four', title: 'Four in a Row', desc: 'Drop discs, block lines, connect four to win.', players: '2 players', time: '10 minutes', extra: '8 plays', cat: 'Classic', boxBg: '#1e293b', boxFg: '#38bdf8', boardType: 'grid' },
+      { key: 'dune', title: 'Dune: Imperium', desc: 'Deploy agents, harvest spice, and control Arrakis.', players: '1–4 players', time: '90 minutes', extra: '22 plays', cat: 'Strategy', boxBg: '#78350f', boxFg: '#fde68a', boardType: 'dune' },
+      { key: 'seabattle', title: 'Sea Battle', desc: 'Deploy your fleet, call your shots, sink theirs first.', players: '2 players', time: '15 minutes', extra: '5 plays', cat: 'Classic', boxBg: '#0f172a', boxFg: '#38bdf8', boardType: 'grid' },
+      { key: 'holdem', title: "Texas Hold'em", desc: 'Two hole cards, five on the board, all your chips.', players: '2–9 players', time: '30 minutes', extra: '12 plays', cat: 'Cards', boxBg: '#14532d', boxFg: '#fde047', boardType: 'casino' },
+      { key: 'catan', title: 'Catan', desc: 'Settle the island. Trade, build, and race to 10 victory points.', players: '3–4 players', time: '75 minutes', extra: '19 plays', cat: 'Strategy', boxBg: '#991b1b', boxFg: '#fef08a', boardType: 'catan' },
+      { key: 'ticket', title: 'Ticket to Ride', desc: 'Cross North America by rail, one route at a time.', players: '2–5 players', time: '60 minutes', extra: '9 plays', cat: 'Strategy', boxBg: '#1e3a8a', boxFg: '#f8fafc', boardType: 'ticket' },
+      { key: 'blackjack', title: 'Blackjack', desc: 'Beat the dealer to 21. Classic shoe, Vegas strip rules, up to five seats.', players: '1–5 players', time: '15 minutes', extra: '3 plays', cat: 'Cards', boxBg: '#3b0764', boxFg: '#fde047', boardType: 'casino' },
+      { key: 'heat', title: 'Heat: Pedal to the Metal', desc: 'Push your engine to the limit, manage your heat, slipstream to victory.', players: '1–6 players', time: '45 minutes', extra: '6 plays', cat: 'Dice', boxBg: '#7f1d1d', boxFg: '#fdba74', boardType: 'track' },
+      { key: 'chess', title: 'Chess', desc: 'The royal game: checkmate the enemy king.', players: '2 players', time: '30 minutes', extra: '18 plays', cat: 'Classic', boxBg: '#27272a', boxFg: '#fde68a', boardType: 'chess' },
+      { key: 'dinolab', title: 'Dino Lab', desc: 'Draft dinosaurs, fill your board, score the park.', players: '2–5 players', time: '15 minutes', extra: '4 plays', cat: 'Party', boxBg: '#3f2e21', boxFg: '#a7f3d0', boardType: 'dune' },
+      { key: 'monopoly', title: 'Monopoly', desc: 'Buy the neighborhood, bankrupt your friends.', players: '2–6 players', time: '90 minutes', extra: '3 plays', cat: 'Classic', boxBg: '#064e3b', boxFg: '#fde047', boardType: 'monopoly' },
+      { key: 'checkers', title: 'Checkers', desc: 'Jump, capture, crown your kings.', players: '2 players', time: '20 minutes', extra: '14 plays', cat: 'Classic', boxBg: '#4c1d95', boxFg: '#f5d0fe', boardType: 'checkers' }
+    ];
 
-    function openSandbox(gameKey) {
-      currentSandboxGame = gameKey;
-      const modal = document.getElementById('sandboxModal');
-      modal.classList.add('open');
-      modal.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      setupSandboxGame(gameKey);
-      if (!sandboxRunning) {
-        sandboxRunning = true;
-        requestAnimationFrame(sandboxPhysicsLoop);
+    let activeCatFilter = 'All';
+    let activeSearchQuery = '';
+
+    function renderTTFCatalog() {
+      const grid = document.getElementById('ttfCatalogGrid');
+      const filtered = TTF_GAMES.filter(g => {
+        const matchCat = activeCatFilter === 'All' || g.cat === activeCatFilter;
+        const matchSearch = g.title.toLowerCase().includes(activeSearchQuery.toLowerCase()) ||
+                            g.desc.toLowerCase().includes(activeSearchQuery.toLowerCase());
+        return matchCat && matchSearch;
+      });
+
+      grid.innerHTML = filtered.map(g => `
+        <div class="ttf-box-card" onclick="openGameStage('${g.key}')">
+          <div class="ttf-box-preview">
+            <span class="by-oscar-tag">By Oscar</span>
+            <div class="box-3d-mesh" style="background:${g.boxBg}; color:${g.boxFg};">
+              <div style="font-size:0.95rem; line-height:1.15;">${g.title.toUpperCase()}</div>
+              <div style="font-size:0.55rem; opacity:0.8; margin-top:4px; font-family:sans-serif;">OSCAR EDITION</div>
+            </div>
+          </div>
+          <div class="ttf-box-info">
+            <div>
+              <div class="ttf-box-title">${g.title}</div>
+              <div class="ttf-box-desc">${g.desc}</div>
+            </div>
+            <div class="ttf-box-meta">
+              <span>${g.players} • ${g.time}</span>
+              <span>${g.extra}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterCatalogByCat(cat, btn) {
+      activeCatFilter = cat;
+      document.querySelectorAll('.ttf-cat-pill').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderTTFCatalog();
+    }
+
+    function filterCatalogBySearch(val) {
+      activeSearchQuery = val;
+      renderTTFCatalog();
+    }
+
+    renderTTFCatalog();
+
+    /* ========================================================
+       5. THREE.JS SCENE 1: INTERACTIVE 3D HERO FELT TABLE (Video 2)
+       ======================================================== */
+    let heroScene, heroCamera, heroRenderer, heroRaycaster, heroMouse, heroDragPlane;
+    let heroBodies = [];
+    let heroDraggedBody = null;
+    let heroLastHitPoint = new THREE.Vector3();
+    let heroVelPoint = new THREE.Vector3();
+    let heroInitialized = false;
+
+    function makeDieMaterials(baseColor, pipColor) {
+      const mats = [];
+      for (let face = 1; face <= 6; face++) {
+        const c = document.createElement('canvas');
+        c.width = 128; c.height = 128;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = baseColor;
+        ctx.fillRect(0, 0, 128, 128);
+        ctx.strokeStyle = 'rgba(0,0,0,0.18)';
+        ctx.lineWidth = 6;
+        ctx.strokeRect(3, 3, 122, 122);
+        ctx.fillStyle = pipColor;
+        const pips = {
+          1: [[64,64]],
+          2: [[34,34],[94,94]],
+          3: [[34,34],[64,64],[94,94]],
+          4: [[34,34],[94,34],[34,94],[94,94]],
+          5: [[34,34],[94,34],[64,64],[34,94],[94,94]],
+          6: [[34,30],[94,30],[34,64],[94,64],[34,98],[94,98]]
+        }[face];
+        pips.forEach(([px, py]) => {
+          ctx.beginPath(); ctx.arc(px, py, 11, 0, Math.PI * 2); ctx.fill();
+        });
+        mats.push(new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(c), roughness: 0.3 }));
       }
+      return mats;
     }
 
-    function closeSandbox() {
-      document.getElementById('sandboxModal').classList.remove('open');
+    function makeCardTexture(title, sub, accentColor) {
+      const c = document.createElement('canvas');
+      c.width = 256; c.height = 360;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#fdfbf7';
+      ctx.fillRect(0, 0, 256, 360);
+      ctx.strokeStyle = '#1c1917';
+      ctx.lineWidth = 10;
+      ctx.strokeRect(8, 8, 240, 344);
+      ctx.fillStyle = accentColor;
+      ctx.fillRect(24, 24, 208, 150);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 28px Georgia';
+      ctx.textAlign = 'center';
+      ctx.fillText(title, 128, 108);
+      ctx.fillStyle = '#1c1917';
+      ctx.font = 'bold 22px sans-serif';
+      ctx.fillText(sub, 128, 245);
+      ctx.font = '16px sans-serif';
+      ctx.fillStyle = '#57534e';
+      ctx.fillText('MADE BY OSCAR', 128, 315);
+      return new THREE.CanvasTexture(c);
     }
 
-    function resetCurrentSandbox() {
-      setupSandboxGame(currentSandboxGame);
-    }
+    function initHero3DScene() {
+      if (heroInitialized) return;
+      heroInitialized = true;
+      const canvas = document.getElementById('hero3DCanvas');
+      heroScene = new THREE.Scene();
+      heroScene.background = new THREE.Color(0x16261e);
 
-    // Physical Piece Factory
-    function createPiece(opts) {
-      return {
-        id: Math.random().toString(36).slice(2),
-        x: opts.x,
-        y: opts.y,
-        vx: 0,
-        vy: 0,
-        r: opts.r || 22,
-        w: opts.w || 58,
-        h: opts.h || 82,
-        shape: opts.shape || 'circle', // 'circle', 'card', 'die', 'train'
-        label: opts.label || '',
-        subLabel: opts.subLabel || '',
-        bg: opts.bg || '#f8fafc',
-        fg: opts.fg || '#0f172a',
-        border: opts.border || '#334155',
-        angle: opts.angle || 0,
-        vAngle: 0,
-        faceUp: opts.faceUp !== undefined ? opts.faceUp : true,
-        backBg: opts.backBg || '#1e3a8a',
-        team: opts.team || 'neutral',
-        rollingTimer: 0
-      };
-    }
+      heroCamera = new THREE.PerspectiveCamera(42, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+      heroCamera.position.set(0, 11.5, 9.2);
+      heroCamera.lookAt(1.5, 0, 0);
 
-    function setupSandboxGame(gameKey) {
-      tablePieces = [];
-      const titles = {
-        chess: 'Chess — Royal Wooden Table',
-        ticket: 'Ticket to Ride — North America Rail Sandbox',
-        monopoly: 'Monopoly — Property & Dice Sandbox',
-        dune: 'Dune: Imperium — Arrakis Spice Table',
-        blackjack: 'Blackjack — Casino Felt & Chips Sandbox',
-        dc: 'DC Deck-Building Game — Hero Lineup Table',
-        checkers: 'Checkers — Classic Board Sandbox'
-      };
-      document.getElementById('sandboxGameTitle').textContent = titles[gameKey] || 'Tabletop Sandbox';
+      heroRenderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      heroRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
+      heroRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      heroRenderer.shadowMap.enabled = true;
 
-      if (gameKey === 'chess') {
-        const startX = 256, startY = 66, sq = 56;
-        const backRowW = ['♖','♘','♗','♕','♔','♗','♘','♖'];
-        const backRowB = ['♜','♞','♝','♛','♚','♝','♞','♜'];
-        for (let c = 0; c < 8; c++) {
-          // Black pieces
-          tablePieces.push(createPiece({ x: startX + c * sq + 28, y: startY + 28, r: 22, label: backRowB[c], bg: '#1e293b', fg: '#f8fafc', border: '#94a3b8', team: 'bot' }));
-          tablePieces.push(createPiece({ x: startX + c * sq + 28, y: startY + sq + 28, r: 20, label: '♟', bg: '#1e293b', fg: '#f8fafc', border: '#94a3b8', team: 'bot' }));
-          // White pieces (Oscar)
-          tablePieces.push(createPiece({ x: startX + c * sq + 28, y: startY + 6 * sq + 28, r: 20, label: '♙', bg: '#fef3c7', fg: '#1c1917', border: '#d97706', team: 'oscar' }));
-          tablePieces.push(createPiece({ x: startX + c * sq + 28, y: startY + 7 * sq + 28, r: 22, label: backRowW[c], bg: '#fef3c7', fg: '#1c1917', border: '#d97706', team: 'oscar' }));
-        }
-      } else if (gameKey === 'checkers') {
-        const startX = 256, startY = 66, sq = 56;
-        for (let r = 0; r < 8; r++) {
-          for (let c = 0; c < 8; c++) {
-            if ((r + c) % 2 === 1) {
-              if (r < 3) tablePieces.push(createPiece({ x: startX + c * sq + 28, y: startY + r * sq + 28, r: 21, label: '⚫', bg: '#18181b', fg: '#fff', border: '#52525b', team: 'bot' }));
-              if (r > 4) tablePieces.push(createPiece({ x: startX + c * sq + 28, y: startY + r * sq + 28, r: 21, label: '🔴', bg: '#dc2626', fg: '#fff', border: '#fca5a5', team: 'oscar' }));
-            }
-          }
-        }
-      } else if (gameKey === 'blackjack') {
-        // Chips
-        const chipColors = [
-          { val: '$5', bg: '#dc2626' }, { val: '$25', bg: '#16a34a' },
-          { val: '$100', bg: '#18181b' }, { val: '$500', bg: '#7c3aed' }
-        ];
-        chipColors.forEach((ch, i) => {
-          for (let k = 0; k < 3; k++) {
-            tablePieces.push(createPiece({ x: 140 + i * 75, y: 460 - k * 8, r: 24, label: ch.val, bg: ch.bg, fg: '#fff', border: '#fde047', team: 'oscar' }));
-          }
-        });
-        // Cards
-        const cards = ['A♠','K♥','Q♦','J♣','10♠','9♥'];
-        cards.forEach((c, i) => {
-          tablePieces.push(createPiece({
-            x: 340 + i * 72, y: i < 2 ? 150 : 350, shape: 'card', w: 62, h: 88,
-            label: c, subLabel: 'CASINO', bg: '#ffffff', fg: c.includes('♥') || c.includes('♦') ? '#dc2626' : '#0f172a',
-            faceUp: i !== 1
-          }));
-        });
-      } else if (gameKey === 'ticket') {
-        // Train cars & route cards
-        for (let i = 0; i < 10; i++) {
-          tablePieces.push(createPiece({ x: 110 + (i % 5) * 52, y: 470 + Math.floor(i / 5) * 42, shape: 'train', w: 42, h: 22, label: '🚂', bg: '#2563eb', fg: '#fff', border: '#93c5fd', team: 'oscar' }));
-          tablePieces.push(createPiece({ x: 640 + (i % 5) * 52, y: 470 + Math.floor(i / 5) * 42, shape: 'train', w: 42, h: 22, label: '🚂', bg: '#dc2626', fg: '#fff', border: '#fca5a5', team: 'bot' }));
-        }
-        const tickets = ['MIA → NYC (11)', 'LAX → SEA (9)', 'DEN → CHI (7)', 'ORL → DAL (6)'];
-        tickets.forEach((t, i) => {
-          tablePieces.push(createPiece({ x: 260 + i * 110, y: 110, shape: 'card', w: 92, h: 64, label: t, subLabel: 'ROUTE TICKET', bg: '#fef3c7', fg: '#1c1917' }));
-        });
-      } else if (gameKey === 'monopoly') {
-        // Movers, Dice, and Property Deeds
-        const movers = ['🎩','🚗','🐕','🚢'];
-        movers.forEach((m, i) => {
-          tablePieces.push(createPiece({ x: 440 + i * 45, y: 450, r: 22, label: m, bg: '#e2e8f0', fg: '#0f172a', border: '#eab308', team: 'oscar' }));
-        });
-        // Two throwable Dice
-        tablePieces.push(createPiece({ x: 430, y: 280, shape: 'die', w: 44, h: 44, r: 24, label: '5', bg: '#ffffff', fg: '#111827' }));
-        tablePieces.push(createPiece({ x: 500, y: 280, shape: 'die', w: 44, h: 44, r: 24, label: '6', bg: '#ffffff', fg: '#111827' }));
-        // Deeds
-        const deeds = [
-          { name: 'Boardwalk', col: '#1d4ed8', price: '$400' },
-          { name: 'Park Place', col: '#1d4ed8', price: '$350' },
-          { name: 'Kentucky Ave', col: '#dc2626', price: '$220' },
-          { name: 'Oriental Ave', col: '#38bdf8', price: '$100' }
-        ];
-        deeds.forEach((d, i) => {
-          tablePieces.push(createPiece({ x: 120, y: 130 + i * 95, shape: 'card', w: 84, h: 76, label: d.name, subLabel: d.price, bg: '#ffffff', fg: '#111827', border: d.col }));
-        });
-      } else if (gameKey === 'dune') {
-        // Agents, Spice cubes, Intrigue cards
-        for (let i = 0; i < 6; i++) {
-          tablePieces.push(createPiece({ x: 160 + i * 42, y: 480, r: 18, label: '🏜️', bg: '#ea580c', fg: '#fff', border: '#fed7aa' }));
-        }
-        ['Agent 1','Agent 2','Mentat'].forEach((ag, i) => {
-          tablePieces.push(createPiece({ x: 520 + i * 65, y: 475, r: 24, label: '⚔️', subLabel: ag, bg: '#15803d', fg: '#fff', border: '#86efac', team: 'oscar' }));
-        });
-        ['Arrakeen','Spice Refinery','Heighliner','Imperial Basin'].forEach((card, i) => {
-          tablePieces.push(createPiece({ x: 240 + i * 140, y: 130, shape: 'card', w: 105, h: 75, label: card, subLabel: 'DUNE SECTOR', bg: '#fde68a', fg: '#451a03' }));
-        });
-      } else if (gameKey === 'dc') {
-        const heroes = [
-          { name: 'Batman', sub: '+3 Power', bg: '#1e293b', fg: '#fde047' },
-          { name: 'Superman', sub: '+4 Power', bg: '#1d4ed8', fg: '#ffffff' },
-          { name: 'Wonder Woman', sub: 'Draw 2 Cards', bg: '#b91c1c', fg: '#fde047' },
-          { name: 'The Flash', sub: 'First Strike', bg: '#dc2626', fg: '#fef08a' },
-          { name: 'Green Lantern', sub: 'Willpower +3', bg: '#15803d', fg: '#ffffff' }
-        ];
-        heroes.forEach((h, i) => {
-          tablePieces.push(createPiece({
-            x: 180 + i * 145, y: 240, shape: 'card', w: 110, h: 145,
-            label: h.name, subLabel: h.sub, bg: h.bg, fg: h.fg, border: '#fde047'
-          }));
-        });
-        tablePieces.push(createPiece({ x: 480, y: 460, shape: 'die', w: 46, h: 46, r: 24, label: '6', bg: '#fde047', fg: '#111' }));
+      const amb = new THREE.AmbientLight(0xffffff, 0.65);
+      heroScene.add(amb);
+
+      const dir = new THREE.DirectionalLight(0xfff7ed, 0.95);
+      dir.position.set(6, 16, 8);
+      dir.castShadow = true;
+      dir.shadow.mapSize.width = 1024;
+      dir.shadow.mapSize.height = 1024;
+      heroScene.add(dir);
+
+      // Green Felt Table Floor
+      const feltGeo = new THREE.PlaneGeometry(32, 20);
+      const feltMat = new THREE.MeshStandardMaterial({ color: 0x224234, roughness: 0.88 });
+      const felt = new THREE.Mesh(feltGeo, feltMat);
+      felt.rotation.x = -Math.PI / 2;
+      felt.receiveShadow = true;
+      heroScene.add(felt);
+
+      // Spawn 3D Dice, Chips, Wooden Blocks, and Cards on the right side (just like Video 2)
+      const whiteDieMat = makeDieMaterials('#f8fafc', '#0f172a');
+      const redDieMat = makeDieMaterials('#dc2626', '#ffffff');
+
+      for (let i = 0; i < 4; i++) {
+        const dieMesh = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.95, 0.95), i % 2 === 0 ? whiteDieMat : redDieMat);
+        dieMesh.castShadow = true;
+        dieMesh.position.set(1.5 + i * 1.35, 0.5, -0.5 + (i % 2) * 1.2);
+        heroScene.add(dieMesh);
+        heroBodies.push({ mesh: dieMesh, vx: 0, vz: 0, vy: 0, vr: 0, halfH: 0.48, radius: 0.65, isDie: true });
       }
-    }
 
-    function drawTableBackground() {
-      ctxTb.fillStyle = '#1b2e23';
-      ctxTb.fillRect(0, 0, tbCanvas.width, tbCanvas.height);
+      // Blue D20 / Polyhedron Die
+      const d20Mesh = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(0.68, 0),
+        new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.35, flatShading: true })
+      );
+      d20Mesh.castShadow = true;
+      d20Mesh.position.set(3.8, 0.68, 1.5);
+      heroScene.add(d20Mesh);
+      heroBodies.push({ mesh: d20Mesh, vx: 0, vz: 0, vy: 0, vr: 0, halfH: 0.65, radius: 0.68, isDie: true });
 
-      // Subtle felt vignette
-      const grad = ctxTb.createRadialGradient(480, 290, 80, 480, 290, 560);
-      grad.addColorStop(0, 'rgba(42, 77, 56, 0.45)');
-      grad.addColorStop(1, 'rgba(10, 18, 14, 0.75)');
-      ctxTb.fillStyle = grad;
-      ctxTb.fillRect(0, 0, tbCanvas.width, tbCanvas.height);
-
-      if (currentSandboxGame === 'chess' || currentSandboxGame === 'checkers') {
-        const startX = 256, startY = 66, sq = 56;
-        ctxTb.fillStyle = '#3e2723';
-        ctxTb.fillRect(startX - 12, startY - 12, sq * 8 + 24, sq * 8 + 24);
-        for (let r = 0; r < 8; r++) {
-          for (let c = 0; c < 8; c++) {
-            ctxTb.fillStyle = (r + c) % 2 === 0 ? '#f0d9b5' : '#b58863';
-            ctxTb.fillRect(startX + c * sq, startY + r * sq, sq, sq);
-          }
-        }
-      } else if (currentSandboxGame === 'ticket') {
-        ctxTb.strokeStyle = 'rgba(255,255,255,0.22)';
-        ctxTb.lineWidth = 4;
-        ctxTb.setLineDash([12, 8]);
-        const nodes = [[180,260,'Seattle'],[220,390,'Los Angeles'],[450,310,'Denver'],[620,250,'Chicago'],[800,220,'New York'],[750,410,'Miami']];
-        for (let i = 0; i < nodes.length - 1; i++) {
-          ctxTb.beginPath();
-          ctxTb.moveTo(nodes[i][0], nodes[i][1]);
-          ctxTb.lineTo(nodes[i + 1][0], nodes[i + 1][1]);
-          ctxTb.stroke();
-        }
-        ctxTb.setLineDash([]);
-        nodes.forEach(([nx, ny, city]) => {
-          ctxTb.fillStyle = '#fde047';
-          ctxTb.beginPath(); ctxTb.arc(nx, ny, 9, 0, Math.PI * 2); ctxTb.fill();
-          ctxTb.fillStyle = '#fff'; ctxTb.font = 'bold 13px sans-serif';
-          ctxTb.fillText(city, nx - 24, ny - 14);
-        });
-      } else if (currentSandboxGame === 'monopoly') {
-        ctxTb.strokeStyle = '#fde047';
-        ctxTb.lineWidth = 3;
-        ctxTb.strokeRect(240, 50, 480, 480);
-        ctxTb.fillStyle = 'rgba(255,255,255,0.08)';
-        ctxTb.fillRect(310, 120, 340, 340);
-        ctxTb.fillStyle = '#fde047';
-        ctxTb.font = 'bold 28px Georgia';
-        ctxTb.textAlign = 'center';
-        ctxTb.fillText('MONOPOLY', 480, 295);
-      } else if (currentSandboxGame === 'blackjack') {
-        ctxTb.strokeStyle = 'rgba(253, 224, 71, 0.45)';
-        ctxTb.lineWidth = 3;
-        ctxTb.beginPath();
-        ctxTb.arc(480, 350, 65, 0, Math.PI * 2);
-        ctxTb.stroke();
-        ctxTb.fillStyle = 'rgba(255,255,255,0.5)';
-        ctxTb.font = 'bold 15px sans-serif';
-        ctxTb.textAlign = 'center';
-        ctxTb.fillText('PLACE BETS & CARDS HERE', 480, 355);
+      // Casino Chips & Wooden Discs
+      const chipColors = [0xd97706, 0xdc2626, 0x2563eb, 0x16a34a, 0xfacc15];
+      for (let i = 0; i < 9; i++) {
+        const chip = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.62, 0.62, 0.18, 28),
+          new THREE.MeshStandardMaterial({ color: chipColors[i % chipColors.length], roughness: 0.4 })
+        );
+        chip.castShadow = true;
+        chip.position.set(5.2 + (i % 3) * 1.3, 0.12, -1.2 + Math.floor(i / 3) * 1.3);
+        heroScene.add(chip);
+        heroBodies.push({ mesh: chip, vx: 0, vz: 0, vy: 0, vr: 0, halfH: 0.1, radius: 0.62, isDie: false });
       }
+
+      // 3D Cards on Felt
+      const cardTitles = [['ACE ♠', 'BLACKJACK', '#1e293b'], ['CATAN', 'SETTLEMENT', '#b45309'], ['DUNE', 'SPICE HARVEST', '#7c2d12']];
+      cardTitles.forEach(([t, s, col], idx) => {
+        const cMesh = new THREE.Mesh(
+          new THREE.BoxGeometry(1.7, 0.04, 2.4),
+          new THREE.MeshStandardMaterial({ map: makeCardTexture(t, s, col), roughness: 0.5 })
+        );
+        cMesh.castShadow = true;
+        cMesh.position.set(1.8 + idx * 2.4, 0.04, -3.1);
+        cMesh.rotation.y = (idx - 1) * 0.22;
+        heroScene.add(cMesh);
+        heroBodies.push({ mesh: cMesh, vx: 0, vz: 0, vy: 0, vr: 0, halfH: 0.03, radius: 0.9, isDie: false });
+      });
+
+      heroRaycaster = new THREE.Raycaster();
+      heroMouse = new THREE.Vector2();
+      heroDragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -1.3);
+
+      setup3DPointerInteraction(canvas, () => ({
+        camera: heroCamera,
+        bodies: heroBodies,
+        dragPlane: heroDragPlane,
+        getDragged: () => heroDraggedBody,
+        setDragged: (b) => { heroDraggedBody = b; },
+        lastPoint: heroLastHitPoint,
+        velPoint: heroVelPoint
+      }));
+
+      animateHero3D();
     }
 
-    function sandboxPhysicsLoop() {
-      drawTableBackground();
+    function resizeHero3D() {
+      if (!heroRenderer) return;
+      const canvas = document.getElementById('hero3DCanvas');
+      if (!canvas.clientWidth) return;
+      heroCamera.aspect = canvas.clientWidth / canvas.clientHeight;
+      heroCamera.updateProjectionMatrix();
+      heroRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    }
+    window.addEventListener('resize', resizeHero3D);
 
-      // Update physics & collisions
-      for (let i = 0; i < tablePieces.length; i++) {
-        const p = tablePieces[i];
-        if (p !== draggedPiece) {
-          p.x += p.vx;
-          p.y += p.vy;
-          p.angle += p.vAngle;
+    function animateHero3D() {
+      requestAnimationFrame(animateHero3D);
+      step3DPhysics(heroBodies, heroDraggedBody, 9.5, 5.2);
+      if (heroRenderer && heroScene) heroRenderer.render(heroScene, heroCamera);
+    }
 
-          // Friction
-          p.vx *= 0.92;
-          p.vy *= 0.92;
-          p.vAngle *= 0.9;
+    /* ========================================================
+       6. SHARED 3D PHYSICS & GRAB/THROW CONTROLLER
+       ======================================================== */
+    function setup3DPointerInteraction(canvas, getContextFn) {
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
+      const intersectPt = new THREE.Vector3();
 
-          if (Math.abs(p.vx) < 0.04) p.vx = 0;
-          if (Math.abs(p.vy) < 0.04) p.vy = 0;
+      canvas.addEventListener('pointerdown', (e) => {
+        const ctx = getContextFn();
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(mouse, ctx.camera);
 
-          // Die tumbling effect while fast
-          if (p.shape === 'die' && (Math.abs(p.vx) > 1.2 || Math.abs(p.vy) > 1.2 || p.rollingTimer > 0)) {
-            if (p.rollingTimer > 0) p.rollingTimer--;
-            p.label = String(Math.floor(Math.random() * 6) + 1);
+        // Check special interactive targets first (Rulebook or Catan Settlement nodes)
+        if (ctx.onSpecialClick && ctx.onSpecialClick(raycaster)) return;
+
+        const meshes = ctx.bodies.map(b => b.mesh);
+        const hits = raycaster.intersectObjects(meshes, false);
+        if (hits.length > 0) {
+          const hitMesh = hits[0].object;
+          const body = ctx.bodies.find(b => b.mesh === hitMesh);
+          if (body) {
+            ctx.setDragged(body);
+            body.vx = 0; body.vz = 0; body.vy = 0;
+            body.mesh.position.y = body.halfH + 1.35;
+            raycaster.ray.intersectPlane(ctx.dragPlane, intersectPt);
+            ctx.lastPoint.copy(intersectPt);
+            ctx.velPoint.set(0, 0, 0);
+            playWoodClack(0.18, 260);
+            canvas.setPointerCapture(e.pointerId);
           }
+        }
+      });
 
-          // Wall bounce
-          const pad = p.r || 28;
-          if (p.x < pad) { p.x = pad; p.vx *= -0.75; }
-          if (p.x > tbCanvas.width - pad) { p.x = tbCanvas.width - pad; p.vx *= -0.75; }
-          if (p.y < pad) { p.y = pad; p.vy *= -0.75; }
-          if (p.y > tbCanvas.height - pad) { p.y = tbCanvas.height - pad; p.vy *= -0.75; }
+      canvas.addEventListener('pointermove', (e) => {
+        const ctx = getContextFn();
+        const dragged = ctx.getDragged();
+        if (!dragged) return;
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(mouse, ctx.camera);
+        if (raycaster.ray.intersectPlane(ctx.dragPlane, intersectPt)) {
+          ctx.velPoint.subVectors(intersectPt, ctx.lastPoint);
+          ctx.lastPoint.copy(intersectPt);
+          dragged.mesh.position.x = intersectPt.x;
+          dragged.mesh.position.z = intersectPt.z;
+          dragged.mesh.position.y = dragged.halfH + 1.35;
+          if (dragged.isDie) {
+            dragged.mesh.rotation.x += ctx.velPoint.z * 0.6;
+            dragged.mesh.rotation.z -= ctx.velPoint.x * 0.6;
+          }
+        }
+      });
+
+      canvas.addEventListener('pointerup', () => {
+        const ctx = getContextFn();
+        const dragged = ctx.getDragged();
+        if (!dragged) return;
+        dragged.vx = Math.max(-0.85, Math.min(0.85, ctx.velPoint.x * 0.85));
+        dragged.vz = Math.max(-0.85, Math.min(0.85, ctx.velPoint.z * 0.85));
+        dragged.vy = -0.08;
+        dragged.vr = Math.hypot(dragged.vx, dragged.vz) * 0.45;
+        ctx.setDragged(null);
+      });
+    }
+
+    function step3DPhysics(bodies, dragged, boundX, boundZ) {
+      for (let i = 0; i < bodies.length; i++) {
+        const b = bodies[i];
+        if (b === dragged) continue;
+
+        b.mesh.position.x += b.vx;
+        b.mesh.position.z += b.vz;
+        b.mesh.position.y += b.vy;
+
+        // Gravity to table surface
+        if (b.mesh.position.y > b.halfH) {
+          b.vy -= 0.025;
+          if (b.mesh.position.y + b.vy <= b.halfH) {
+            b.mesh.position.y = b.halfH;
+            if (Math.abs(b.vy) > 0.09) playWoodClack(0.22, b.isDie ? 320 : 190);
+            b.vy = -b.vy * 0.35;
+            if (Math.abs(b.vy) < 0.03) b.vy = 0;
+          }
+        } else {
+          b.mesh.position.y = b.halfH;
+          b.vy = 0;
         }
 
-        // Circle-to-circle collisions so thrown pieces knock other pieces
-        for (let j = i + 1; j < tablePieces.length; j++) {
-          const q = tablePieces[j];
-          const dx = q.x - p.x;
-          const dy = q.y - p.y;
-          const dist = Math.hypot(dx, dy);
-          const minDist = (p.r || 24) + (q.r || 24);
+        // Tumbling rotation
+        if (b.isDie && b.vr > 0.005) {
+          b.mesh.rotation.x += b.vr;
+          b.mesh.rotation.y += b.vr * 0.8;
+          b.vr *= 0.92;
+        }
+
+        // Table friction
+        b.vx *= 0.92;
+        b.vz *= 0.92;
+        if (Math.abs(b.vx) < 0.002) b.vx = 0;
+        if (Math.abs(b.vz) < 0.002) b.vz = 0;
+
+        // Table Wooden Rim Bounce
+        if (b.mesh.position.x > boundX) { b.mesh.position.x = boundX; b.vx *= -0.7; playWoodClack(0.15, 150); }
+        if (b.mesh.position.x < -boundX) { b.mesh.position.x = -boundX; b.vx *= -0.7; playWoodClack(0.15, 150); }
+        if (b.mesh.position.z > boundZ) { b.mesh.position.z = boundZ; b.vz *= -0.7; playWoodClack(0.15, 150); }
+        if (b.mesh.position.z < -boundZ) { b.mesh.position.z = -boundZ; b.vz *= -0.7; playWoodClack(0.15, 150); }
+
+        // Piece-to-piece collisions
+        for (let j = i + 1; j < bodies.length; j++) {
+          const q = bodies[j];
+          const dx = q.mesh.position.x - b.mesh.position.x;
+          const dz = q.mesh.position.z - b.mesh.position.z;
+          const dist = Math.hypot(dx, dz);
+          const minDist = b.radius + q.radius;
           if (dist > 0 && dist < minDist) {
-            const nx = dx / dist;
-            const ny = dy / dist;
+            const nx = dx / dist, nz = dz / dist;
             const overlap = (minDist - dist) * 0.5;
-            if (p !== draggedPiece) { p.x -= nx * overlap; p.y -= ny * overlap; }
-            if (q !== draggedPiece) { q.x += nx * overlap; q.y += ny * overlap; }
-
-            const kx = p.vx - q.vx;
-            const ky = p.vy - q.vy;
-            const pImpulse = 2 * (nx * kx + ny * ky) / 2;
-            if (p !== draggedPiece) {
-              p.vx -= pImpulse * nx * 0.85;
-              p.vy -= pImpulse * ny * 0.85;
-            }
-            if (q !== draggedPiece) {
-              q.vx += pImpulse * nx * 0.85;
-              q.vy += pImpulse * ny * 0.85;
+            if (b !== dragged) { b.mesh.position.x -= nx * overlap; b.mesh.position.z -= nz * overlap; }
+            if (q !== dragged) { q.mesh.position.x += nx * overlap; q.mesh.position.z += nz * overlap; }
+            const rvx = b.vx - q.vx, rvz = b.vz - q.vz;
+            const imp = rvx * nx + rvz * nz;
+            if (imp > 0) {
+              if (b !== dragged) { b.vx -= imp * nx * 0.8; b.vz -= imp * nz * 0.8; }
+              if (q !== dragged) { q.vx += imp * nx * 0.8; q.vz += imp * nz * 0.8; }
+              if (imp > 0.06) playWoodClack(0.2, 240);
             }
           }
         }
       }
-
-      // Render all pieces (dragged piece on top)
-      tablePieces.forEach(p => {
-        if (p !== draggedPiece) drawPiece(p, false);
-      });
-      if (draggedPiece) drawPiece(draggedPiece, true);
-
-      requestAnimationFrame(sandboxPhysicsLoop);
     }
 
-    function drawPiece(p, isHeld) {
-      ctxTb.save();
-      ctxTb.translate(p.x, p.y);
-      if (isHeld) ctxTb.scale(1.16, 1.16);
-      ctxTb.rotate(p.angle);
+    /* ========================================================
+       7. THREE.JS SCENE 2: GAME PREVIEW, LOBBY & OVERHEAD 3D TABLE (Video 1 & 3)
+       ======================================================== */
+    let stageScene, stageCamera, stageRenderer, stageDragPlane;
+    let stageBodies = [];
+    let stageSpecialClickables = [];
+    let stageDraggedBody = null;
+    let stageLastPt = new THREE.Vector3();
+    let stageVelPt = new THREE.Vector3();
+    let stageInitialized = false;
+    let currentStageGame = TTF_GAMES[5]; // Default Catan
+    let cameraTargetPos = new THREE.Vector3(0, 8.2, 11.5);
+    let cameraTargetLook = new THREE.Vector3(0, 0, 0);
+    let currentLookAt = new THREE.Vector3(0, 0, 0);
 
-      // Lift shadow
-      ctxTb.shadowColor = 'rgba(0, 0, 0, 0.55)';
-      ctxTb.shadowBlur = isHeld ? 22 : 7;
-      ctxTb.shadowOffsetX = isHeld ? 8 : 2;
-      ctxTb.shadowOffsetY = isHeld ? 12 : 4;
+    let lobbyBots = [];
+    let activeTurnIndex = 0;
+    let oscarStats = { vp: 2, roads: 13, pieces: 5, cards: 4 };
 
-      if (p.shape === 'card') {
-        const hw = p.w / 2, hh = p.h / 2;
-        ctxTb.fillStyle = p.faceUp ? p.bg : p.backBg;
-        ctxTb.strokeStyle = p.border || '#e2e8f0';
-        ctxTb.lineWidth = 2.5;
-        ctxTb.beginPath();
-        ctxTb.roundRect(-hw, -hh, p.w, p.h, 8);
-        ctxTb.fill();
-        ctxTb.stroke();
+    function openGameStage(gameKey) {
+      const found = TTF_GAMES.find(g => g.key === gameKey) || TTF_GAMES[5];
+      currentStageGame = found;
 
-        ctxTb.shadowBlur = 0;
-        ctxTb.shadowOffsetX = 0;
-        ctxTb.shadowOffsetY = 0;
-        ctxTb.fillStyle = p.faceUp ? p.fg : '#93c5fd';
-        ctxTb.textAlign = 'center';
-        ctxTb.font = 'bold 13px sans-serif';
-        ctxTb.fillText(p.faceUp ? p.label : '🂠 OSCAR', 0, -4);
-        if (p.faceUp && p.subLabel) {
-          ctxTb.font = '11px sans-serif';
-          ctxTb.fillText(p.subLabel, 0, 16);
+      document.getElementById('ttfCatalogView').style.display = 'none';
+      document.getElementById('ttfStageView').classList.add('active');
+      document.getElementById('stageLeftLobbyPanel').style.display = 'block';
+      document.getElementById('preLobbyBox').style.display = 'block';
+      document.getElementById('activeLobbyBox').style.display = 'none';
+      document.getElementById('overheadGameHud').classList.remove('visible');
+      document.getElementById('openRulebookBtn').style.display = 'block';
+
+      document.getElementById('stTitle').textContent = found.title;
+      document.getElementById('stSub').textContent = found.desc;
+      document.getElementById('stPlayers').textContent = `👥 ${found.players}`;
+      document.getElementById('stTime').textContent = `⏱️ ${found.time}`;
+
+      initStage3DIfNeeded();
+      resizeStage3D();
+      buildPreviewTable3D(found);
+
+      // Angle camera like Video 1 (Showing 3D box & rulebook on the right side of the wood table)
+      cameraTargetPos.set(-1.5, 6.2, 10.6);
+      cameraTargetLook.set(-1.0, 0.6, 0);
+    }
+
+    function returnToCatalog() {
+      document.getElementById('ttfStageView').classList.remove('active');
+      document.getElementById('ttfCatalogView').style.display = 'block';
+      setTimeout(resizeHero3D, 50);
+    }
+
+    function openLobbyRoom() {
+      const nick = document.getElementById('playerNicknameInput').value.trim() || 'Oscar';
+      document.getElementById('hudPlayerName').textContent = nick;
+      document.getElementById('preLobbyBox').style.display = 'none';
+      document.getElementById('activeLobbyBox').style.display = 'block';
+      const code = Math.random().toString(36).substring(2, 6);
+      document.getElementById('roomUrlText').textContent = `oscargomez.me/room/${currentStageGame.key}-${code}`;
+      lobbyBots = [];
+      renderLobbySeats();
+    }
+
+    function copyRoomLink(btn) {
+      navigator.clipboard.writeText('https://' + document.getElementById('roomUrlText').textContent);
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = 'Copy link'; }, 1500);
+    }
+
+    function addBotToLobby() {
+      const botNames = ['Luna', 'Luna II', 'Atlas'];
+      if (lobbyBots.length >= 3) return;
+      const nextName = botNames[lobbyBots.length];
+      lobbyBots.push({ name: nextName, diff: 'Easy', color: lobbyBots.length === 0 ? '#3b82f6' : '#f8fafc', vp: 2 });
+      playWoodClack(0.2, 290);
+      renderLobbySeats();
+    }
+
+    function renderLobbySeats() {
+      const nick = document.getElementById('playerNicknameInput').value.trim() || 'Oscar';
+      const grid = document.getElementById('lobbySeatsGrid');
+      let html = `
+        <div class="seat-pill">
+          <span>🔴 <strong>${nick}</strong> (You)</span>
+          <span style="font-size:0.7rem; color:#4ade80;">Host</span>
+        </div>
+      `;
+      lobbyBots.forEach((b, i) => {
+        html += `
+          <div class="seat-pill">
+            <span>🤖 <strong>${b.name}</strong></span>
+            <span style="font-size:0.72rem; color:#a8a29e;">${b.diff} <span style="cursor:pointer;margin-left:4px;" onclick="removeBot(${i})">✕</span></span>
+          </div>
+        `;
+      });
+      grid.innerHTML = html;
+    }
+
+    function removeBot(idx) {
+      lobbyBots.splice(idx, 1);
+      renderLobbySeats();
+    }
+
+    function sendLobbyChat() {
+      const inp = document.getElementById('lobbyChatInput');
+      const txt = inp.value.trim();
+      if (!txt) return;
+      const log = document.getElementById('lobbyChatLog');
+      const nick = document.getElementById('playerNicknameInput').value.trim() || 'Oscar';
+      log.innerHTML += `<div style="margin-top:4px;"><strong style="color:#f5f0e6;">${nick}:</strong> ${txt}</div>`;
+      inp.value = '';
+      log.scrollTop = log.scrollHeight;
+    }
+
+    /* --- LAUNCH FULL 3D OVERHEAD GAME TABLE (Video 1 & 3) --- */
+    function launchOverhead3DGame() {
+      if (lobbyBots.length === 0) {
+        addBotToLobby();
+        addBotToLobby();
+      }
+      document.getElementById('stageLeftLobbyPanel').style.display = 'none';
+      document.getElementById('openRulebookBtn').style.display = 'none';
+      document.getElementById('overheadGameHud').classList.add('visible');
+
+      oscarStats = { vp: 2, roads: 13, pieces: 5, cards: 4 };
+      updateOscarHud();
+      renderBotHuds();
+
+      buildFullOverheadBoard3D(currentStageGame);
+
+      // Fly camera overhead just like Video 1 & 3
+      cameraTargetPos.set(0, 15.2, 4.2);
+      cameraTargetLook.set(0, 0, 0);
+
+      // Run initial bot placement sequence like Video 3
+      document.getElementById('hudTurnHeader').textContent = `${lobbyBots[0].name}'s turn`;
+      document.getElementById('hudTurnSub').textContent = `${lobbyBots[0].name} is placing a piece on the board...`;
+      setTimeout(() => {
+        playWoodClack(0.28, 210);
+        document.getElementById('hudTurnHeader').textContent = `Oscar's turn`;
+        document.getElementById('hudTurnSub').textContent = `Click any glowing spot on the board to build, or grab & throw any 3D piece/die!`;
+      }, 1100);
+    }
+
+    function exitOverheadToLobby() {
+      document.getElementById('overheadGameHud').classList.remove('visible');
+      document.getElementById('stageLeftLobbyPanel').style.display = 'block';
+      document.getElementById('openRulebookBtn').style.display = 'block';
+      buildPreviewTable3D(currentStageGame);
+      cameraTargetPos.set(-1.5, 6.2, 10.6);
+      cameraTargetLook.set(-1.0, 0.6, 0);
+    }
+
+    function renderBotHuds() {
+      const container = document.getElementById('botHudsContainer');
+      container.innerHTML = lobbyBots.map(b => `
+        <div class="bot-hud-card" style="border-color:${b.color};">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>🤖 ${b.name}</strong>
+            <span style="font-size:1.1rem; font-weight:800; color:#fde047;">${b.vp} VP</span>
+          </div>
+          <div style="font-size:0.72rem; color:#94a3b8; margin-top:4px;">
+            Roads: 13 • Pieces: 4 • Cards: 3
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateOscarHud() {
+      document.getElementById('hudVP').textContent = oscarStats.vp;
+      document.getElementById('hudRoads').textContent = oscarStats.roads;
+      document.getElementById('hudPieces').textContent = oscarStats.pieces;
+      document.getElementById('hudCards').textContent = oscarStats.cards;
+    }
+
+    function initStage3DIfNeeded() {
+      if (stageInitialized) return;
+      stageInitialized = true;
+      const canvas = document.getElementById('gameStage3DCanvas');
+      stageScene = new THREE.Scene();
+      stageScene.background = new THREE.Color(0x1b140e);
+
+      stageCamera = new THREE.PerspectiveCamera(42, canvas.clientWidth / canvas.clientHeight, 0.1, 120);
+      stageCamera.position.copy(cameraTargetPos);
+
+      stageRenderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      stageRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
+      stageRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      stageRenderer.shadowMap.enabled = true;
+
+      stageDragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -1.2);
+
+      setup3DPointerInteraction(canvas, () => ({
+        camera: stageCamera,
+        bodies: stageBodies,
+        dragPlane: stageDragPlane,
+        getDragged: () => stageDraggedBody,
+        setDragged: (b) => { stageDraggedBody = b; },
+        lastPoint: stageLastPt,
+        velPoint: stageVelPt,
+        onSpecialClick: (raycaster) => {
+          const hits = raycaster.intersectObjects(stageSpecialClickables, false);
+          if (hits.length > 0) {
+            const obj = hits[0].object;
+            if (obj.userData.type === 'rulebook') {
+              toggleRulebookModal(true);
+              return true;
+            }
+            if (obj.userData.type === 'buildNode') {
+              place3DPieceOnNode(obj);
+              return true;
+            }
+          }
+          return false;
         }
-      } else if (p.shape === 'die') {
-        const hs = p.w / 2;
-        ctxTb.fillStyle = p.bg;
-        ctxTb.strokeStyle = '#cbd5e1';
-        ctxTb.lineWidth = 2;
-        ctxTb.beginPath();
-        ctxTb.roundRect(-hs, -hs, p.w, p.h, 9);
-        ctxTb.fill();
-        ctxTb.stroke();
+      }));
 
-        ctxTb.shadowBlur = 0;
-        ctxTb.fillStyle = p.fg;
-        ctxTb.font = 'bold 20px sans-serif';
-        ctxTb.textAlign = 'center';
-        ctxTb.textBaseline = 'middle';
-        ctxTb.fillText('🎲 ' + p.label, 0, 1);
-      } else if (p.shape === 'train') {
-        ctxTb.fillStyle = p.bg;
-        ctxTb.strokeStyle = p.border;
-        ctxTb.lineWidth = 2;
-        ctxTb.beginPath();
-        ctxTb.roundRect(-p.w / 2, -p.h / 2, p.w, p.h, 5);
-        ctxTb.fill();
-        ctxTb.stroke();
-        ctxTb.shadowBlur = 0;
-        ctxTb.font = '14px sans-serif';
-        ctxTb.textAlign = 'center';
-        ctxTb.textBaseline = 'middle';
-        ctxTb.fillText(p.label, 0, 1);
+      animateStage3D();
+    }
+
+    function resizeStage3D() {
+      if (!stageRenderer) return;
+      const canvas = document.getElementById('gameStage3DCanvas');
+      if (!canvas.clientWidth) return;
+      stageCamera.aspect = canvas.clientWidth / canvas.clientHeight;
+      stageCamera.updateProjectionMatrix();
+      stageRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    }
+    window.addEventListener('resize', resizeStage3D);
+
+    function clearStageScene() {
+      while (stageScene.children.length > 0) {
+        stageScene.remove(stageScene.children[0]);
+      }
+      stageBodies = [];
+      stageSpecialClickables = [];
+    }
+
+    function addBaseTableAndLights() {
+      const amb = new THREE.AmbientLight(0xffffff, 0.68);
+      stageScene.add(amb);
+
+      const dir = new THREE.DirectionalLight(0xfffbeb, 0.95);
+      dir.position.set(5, 18, 8);
+      dir.castShadow = true;
+      dir.shadow.mapSize.width = 1024;
+      dir.shadow.mapSize.height = 1024;
+      stageScene.add(dir);
+
+      // Courtyard outer floor (like Video 1 & 3)
+      const roomFloor = new THREE.Mesh(
+        new THREE.PlaneGeometry(60, 60),
+        new THREE.MeshStandardMaterial({ color: 0x3f2e21, roughness: 0.95 })
+      );
+      roomFloor.rotation.x = -Math.PI / 2;
+      roomFloor.position.y = -1.5;
+      stageScene.add(roomFloor);
+
+      // Main Mahogany Rounded Table Surface
+      const tableMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(19, 0.6, 12.5),
+        new THREE.MeshStandardMaterial({ color: 0x3b2314, roughness: 0.55 })
+      );
+      tableMesh.position.y = -0.3;
+      tableMesh.receiveShadow = true;
+      stageScene.add(tableMesh);
+
+      // Raised Wooden Table Rails
+      const railMat = new THREE.MeshStandardMaterial({ color: 0x26150b, roughness: 0.45 });
+      const rTop = new THREE.Mesh(new THREE.BoxGeometry(19.6, 0.45, 0.45), railMat);
+      rTop.position.set(0, 0.15, -6.25);
+      const rBot = rTop.clone(); rBot.position.set(0, 0.15, 6.25);
+      const rLeft = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.45, 12.9), railMat);
+      rLeft.position.set(-9.55, 0.15, 0);
+      const rRight = rLeft.clone(); rRight.position.set(9.55, 0.15, 0);
+      stageScene.add(rTop, rBot, rLeft, rRight);
+    }
+
+    function makeStandingBoxTexture(title, bgHex, fgHex, subText) {
+      const c = document.createElement('canvas');
+      c.width = 512; c.height = 640;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = bgHex;
+      ctx.fillRect(0, 0, 512, 640);
+
+      const grad = ctx.createLinearGradient(0, 0, 0, 640);
+      grad.addColorStop(0, 'rgba(255,255,255,0.12)');
+      grad.addColorStop(1, 'rgba(0,0,0,0.45)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 512, 640);
+
+      ctx.strokeStyle = fgHex;
+      ctx.lineWidth = 14;
+      ctx.strokeRect(20, 20, 472, 600);
+
+      ctx.fillStyle = fgHex;
+      ctx.font = 'bold 64px Georgia';
+      ctx.textAlign = 'center';
+      ctx.fillText(title.toUpperCase().slice(0, 12), 256, 220);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 28px sans-serif';
+      ctx.fillText(subText, 256, 310);
+
+      // Sun / Island emblem
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.arc(256, 460, 75, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#fef3c7';
+      ctx.font = 'bold 22px sans-serif';
+      ctx.fillText('MADE BY OSCAR', 256, 580);
+      return new THREE.CanvasTexture(c);
+    }
+
+    /* --- BUILD 3D PREVIEW TABLE (Standing Box, Clickable Rulebook, Hexes & Dice like Video 1 & 2) --- */
+    function buildPreviewTable3D(game) {
+      clearStageScene();
+      addBaseTableAndLights();
+
+      // Standing 3D Game Box on the Right
+      const boxTex = makeStandingBoxTexture(game.title, game.boxBg, game.boxFg, 'TRADE • BUILD • SETTLE');
+      const boxMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(2.8, 3.6, 0.7),
+        new THREE.MeshStandardMaterial({ map: boxTex, roughness: 0.4 })
+      );
+      boxMesh.position.set(3.9, 1.8, -1.6);
+      boxMesh.rotation.y = -0.35;
+      boxMesh.castShadow = true;
+      stageScene.add(boxMesh);
+
+      // Standing 3D Clickable Rulebook next to Box (Video 1 & 2)
+      const bookTex = makeStandingBoxTexture(game.title, '#b91c1c', '#fde047', 'GAME RULES & ALMANAC');
+      const bookMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(2.3, 3.1, 0.18),
+        new THREE.MeshStandardMaterial({ map: bookTex, roughness: 0.45 })
+      );
+      bookMesh.position.set(1.5, 1.55, -1.3);
+      bookMesh.rotation.y = -0.18;
+      bookMesh.rotation.x = -0.08;
+      bookMesh.castShadow = true;
+      bookMesh.userData = { type: 'rulebook' };
+      stageScene.add(bookMesh);
+      stageSpecialClickables.push(bookMesh);
+
+      // Sample Hex Tiles, Wooden Pieces & Throwable 3D Dice in front of the box
+      const hexColors = [0x15803d, 0xd97706, 0x65a30d];
+      for (let i = 0; i < 3; i++) {
+        const hex = new THREE.Mesh(
+          new THREE.CylinderGeometry(1.05, 1.05, 0.1, 6),
+          new THREE.MeshStandardMaterial({ color: hexColors[i], roughness: 0.6 })
+        );
+        hex.position.set(2.8 + i * 1.4, 0.06, 1.4 + (i % 2) * 0.7);
+        hex.castShadow = true;
+        stageScene.add(hex);
+        stageBodies.push({ mesh: hex, vx: 0, vz: 0, vy: 0, vr: 0, halfH: 0.06, radius: 0.9, isDie: false });
+      }
+
+      // Throwable 3D Dice
+      const wDie = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.55, 0.55), makeDieMaterials('#fef08a', '#1c1917'));
+      wDie.position.set(2.1, 0.3, 2.5);
+      wDie.castShadow = true;
+      stageScene.add(wDie);
+      stageBodies.push({ mesh: wDie, vx: 0, vz: 0, vy: 0, vr: 0, halfH: 0.28, radius: 0.4, isDie: true });
+
+      const rDie = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.55, 0.55), makeDieMaterials('#dc2626', '#ffffff'));
+      rDie.position.set(2.9, 0.3, 2.7);
+      rDie.castShadow = true;
+      stageScene.add(rDie);
+      stageBodies.push({ mesh: rDie, vx: 0, vz: 0, vy: 0, vr: 0, halfH: 0.28, radius: 0.4, isDie: true });
+
+      // Little 3D wooden settlements
+      const pieceColors = [0x2563eb, 0xdc2626, 0xd97706];
+      pieceColors.forEach((col, i) => {
+        const m = new THREE.Mesh(
+          new THREE.BoxGeometry(0.45, 0.45, 0.45),
+          new THREE.MeshStandardMaterial({ color: col, roughness: 0.4 })
+        );
+        m.position.set(0.8 + i * 0.65, 0.24, 1.8);
+        m.castShadow = true;
+        stageScene.add(m);
+        stageBodies.push({ mesh: m, vx: 0, vz: 0, vy: 0, vr: 0, halfH: 0.23, radius: 0.35, isDie: false });
+      });
+    }
+
+    /* --- BUILD FULL 3D OVERHEAD BOARD + SEATED AVATARS (Video 1 & 3) --- */
+    function buildFullOverheadBoard3D(game) {
+      clearStageScene();
+      addBaseTableAndLights();
+
+      // Add 3D Seated Player Avatars in Chairs around the table (Video 1 & 3)
+      createSeatedAvatar3D(-10.6, -2.2, Math.PI / 2, 0x2563eb); // Luna (Left Top)
+      createSeatedAvatar3D(-10.6, 2.2, Math.PI / 2, 0xf8fafc);  // Luna II (Left Bottom)
+      createSeatedAvatar3D(6.5, 7.4, 0, 0xdc2626);              // Oscar (Bottom Right)
+
+      if (game.boardType === 'catan' || game.boardType === 'dune') {
+        // Blue Ocean Hexagonal Island Border
+        const oceanMesh = new THREE.Mesh(
+          new THREE.CylinderGeometry(5.2, 5.2, 0.08, 6),
+          new THREE.MeshStandardMaterial({ color: game.boardType === 'catan' ? 0x2563eb : 0x9a3412, roughness: 0.5 })
+        );
+        oceanMesh.position.set(0.5, 0.04, 0);
+        oceanMesh.receiveShadow = true;
+        stageScene.add(oceanMesh);
+
+        // 19 Catan Resource Hexes with Number Tokens
+        const hexCoords = [
+          [0,0], [1,0], [-1,0], [0,1], [0,-1], [1,-1], [-1,1],
+          [2,0], [-2,0], [0,2], [0,-2], [1,1], [-1,-1], [2,-1], [-2,1], [1,-2], [-1,2], [2,-2], [-2,2]
+        ];
+        const resPalette = [0x15803d, 0x65a30d, 0xd97706, 0xb45309, 0x64748b, 0xfde68a];
+        const numbers = [6, 5, 9, 4, 3, 8, 10, 6, 5, 9, 12, 3, 2, 11, 11, 4, 8, 10];
+
+        hexCoords.forEach(([q, r], idx) => {
+          const radius = 0.88;
+          const x = 0.5 + radius * Math.sqrt(3) * (q + r / 2);
+          const z = radius * 1.5 * r;
+
+          const hexTile = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.84, 0.84, 0.12, 6),
+            new THREE.MeshStandardMaterial({ color: resPalette[idx % resPalette.length], roughness: 0.65 })
+          );
+          hexTile.position.set(x, 0.1, z);
+          hexTile.receiveShadow = true;
+          stageScene.add(hexTile);
+
+          // Number token disc on top
+          if (idx > 0) {
+            const numC = document.createElement('canvas');
+            numC.width = 64; numC.height = 64;
+            const nCtx = numC.getContext('2d');
+            nCtx.fillStyle = '#fef3c7';
+            nCtx.beginPath(); nCtx.arc(32, 32, 30, 0, Math.PI * 2); nCtx.fill();
+            const nVal = numbers[idx % numbers.length];
+            nCtx.fillStyle = (nVal === 6 || nVal === 8) ? '#dc2626' : '#1c1917';
+            nCtx.font = 'bold 28px Georgia';
+            nCtx.textAlign = 'center';
+            nCtx.textBaseline = 'middle';
+            nCtx.fillText(String(nVal), 32, 33);
+
+            const tok = new THREE.Mesh(
+              new THREE.CylinderGeometry(0.32, 0.32, 0.05, 20),
+              new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(numC) })
+            );
+            tok.position.set(x, 0.18, z);
+            stageScene.add(tok);
+          }
+
+          // Interactive Glowing Build Vertex Node (Just like Video 3)
+          if (idx < 12) {
+            const nodeMesh = new THREE.Mesh(
+              new THREE.CylinderGeometry(0.24, 0.24, 0.08, 16),
+              new THREE.MeshStandardMaterial({ color: 0xfde047, emissive: 0xca8a04, transparent: true, opacity: 0.78 })
+            );
+            nodeMesh.position.set(x + 0.48, 0.19, z + 0.42);
+            nodeMesh.userData = { type: 'buildNode' };
+            stageScene.add(nodeMesh);
+            stageSpecialClickables.push(nodeMesh);
+          }
+        });
+      } else if (game.boardType === 'chess' || game.boardType === 'checkers' || game.boardType === 'grid') {
+        // 3D Wooden 8x8 Chess/Checkers Board
+        for (let r = 0; r < 8; r++) {
+          for (let c = 0; c < 8; c++) {
+            const sq = new THREE.Mesh(
+              new THREE.BoxGeometry(0.95, 0.12, 0.95),
+              new THREE.MeshStandardMaterial({ color: (r + c) % 2 === 0 ? 0xf0d9b5 : 0x8b5a2b })
+            );
+            sq.position.set((c - 3.5) * 0.95, 0.08, (r - 3.5) * 0.95);
+            sq.receiveShadow = true;
+            stageScene.add(sq);
+
+            if ((r < 2 || r > 5) && (game.boardType === 'chess' || (r + c) % 2 === 1)) {
+              const isOscar = r > 5;
+              const piece = new THREE.Mesh(
+                game.boardType === 'chess'
+                  ? new THREE.CylinderGeometry(0.22, 0.34, r === 1 || r === 6 ? 0.55 : 0.85, 20)
+                  : new THREE.CylinderGeometry(0.35, 0.35, 0.18, 24),
+                new THREE.MeshStandardMaterial({ color: isOscar ? 0xdc2626 : 0x1e293b, roughness: 0.35 })
+              );
+              piece.position.set((c - 3.5) * 0.95, 0.4, (r - 3.5) * 0.95);
+              piece.castShadow = true;
+              stageScene.add(piece);
+              stageBodies.push({ mesh: piece, vx: 0, vz: 0, vy: 0, vr: 0, halfH: 0.3, radius: 0.35, isDie: false });
+            }
+          }
+        }
       } else {
-        // 3D Wooden / Token Circle Piece
-        ctxTb.fillStyle = p.bg;
-        ctxTb.strokeStyle = p.border;
-        ctxTb.lineWidth = 3;
-        ctxTb.beginPath();
-        ctxTb.arc(0, 0, p.r, 0, Math.PI * 2);
-        ctxTb.fill();
-        ctxTb.stroke();
-
-        ctxTb.shadowBlur = 0;
-        ctxTb.shadowOffsetX = 0;
-        ctxTb.shadowOffsetY = 0;
-        ctxTb.fillStyle = p.fg;
-        ctxTb.font = p.label.length > 2 ? 'bold 12px sans-serif' : '24px sans-serif';
-        ctxTb.textAlign = 'center';
-        ctxTb.textBaseline = 'middle';
-        ctxTb.fillText(p.label, 0, 1);
+        // Monopoly / Ticket to Ride / Casino / Deck-Building 3D Board Mat
+        const boardMat = new THREE.Mesh(
+          new THREE.BoxGeometry(9.5, 0.1, 7.5),
+          new THREE.MeshStandardMaterial({ color: 0x14532d, roughness: 0.7 })
+        );
+        boardMat.position.set(0, 0.06, 0);
+        stageScene.add(boardMat);
       }
-      ctxTb.restore();
+
+      // Add Resource Card Stacks & Throwable 3D Dice on the side of the board
+      for (let i = 0; i < 4; i++) {
+        const cardMesh = new THREE.Mesh(
+          new THREE.BoxGeometry(1.2, 0.06, 1.7),
+          new THREE.MeshStandardMaterial({ map: makeCardTexture(game.title.slice(0, 8), 'RESOURCE', '#b45309') })
+        );
+        cardMesh.position.set(6.2, 0.1, -3.2 + i * 2.1);
+        cardMesh.castShadow = true;
+        stageScene.add(cardMesh);
+        stageBodies.push({ mesh: cardMesh, vx: 0, vz: 0, vy: 0, vr: 0, halfH: 0.05, radius: 0.65, isDie: false });
+      }
+
+      // Two 3D Dice ready to grab or roll
+      const d1 = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.65, 0.65), makeDieMaterials('#fef08a', '#1c1917'));
+      d1.position.set(-4.8, 0.4, 2.5);
+      d1.castShadow = true;
+      stageScene.add(d1);
+      stageBodies.push({ mesh: d1, vx: 0, vz: 0, vy: 0, vr: 0, halfH: 0.33, radius: 0.45, isDie: true });
+
+      const d2 = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.65, 0.65), makeDieMaterials('#dc2626', '#ffffff'));
+      d2.position.set(-3.8, 0.4, 2.8);
+      d2.castShadow = true;
+      stageScene.add(d2);
+      stageBodies.push({ mesh: d2, vx: 0, vz: 0, vy: 0, vr: 0, halfH: 0.33, radius: 0.45, isDie: true });
     }
 
-    function getCanvasCoords(e) {
-      const rect = tbCanvas.getBoundingClientRect();
-      const scaleX = tbCanvas.width / rect.width;
-      const scaleY = tbCanvas.height / rect.height;
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      return {
-        x: (clientX - rect.left) * scaleX,
-        y: (clientY - rect.top) * scaleY
-      };
+    function createSeatedAvatar3D(x, z, rotY, shirtColor) {
+      const group = new THREE.Group();
+      // Chair
+      const chair = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.2, 1.6), new THREE.MeshStandardMaterial({ color: 0x291d16 }));
+      chair.position.y = -0.6;
+      group.add(chair);
+      // Torso
+      const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.65, 1.4, 16), new THREE.MeshStandardMaterial({ color: shirtColor }));
+      torso.position.y = 0.5;
+      group.add(torso);
+      // Head
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.45, 20, 20), new THREE.MeshStandardMaterial({ color: 0xd6a77a }));
+      head.position.y = 1.5;
+      group.add(head);
+      // Hat/Hair
+      const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.48, 0.22, 16), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
+      cap.position.y = 1.82;
+      group.add(cap);
+
+      group.position.set(x, 0, z);
+      group.rotation.y = rotY;
+      stageScene.add(group);
     }
 
-    function hitTestPiece(p, x, y) {
-      if (p.shape === 'card' || p.shape === 'die' || p.shape === 'train') {
-        return Math.abs(x - p.x) <= p.w / 2 + 6 && Math.abs(y - p.y) <= p.h / 2 + 6;
-      }
-      return Math.hypot(x - p.x, y - p.y) <= p.r + 4;
+    function place3DPieceOnNode(nodeMesh) {
+      playWoodClack(0.32, 230);
+      const settlement = new THREE.Mesh(
+        new THREE.BoxGeometry(0.44, 0.44, 0.44),
+        new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.35 })
+      );
+      settlement.position.set(nodeMesh.position.x, 0.32, nodeMesh.position.z);
+      settlement.castShadow = true;
+      stageScene.add(settlement);
+      stageBodies.push({ mesh: settlement, vx: 0, vz: 0, vy: 0, vr: 0, halfH: 0.22, radius: 0.32, isDie: false });
+
+      // Remove highlight node once built
+      stageScene.remove(nodeMesh);
+      stageSpecialClickables = stageSpecialClickables.filter(n => n !== nodeMesh);
+
+      oscarStats.vp += 1;
+      oscarStats.pieces = Math.max(0, oscarStats.pieces - 1);
+      updateOscarHud();
+
+      document.getElementById('hudTurnHeader').textContent = `Settlement Built! (+1 VP)`;
+      document.getElementById('hudTurnSub').textContent = `Click another highlighted spot, roll the 3D dice, or grab & move any piece.`;
     }
 
-    tbCanvas.addEventListener('pointerdown', (e) => {
-      const pos = getCanvasCoords(e);
-      for (let i = tablePieces.length - 1; i >= 0; i--) {
-        const p = tablePieces[i];
-        if (hitTestPiece(p, pos.x, pos.y)) {
-          draggedPiece = p;
-          dragOffset.x = pos.x - p.x;
-          dragOffset.y = pos.y - p.y;
-          p.vx = 0;
-          p.vy = 0;
-          pointerHistory = [{ x: pos.x, y: pos.y, t: performance.now() }];
-          // Move to top of render stack
-          tablePieces.splice(i, 1);
-          tablePieces.push(p);
-          tbCanvas.setPointerCapture(e.pointerId);
-          break;
-        }
-      }
-    });
-
-    tbCanvas.addEventListener('pointermove', (e) => {
-      if (!draggedPiece) return;
-      const pos = getCanvasCoords(e);
-      draggedPiece.x = pos.x - dragOffset.x;
-      draggedPiece.y = pos.y - dragOffset.y;
-      const now = performance.now();
-      pointerHistory.push({ x: pos.x, y: pos.y, t: now });
-      if (pointerHistory.length > 6) pointerHistory.shift();
-    });
-
-    tbCanvas.addEventListener('pointerup', () => {
-      if (!draggedPiece) return;
-      const now = performance.now();
-      const first = pointerHistory[0];
-      if (first) {
-        const dt = Math.max(now - first.t, 16);
-        const vx = ((draggedPiece.x + dragOffset.x - first.x) / dt) * 15;
-        const vy = ((draggedPiece.y + dragOffset.y - first.y) / dt) * 15;
-        draggedPiece.vx = Math.max(-28, Math.min(28, vx));
-        draggedPiece.vy = Math.max(-28, Math.min(28, vy));
-
-        // Gentle placement snaps to Chess/Checkers board grid
-        if ((currentSandboxGame === 'chess' || currentSandboxGame === 'checkers') && Math.hypot(vx, vy) < 2.2) {
-          const startX = 256, startY = 66, sq = 56;
-          if (draggedPiece.x >= startX && draggedPiece.x <= startX + sq * 8 &&
-              draggedPiece.y >= startY && draggedPiece.y <= startY + sq * 8) {
-            const col = Math.floor((draggedPiece.x - startX) / sq);
-            const row = Math.floor((draggedPiece.y - startY) / sq);
-            draggedPiece.x = startX + col * sq + 28;
-            draggedPiece.y = startY + row * sq + 28;
-            draggedPiece.vx = 0;
-            draggedPiece.vy = 0;
-          }
-        }
-      }
-      draggedPiece = null;
-    });
-
-    // Double-click to flip cards or roll dice
-    tbCanvas.addEventListener('dblclick', (e) => {
-      const pos = getCanvasCoords(e);
-      for (let i = tablePieces.length - 1; i >= 0; i--) {
-        const p = tablePieces[i];
-        if (hitTestPiece(p, pos.x, pos.y)) {
-          if (p.shape === 'card') {
-            p.faceUp = !p.faceUp;
-          } else if (p.shape === 'die') {
-            p.vx = (Math.random() - 0.5) * 22;
-            p.vy = (Math.random() - 0.5) * 22;
-            p.vAngle = (Math.random() - 0.5) * 0.4;
-            p.rollingTimer = 25;
-          }
-          break;
-        }
-      }
-    });
-
-    function rollAllTableDice() {
-      let foundDie = false;
-      tablePieces.forEach(p => {
-        if (p.shape === 'die') {
-          foundDie = true;
-          p.vx = (Math.random() - 0.5) * 26;
-          p.vy = (Math.random() - 0.5) * 26;
-          p.vAngle = (Math.random() - 0.5) * 0.5;
-          p.rollingTimer = 30;
+    function rollStage3DDice() {
+      playWoodClack(0.3, 340);
+      stageBodies.forEach(b => {
+        if (b.isDie) {
+          b.mesh.position.y = 2.4;
+          b.vx = (Math.random() - 0.5) * 0.55;
+          b.vz = (Math.random() - 0.5) * 0.55;
+          b.vy = 0.12;
+          b.vr = 0.38;
         }
       });
-      if (!foundDie) {
-        const d = createPiece({ x: 480, y: 290, shape: 'die', w: 46, h: 46, r: 24, label: '6', bg: '#ffffff', fg: '#111827' });
-        d.vx = (Math.random() - 0.5) * 22;
-        d.vy = (Math.random() - 0.5) * 22;
-        d.rollingTimer = 28;
-        tablePieces.push(d);
+      const rollSum = Math.floor(Math.random() * 6) + 1 + Math.floor(Math.random() * 6) + 1;
+      oscarStats.cards += 1;
+      updateOscarHud();
+      document.getElementById('hudTurnHeader').textContent = `🎲 Rolled a ${rollSum}!`;
+      document.getElementById('hudTurnSub').textContent = `Resources distributed! Oscar gained +1 Resource Card.`;
+    }
+
+    function spawnStage3DCard() {
+      playPageRustle();
+      const cMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(1.2, 0.06, 1.7),
+        new THREE.MeshStandardMaterial({ map: makeCardTexture('BONUS', '+1 VP CARD', '#15803d') })
+      );
+      cMesh.position.set(0, 1.6, 3.2);
+      cMesh.castShadow = true;
+      stageScene.add(cMesh);
+      stageBodies.push({ mesh: cMesh, vx: (Math.random() - 0.5) * 0.2, vz: -0.15, vy: 0, vr: 0, halfH: 0.04, radius: 0.65, isDie: false });
+      oscarStats.cards += 1;
+      updateOscarHud();
+    }
+
+    function triggerNextTurn() {
+      if (lobbyBots.length === 0) return;
+      const bot = lobbyBots[activeTurnIndex % lobbyBots.length];
+      activeTurnIndex++;
+      document.getElementById('hudTurnHeader').textContent = `${bot.name}'s turn`;
+      document.getElementById('hudTurnSub').textContent = `${bot.name} is rolling dice and placing a piece...`;
+      rollStage3DDice();
+      setTimeout(() => {
+        playWoodClack(0.26, 200);
+        if (Math.random() > 0.4) bot.vp += 1;
+        renderBotHuds();
+        document.getElementById('hudTurnHeader').textContent = `Oscar's turn`;
+        document.getElementById('hudTurnSub').textContent = `Your move! Roll the 3D dice, click a glowing spot, or grab & throw pieces.`;
+      }, 1200);
+    }
+
+    function animateStage3D() {
+      requestAnimationFrame(animateStage3D);
+      if (!stageRenderer || !stageScene) return;
+
+      // Smooth camera flight transition
+      stageCamera.position.lerp(cameraTargetPos, 0.06);
+      currentLookAt.lerp(cameraTargetLook, 0.06);
+      stageCamera.lookAt(currentLookAt);
+
+      step3DPhysics(stageBodies, stageDraggedBody, 8.8, 5.6);
+      stageRenderer.render(stageScene, stageCamera);
+    }
+
+    /* ========================================================
+       8. INTERACTIVE RULEBOOK & ALMANAC FLIPBOOK (Video 2)
+       ======================================================== */
+    let currentBookSpread = 0;
+    const BOOK_SPREADS = [
+      {
+        leftTitle: 'Game Overview & Setup',
+        leftBody: `<p>Welcome to the official <strong>OG ZONE Tabletop Edition</strong> crafted by Oscar.</p><br/><p><strong>1. Construct the Board:</strong> The 3D table automatically sets up all terrain hexes, number tokens, and starting pieces.</p><br/><p><strong>2. Initial Placements:</strong> Each player and bot places 2 starting settlements and 2 roads on highlighted vertices.</p>`,
+        rightTitle: 'Turn Sequence & Trading',
+        rightBody: `<p>On your turn, complete these phases in order:</p><br/><p>• <strong>Roll for Production:</strong> Grab and throw the 3D dice on the table (or click Roll 3D Dice). Every terrain hex matching the sum produces resources!</p><br/><p>• <strong>Trade & Build:</strong> Spend Brick, Lumber, Wool, Grain, and Ore to build new Roads (1 pt), Settlements (1 VP), or Cities (2 VP).</p>`
+      },
+      {
+        leftTitle: '3D Physics Controls',
+        leftBody: `<p>Every piece on the table is a real 3D physical object:</p><br/><p>• <strong>Grab & Lift:</strong> Click and hold any die, card, wooden settlement, or chip to lift it above the felt.</p><br/><p>• <strong>Flick & Throw:</strong> Move your cursor quickly and release to fling pieces across the table and knock into other objects.</p>`,
+        rightTitle: 'Winning the Game',
+        rightBody: `<p><strong>Race to 10 Victory Points!</strong></p><br/><p>You earn Victory Points from:</p><p>• Each Settlement: <strong>1 VP</strong></p><p>• Each City: <strong>2 VP</strong></p><p>• Longest Road & Largest Army: <strong>2 VP each</strong></p><br/><p>As soon as you reach 10 VP on your turn, you claim victory at the table!</p>`
       }
+    ];
+
+    function toggleRulebookModal(open) {
+      playPageRustle();
+      const modal = document.getElementById('rulebookModal');
+      modal.classList.toggle('open', open);
+      if (open) renderBookSpread();
     }
 
-    function spawnExtraPiece() {
-      const suits = ['♠','♥','♦','♣'];
-      const vals = ['A','K','Q','J','10','9','8'];
-      const pick = vals[Math.floor(Math.random() * vals.length)] + suits[Math.floor(Math.random() * suits.length)];
-      const card = createPiece({
-        x: 120, y: 290, shape: 'card', w: 66, h: 92,
-        label: pick, subLabel: 'OSCAR DECK',
-        bg: '#ffffff', fg: pick.includes('♥') || pick.includes('♦') ? '#dc2626' : '#0f172a'
-      });
-      card.vx = 10 + Math.random() * 6;
-      card.vy = (Math.random() - 0.5) * 6;
-      tablePieces.push(card);
+    function flipRulebookPage(dir) {
+      playPageRustle();
+      currentBookSpread = (currentBookSpread + dir + BOOK_SPREADS.length) % BOOK_SPREADS.length;
+      renderBookSpread();
     }
 
-    function botSandboxMove() {
-      const botPieces = tablePieces.filter(p => p.team === 'bot');
-      const targetPool = botPieces.length > 0 ? botPieces : tablePieces;
-      if (targetPool.length === 0) return;
-      const pick = targetPool[Math.floor(Math.random() * targetPool.length)];
-      pick.vx = (Math.random() - 0.5) * 14;
-      pick.vy = 6 + Math.random() * 8;
+    function renderBookSpread() {
+      const sp = BOOK_SPREADS[currentBookSpread];
+      document.getElementById('bookPageLeft').innerHTML = `
+        <div><h3>${currentStageGame.title} — ${sp.leftTitle}</h3>${sp.leftBody}</div>
+        <div style="font-size:0.75rem; color:#78716c;">Almanac • Made by Oscar</div>
+      `;
+      document.getElementById('bookPageRight').innerHTML = `
+        <div><h3>${sp.rightTitle}</h3>${sp.rightBody}</div>
+        <div style="font-size:0.75rem; color:#78716c; text-align:right;">OG ZONE Studio</div>
+      `;
+      document.getElementById('bookPageIndicator').textContent = `Page ${currentBookSpread * 2 + 2}–${currentBookSpread * 2 + 3} of 4`;
     }
   </script>
 </body>
